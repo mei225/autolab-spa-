@@ -1768,6 +1768,11 @@
 
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
+                // Re-initialize the current page to apply admin mode
+                historyPageInitialized = false;
+                galleryPageInitialized = false;
+                aboutUsPageInitialized = false;
+                productsPageInitialized = false;
                 navigateTo(currentPage);
             }
 
