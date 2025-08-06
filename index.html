@@ -138,7 +138,7 @@
             display: none;
         }
         body.admin-mode .admin-panel {
-            display: block; /* Or flex, depending on the panel */
+            display: flex; /* Or block, depending on the panel */
         }
     </style>
 </head>
@@ -1762,6 +1762,26 @@
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenuContainer = document.getElementById('mobile-menu');
             const desktopNav = document.getElementById('desktop-nav');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+
+            function enterAdminMode() {
+                document.body.classList.add('admin-mode');
+                // Re-render current page to show admin controls if needed
+                const currentPageId = appContent.querySelector('[id]')?.id || 'home';
+                navigateTo(currentPageId);
+            }
+
+            if(adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', () => {
+                    const password = prompt('관리자 비밀번호를 입력하세요:');
+                    if (password === 'autolab2025') {
+                        enterAdminMode();
+                    } else if (password) {
+                        alert('비밀번호가 틀렸습니다.');
+                    }
+                });
+            }
+
 
             function buildMobileMenu() {
                 mobileMenuContainer.innerHTML = ''; 
