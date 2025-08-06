@@ -110,6 +110,30 @@
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
+        /* Admin Edit Button */
+        .edit-btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .edit-btn {
+            display: none;
+            position: absolute;
+            top: -5px;
+            right: -30px;
+            background-color: #38bdf8;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            align-items: center;
+            justify-content: center;
+        }
+        body.admin-mode .edit-btn {
+            display: inline-flex;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -186,17 +210,17 @@
                 </video>
                 <div class="absolute top-0 left-0 w-full h-full bg-black/50"></div>
                 <div class="relative z-10 text-center text-white px-4 hero-text">
-                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">미래를 향한 끝없는 탐구<br>기술의 한계를 넘어서다</h1>
-                    <p class="mt-6 text-lg md:text-xl opacity-80">AUTOLAB은 혁신적인 기술로 내일의 가능성을 현실로 만듭니다.</p>
+                    <h1 data-key="home.hero.title" class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">미래를 향한 끝없는 탐구,<br>기술의 한계를 넘어서다.</h1>
+                    <p data-key="home.hero.subtitle" class="mt-6 text-lg md:text-xl opacity-80">AUTOLAB은 혁신적인 기술로 내일의 가능성을 현실로 만듭니다.</p>
                 </div>
             </section>
             <section class="relative py-24 lg:py-48 bg-cover bg-center mission-bg" style="background-image: linear-gradient(rgba(248, 250, 252, 0.9), rgba(248, 250, 252, 0.9)), url('./background.jpg');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center scroll-reveal">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-snug">
+                    <h2 data-key="home.mission.title" class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-snug">
                         우리는 <span class="text-sky-500">창의적인 아이디어</span>로<br>
                         세상을 움직이는 <span class="text-sky-500">새로운 방법</span>을 제시합니다.
                     </h2>
-                    <p class="mt-8 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
+                    <p data-key="home.mission.description" class="mt-8 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
                         자동차(Auto)와 실험실(Lab)의 결합. AUTOLAB은 끝없는 연구와 실험 정신을 바탕으로, ICT 기술의 경계를 허무는 자동화 기술과 교육 솔루션을 제공합니다.
                     </p>
                     <div class="mt-12">
@@ -209,22 +233,22 @@
             <section class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 md:mb-20 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">핵심 사업분야</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB은 두 가지 핵심 기술을 통해 미래를 선도합니다.</p>
+                        <h2 data-key="home.business.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">핵심 사업분야</h2>
+                        <p data-key="home.business.subtitle" class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB은 두 가지 핵심 기술을 통해 미래를 선도합니다.</p>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16 md:mb-24">
                         <div class="relative scroll-reveal">
-                            <img src="./sensor.jpg" alt="Sensor R&D" class="rounded-lg shadow-2xl w-full">
+                            <img data-key="home.business.sensorImage" src="./sensor.jpg" alt="Sensor R&D" class="rounded-lg shadow-2xl w-full">
                         </div>
                         <div class="scroll-reveal">
                             <span class="text-sky-500 font-semibold">01. SENSOR R&D</span>
-                            <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">세상의 한계를<br>넘어서는 감각</h3>
-                            <p class="text-base md:text-lg text-gray-600 mb-8">
+                            <h3 data-key="home.business.sensorTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">세상의 한계를<br>넘어서는 감각</h3>
+                            <p data-key="home.business.sensorDescription" class="text-base md:text-lg text-gray-600 mb-8">
                                 초정밀 센서부터 AI 기반 인식 시스템까지, 산업의 미래를 여는 핵심 기술을 연구하고 개발합니다. AUTOLAB의 센서 기술은 보이지 않는 것을 보고, 불가능을 가능하게 만듭니다.
                             </p>
                             <ul class="space-y-4 text-gray-700 text-base md:text-lg">
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span><strong>초정밀 측정 기술:</strong> 미세한 변화도 놓치지 않는 정밀함</span></li>
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span><strong>AI 융합 솔루션:</strong> 데이터를 분석하고 예측하는 스마트 센서</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.sensorFeature1"><strong>초정밀 측정 기술:</strong> 미세한 변화도 놓치지 않는 정밀함</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.sensorFeature2"><strong>AI 융합 솔루션:</strong> 데이터를 분석하고 예측하는 스마트 센서</span></li>
                             </ul>
                             <div class="mt-10">
                                 <a href="#" data-target="business-sensor" class="nav-link font-bold text-sky-600 hover:text-sky-700 group text-lg">
@@ -235,17 +259,17 @@
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal lg:order-2">
-                            <img src="./edu.jpg" alt="ICT Education" class="rounded-lg shadow-2xl w-full">
+                            <img data-key="home.business.ictImage" src="./edu.jpg" alt="ICT Education" class="rounded-lg shadow-2xl w-full">
                         </div>
                         <div class="scroll-reveal lg:order-1">
                             <span class="text-sky-500 font-semibold">02. ICT EDUCATION</span>
-                            <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">미래를 만드는<br>사람을 키웁니다</h3>
-                            <p class="text-base md:text-lg text-gray-600 mb-8">
+                            <h3 data-key="home.business.ictTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">미래를 만드는<br>사람을 키웁니다</h3>
+                            <p data-key="home.business.ictDescription" class="text-base md:text-lg text-gray-600 mb-8">
                                 이론을 넘어 실제적인 문제 해결 능력을 키우는 실습 중심의 교육 프로그램을 통해 미래 인재를 양성합니다. AUTOLAB의 교육은 단순한 지식 전달이 아닌, 경험을 통한 성장을 목표로 합니다.
                             </p>
                             <ul class="space-y-4 text-gray-700 text-base md:text-lg">
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span><strong>실무 중심 커리큘럼:</strong> 현장에서 바로 적용 가능한 기술 교육</span></li>
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span><strong>최신 장비 활용:</strong> 최고의 환경에서 최고의 기술을 경험</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.ictFeature1"><strong>실무 중심 커리큘럼:</strong> 현장에서 바로 적용 가능한 기술 교육</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.ictFeature2"><strong>최신 장비 활용:</strong> 최고의 환경에서 최고의 기술을 경험</span></li>
                             </ul>
                             <div class="mt-10">
                                 <a href="#" data-target="business-ict" class="nav-link font-bold text-sky-600 hover:text-sky-700 group text-lg">
@@ -259,22 +283,22 @@
             <section class="py-20 lg:py-32 bg-white">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Products</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요.</p>
+                        <h2 data-key="home.products.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">Products</h2>
+                        <p data-key="home.products.subtitle" class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요.</p>
                     </div>
                     <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300">
-                            <img src="https://placehold.co/600x400/e2e8f0/334155?text=R%26D+Result" alt="R&D Result" class="w-full h-56 object-cover">
+                            <img data-key="home.products.rdImage" src="https://placehold.co/600x400/e2e8f0/334155?text=R%26D+Result" alt="R&D Result" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-xl font-bold text-gray-800 mb-2">R&D 연구개발 결과물</h3>
-                                <p class="text-gray-700">타액 기반 혈당 센서 등 최신 연구 결과물을 확인해보세요.</p>
+                                <h3 data-key="home.products.rdTitle" class="text-xl font-bold text-gray-800 mb-2">R&D 연구개발 결과물</h3>
+                                <p data-key="home.products.rdDescription" class="text-gray-700">타액 기반 혈당 센서 등 최신 연구 결과물을 확인해보세요.</p>
                             </div>
                         </div>
                         <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300" style="transition-delay: 150ms;">
-                            <img src="https://placehold.co/600x400/e2e8f0/334155?text=Education+Kit" alt="Education Kit" class="w-full h-56 object-cover">
+                            <img data-key="home.products.kitImage" src="https://placehold.co/600x400/e2e8f0/334155?text=Education+Kit" alt="Education Kit" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-xl font-bold text-gray-800 mb-2">시판 제품</h3>
-                                <p class="text-gray-700">미로탈출 RC카, 아두이노 키트 등 교육용 제품을 구매할 수 있습니다.</p>
+                                <h3 data-key="home.products.kitTitle" class="text-xl font-bold text-gray-800 mb-2">시판 제품</h3>
+                                <p data-key="home.products.kitDescription" class="text-gray-700">미로탈출 RC카, 아두이노 키트 등 교육용 제품을 구매할 수 있습니다.</p>
                             </div>
                         </div>
                     </div>
@@ -291,8 +315,8 @@
         <div id="about-intro">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e2e8f/ffffff?text=AUTOLAB+Office');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
-                    <h1 class="text-4xl md:text-5xl font-extrabold">AUTOLAB 소개</h1>
-                    <p class="mt-4 text-lg md:text-xl text-gray-300">기술 혁신을 통해 더 나은 미래를 만들어갑니다.</p>
+                    <h1 data-key="about.hero.title" class="text-4xl md:text-5xl font-extrabold">AUTOLAB 소개</h1>
+                    <p data-key="about.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">기술 혁신을 통해 더 나은 미래를 만들어갑니다.</p>
                 </div>
             </section>
             <div class="border-b border-gray-200 sticky top-20 bg-white z-40">
@@ -307,20 +331,20 @@
             <section id="intro" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-20 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">
+                        <h2 data-key="about.intro.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">
                             세상에 없던 새로운 <span class="text-sky-500">가치</span>를 창조합니다.
                         </h2>
-                        <p class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
+                        <p data-key="about.intro.description" class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
                             AUTOLAB은 자동차(Auto)의 정밀한 기술력과 실험실(Lab)의 끝없는 탐구 정신이 만난 곳입니다. 우리는 기존의 틀에 갇히지 않는 창의적인 생각과 ICT 기술력을 바탕으로, 미래 산업의 패러다임을 바꾸는 것을 목표로 합니다.
                         </p>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal">
-                            <img src="https://placehold.co/800x600/e0f2fe/38bdf8?text=Vision+of+Future" alt="AUTOLAB Vision" class="rounded-lg shadow-xl w-full">
+                            <img data-key="about.vision.image" src="https://placehold.co/800x600/e0f2fe/38bdf8?text=Vision+of+Future" alt="AUTOLAB Vision" class="rounded-lg shadow-xl w-full">
                         </div>
                         <div class="scroll-reveal">
-                            <h3 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">우리의 비전</h3>
-                            <p class="text-base md:text-lg text-gray-600 mb-4">
+                            <h3 data-key="about.vision.title" class="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">우리의 비전</h3>
+                            <p data-key="about.vision.description" class="text-base md:text-lg text-gray-600 mb-4">
                                 단순히 기술을 개발하는 것을 넘어, 사람과 기술이 조화롭게 공존하는 세상을 만듭니다. AUTOLAB의 혁신적인 기술은 산업 현장의 효율성을 극대화하고, 우리의 삶을 더욱 안전하고 풍요롭게 만들 것입니다.
                             </p>
                         </div>
@@ -331,25 +355,25 @@
             <section class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-20 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">CI 소개</h2>
-                        <p class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">AUTOLAB의 정체성과 비전을 담은 상징입니다.</p>
+                        <h2 data-key="about.ci.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">CI 소개</h2>
+                        <p data-key="about.ci.subtitle" class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">AUTOLAB의 정체성과 비전을 담은 상징입니다.</p>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal flex justify-center items-center">
-                            <img src="./logo.png" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full">
+                            <img data-key="about.ci.logo" src="./logo.png" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full">
                         </div>
                         <div class="scroll-reveal space-y-8 text-base md:text-lg">
                             <div>
-                                <h4 class="text-xl font-bold text-gray-800 mb-2">로고 디자인</h4>
-                                <p class="text-gray-600">AUTOLAB의 로고는 지능적이고 역동적인 돌고래와 정밀한 기술력을 상징하는 톱니바퀴를 결합하여 탄생했습니다. 이는 유연한 사고와 첨단 기술의 조화를 통해 미래를 향해 나아가는 우리의 의지를 표현합니다.</p>
+                                <h4 data-key="about.ci.designTitle" class="text-xl font-bold text-gray-800 mb-2">로고 디자인</h4>
+                                <p data-key="about.ci.designDescription" class="text-gray-600">AUTOLAB의 로고는 지능적이고 역동적인 돌고래와 정밀한 기술력을 상징하는 톱니바퀴를 결합하여 탄생했습니다. 이는 유연한 사고와 첨단 기술의 조화를 통해 미래를 향해 나아가는 우리의 의지를 표현합니다.</p>
                             </div>
                             <div>
-                                <h4 class="text-xl font-bold text-gray-800 mb-2">시그니처 컬러</h4>
-                                <p class="text-gray-600">주요 색상인 <span class="font-bold text-sky-500">스카이 블루</span>는 신뢰, 기술, 그리고 무한한 가능성을 상징합니다. 고객에게는 안정적인 기술력에 대한 믿음을, 내부적으로는 미래를 향한 밝은 비전을 의미합니다.</p>
+                                <h4 data-key="about.ci.colorTitle" class="text-xl font-bold text-gray-800 mb-2">시그니처 컬러</h4>
+                                <p data-key="about.ci.colorDescription" class="text-gray-600">주요 색상인 <span class="font-bold text-sky-500">스카이 블루</span>는 신뢰, 기술, 그리고 무한한 가능성을 상징합니다. 고객에게는 안정적인 기술력에 대한 믿음을, 내부적으로는 미래를 향한 밝은 비전을 의미합니다.</p>
                             </div>
                             <div>
-                                <h4 class="text-xl font-bold text-gray-800 mb-2">돌고래 심볼</h4>
-                                <p class="text-gray-600">돌고래는 높은 지능, 빠른 속도, 그리고 친근함의 상징입니다. 이는 복잡한 문제를 해결하는 스마트한 기술력, 빠르게 변화하는 시장에 대한 민첩한 대응, 그리고 인간 중심의 기술을 추구하는 AUTOLAB의 핵심 가치를 나타냅니다.</p>
+                                <h4 data-key="about.ci.symbolTitle" class="text-xl font-bold text-gray-800 mb-2">돌고래 심볼</h4>
+                                <p data-key="about.ci.symbolDescription" class="text-gray-600">돌고래는 높은 지능, 빠른 속도, 그리고 친근함의 상징입니다. 이는 복잡한 문제를 해결하는 스마트한 기술력, 빠르게 변화하는 시장에 대한 민첩한 대응, 그리고 인간 중심의 기술을 추구하는 AUTOLAB의 핵심 가치를 나타냅니다.</p>
                             </div>
                         </div>
                     </div>
@@ -358,13 +382,13 @@
             <section id="organization" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">조직도</h2>
-                        <p class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
+                        <h2 data-key="about.org.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">조직도</h2>
+                        <p data-key="about.org.subtitle" class="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
                             AUTOLAB은 최고의 전문가들과 함께 성장합니다.
                         </p>
                     </div>
                     <div class="max-w-5xl mx-auto scroll-reveal">
-                        <img src="https://placehold.co/1200x800/e2e8f0/334155?text=Organization+Chart" alt="AUTOLAB Organization Chart" class="rounded-lg shadow-lg w-full border border-gray-200">
+                        <img data-key="about.org.image" src="https://placehold.co/1200x800/e2e8f0/334155?text=Organization+Chart" alt="AUTOLAB Organization Chart" class="rounded-lg shadow-lg w-full border border-gray-200">
                     </div>
                 </div>
             </section>
@@ -372,22 +396,22 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                           <div class="scroll-reveal lg:order-2">
-                               <img src="https://placehold.co/800x600/1e293b/ffffff?text=Core+Values" alt="Core Values" class="rounded-lg shadow-xl w-full">
+                               <img data-key="about.values.image" src="https://placehold.co/800x600/1e293b/ffffff?text=Core+Values" alt="Core Values" class="rounded-lg shadow-xl w-full">
                           </div>
                           <div class="scroll-reveal lg:order-1 text-base md:text-lg">
-                               <h3 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">핵심 가치</h3>
+                               <h3 data-key="about.values.title" class="text-2xl lg:text-3xl font-bold text-gray-800 mb-8">핵심 가치</h3>
                                <ul class="space-y-8">
                                    <li>
-                                       <h4 class="text-xl font-semibold text-sky-600 mb-2">Innovation (혁신)</h4>
-                                       <p class="text-gray-600">우리는 끊임없이 질문하고, 기존의 방식을 의심하며, 대담한 도전을 통해 세상을 놀라게 할 혁신을 만들어갑니다.</p>
+                                       <h4 data-key="about.values.value1Title" class="text-xl font-semibold text-sky-600 mb-2">Innovation (혁신)</h4>
+                                       <p data-key="about.values.value1Description" class="text-gray-600">우리는 끊임없이 질문하고, 기존의 방식을 의심하며, 대담한 도전을 통해 세상을 놀라게 할 혁신을 만들어갑니다.</p>
                                    </li>
                                     <li>
-                                       <h4 class="text-xl font-semibold text-sky-600 mb-2">Education (교육)</h4>
-                                       <p class="text-gray-600">미래를 이끌어갈 인재를 양성하는 것이 곧 기술의 미래를 만드는 것이라 믿습니다. 실습 중심의 교육으로 살아있는 지식을 전파합니다.</p>
+                                       <h4 data-key="about.values.value2Title" class="text-xl font-semibold text-sky-600 mb-2">Education (교육)</h4>
+                                       <p data-key="about.values.value2Description" class="text-gray-600">미래를 이끌어갈 인재를 양성하는 것이 곧 기술의 미래를 만드는 것이라 믿습니다. 실습 중심의 교육으로 살아있는 지식을 전파합니다.</p>
                                    </li>
                                     <li>
-                                       <h4 class="text-xl font-semibold text-sky-600 mb-2">Growth (성장)</h4>
-                                       <p class="text-gray-600">개인의 성장이 곧 회사의 성장입니다. 구성원 모두가 각 분야의 전문가로 성장할 수 있도록 지원하며, 사회와 함께 발전합니다.</p>
+                                       <h4 data-key="about.values.value3Title" class="text-xl font-semibold text-sky-600 mb-2">Growth (성장)</h4>
+                                       <p data-key="about.values.value3Description" class="text-gray-600">개인의 성장이 곧 회사의 성장입니다. 구성원 모두가 각 분야의 전문가로 성장할 수 있도록 지원하며, 사회와 함께 발전합니다.</p>
                                    </li>
                                </ul>
                           </div>
@@ -464,9 +488,9 @@
                         <div class="bg-gray-50 p-8 rounded-lg">
                             <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">주소 및 연락처</h3>
                             <div class="space-y-3 text-lg">
-                                <p><i class="fas fa-map-marker-alt text-sky-500 mr-3 w-5 text-center"></i>경상남도 창원시 마산합포구 경남대학로 7 (경남대학교)</p>
-                                <p><i class="fas fa-phone-alt text-sky-500 mr-3 w-5 text-center"></i>010-0000-0000</p>
-                                <p><i class="fas fa-envelope text-sky-500 mr-3 w-5 text-center"></i>contact@autolab.co.kr</p>
+                                <p><i class="fas fa-map-marker-alt text-sky-500 mr-3 w-5 text-center"></i><span data-key="location.address">경상남도 창원시 마산합포구 경남대학로 7 (경남대학교)</span></p>
+                                <p><i class="fas fa-phone-alt text-sky-500 mr-3 w-5 text-center"></i><span data-key="location.phone">010-0000-0000</span></p>
+                                <p><i class="fas fa-envelope text-sky-500 mr-3 w-5 text-center"></i><span data-key="location.email">contact@autolab.co.kr</span></p>
                             </div>
                         </div>
                     </div>
@@ -478,8 +502,8 @@
         <div id="business-ict">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=ICT+Education');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
-                    <h1 class="text-4xl md:text-5xl font-extrabold">ICT 교육</h1>
-                    <p class="mt-4 text-lg md:text-xl text-gray-300">미래를 만드는 사람을 키웁니다.</p>
+                    <h1 data-key="ict.hero.title" class="text-4xl md:text-5xl font-extrabold">ICT 교육</h1>
+                    <p data-key="ict.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">미래를 만드는 사람을 키웁니다.</p>
                 </div>
             </section>
             <div class="border-b border-gray-200 sticky top-20 bg-white z-40">
@@ -493,35 +517,35 @@
             <section id="philosophy" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
                     <div class="scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">살아있는 지식,<br>성장하는 경험</h2>
-                        <p class="text-base md:text-lg text-gray-600 mb-8">AUTOLAB의 ICT 교육은 단순한 이론 학습을 넘어, 실제 산업 현장에서 마주할 문제들을 해결하는 능력을 키우는 데 집중합니다. 우리는 수강생들이 직접 부딪히고, 실패하고, 다시 도전하는 과정을 통해 진정한 전문가로 성장할 수 있다고 믿습니다.</p>
+                        <h2 data-key="ict.philosophy.title" class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">살아있는 지식,<br>성장하는 경험</h2>
+                        <p data-key="ict.philosophy.description" class="text-base md:text-lg text-gray-600 mb-8">AUTOLAB의 ICT 교육은 단순한 이론 학습을 넘어, 실제 산업 현장에서 마주할 문제들을 해결하는 능력을 키우는 데 집중합니다. 우리는 수강생들이 직접 부딪히고, 실패하고, 다시 도전하는 과정을 통해 진정한 전문가로 성장할 수 있다고 믿습니다.</p>
                     </div>
                     <div class="scroll-reveal">
-                        <img src="https://placehold.co/800x600/e0f2fe/38bdf8?text=Hands-On+Experience" alt="Education" class="rounded-lg shadow-xl">
+                        <img data-key="ict.philosophy.image" src="https://placehold.co/800x600/e0f2fe/38bdf8?text=Hands-On+Experience" alt="Education" class="rounded-lg shadow-xl">
                     </div>
                 </div>
             </section>
             <section id="features" class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 교육의 특별함</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">최고의 환경에서 최고의 전문가로 성장할 수 있는 기회를 제공합니다.</p>
+                        <h2 data-key="ict.features.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 교육의 특별함</h2>
+                        <p data-key="ict.features.subtitle" class="mt-4 text-base md:text-lg text-gray-600">최고의 환경에서 최고의 전문가로 성장할 수 있는 기회를 제공합니다.</p>
                     </div>
                     <div class="grid md:grid-cols-3 gap-8 text-center">
                         <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal">
                             <div class="w-16 h-16 mx-auto bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-3xl mb-6"><i class="fas fa-laptop-code"></i></div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">실무 중심 커리큘럼</h3>
-                            <p class="text-gray-700">현업 전문가가 설계한 커리큘럼으로, 현장에서 바로 적용 가능한 실용적인 기술을 배웁니다.</p>
+                            <h3 data-key="ict.features.feature1Title" class="text-xl font-bold text-gray-800 mb-2">실무 중심 커리큘럼</h3>
+                            <p data-key="ict.features.feature1Description" class="text-gray-700">현업 전문가가 설계한 커리큘럼으로, 현장에서 바로 적용 가능한 실용적인 기술을 배웁니다.</p>
                         </div>
                         <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal" style="transition-delay: 150ms;">
                             <div class="w-16 h-16 mx-auto bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-3xl mb-6"><i class="fas fa-user-tie"></i></div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">최고의 강사진</h3>
-                            <p class="text-gray-700">풍부한 실무 경험을 갖춘 강사진의 1:1 멘토링을 통해 깊이 있는 학습이 가능합니다.</p>
+                            <h3 data-key="ict.features.feature2Title" class="text-xl font-bold text-gray-800 mb-2">최고의 강사진</h3>
+                            <p data-key="ict.features.feature2Description" class="text-gray-700">풍부한 실무 경험을 갖춘 강사진의 1:1 멘토링을 통해 깊이 있는 학습이 가능합니다.</p>
                         </div>
                         <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal" style="transition-delay: 300ms;">
                             <div class="w-16 h-16 mx-auto bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-3xl mb-6"><i class="fas fa-cogs"></i></div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">최첨단 실습 환경</h3>
-                            <p class="text-gray-700">R&D 센터와 동일한 수준의 최신 장비와 설비를 통해 마음껏 아이디어를 구현할 수 있습니다.</p>
+                            <h3 data-key="ict.features.feature3Title" class="text-xl font-bold text-gray-800 mb-2">최첨단 실습 환경</h3>
+                            <p data-key="ict.features.feature3Description" class="text-gray-700">R&D 센터와 동일한 수준의 최신 장비와 설비를 통해 마음껏 아이디어를 구현할 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
@@ -529,21 +553,21 @@
             <section id="curriculum" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">교육 과정 안내</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">개인의 목표와 수준에 맞는 다양한 교육 과정을 제공합니다.</p>
+                        <h2 data-key="ict.curriculum.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">교육 과정 안내</h2>
+                        <p data-key="ict.curriculum.subtitle" class="mt-4 text-base md:text-lg text-gray-600">개인의 목표와 수준에 맞는 다양한 교육 과정을 제공합니다.</p>
                     </div>
                     <div class="max-w-4xl mx-auto space-y-6 scroll-reveal">
                         <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <h3 class="text-xl font-bold text-sky-600">기초 과정: 센서 데이터 분석 입문</h3>
-                            <p class="mt-2 text-gray-700">센서의 기본 원리를 이해하고, Python을 활용하여 데이터를 수집하고 분석하는 기초를 다집니다.</p>
+                            <h3 data-key="ict.curriculum.course1Title" class="text-xl font-bold text-sky-600">기초 과정: 센서 데이터 분석 입문</h3>
+                            <p data-key="ict.curriculum.course1Description" class="mt-2 text-gray-700">센서의 기본 원리를 이해하고, Python을 활용하여 데이터를 수집하고 분석하는 기초를 다집니다.</p>
                         </div>
                         <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <h3 class="text-xl font-bold text-sky-600">심화 과정: AI 기반 자동화 시스템 구축</h3>
-                            <p class="mt-2 text-gray-700">머신러닝/딥러닝 모델을 활용하여 실제 산업 현장의 문제를 해결하는 자동화 시스템을 직접 구축합니다.</p>
+                            <h3 data-key="ict.curriculum.course2Title" class="text-xl font-bold text-sky-600">심화 과정: AI 기반 자동화 시스템 구축</h3>
+                            <p data-key="ict.curriculum.course2Description" class="mt-2 text-gray-700">머신러닝/딥러닝 모델을 활용하여 실제 산업 현장의 문제를 해결하는 자동화 시스템을 직접 구축합니다.</p>
                         </div>
                         <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <h3 class="text-xl font-bold text-sky-600">맞춤형 기업 교육</h3>
-                            <p class="mt-2 text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
+                            <h3 data-key="ict.curriculum.course3Title" class="text-xl font-bold text-sky-600">맞춤형 기업 교육</h3>
+                            <p data-key="ict.curriculum.course3Description" class="mt-2 text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
                         </div>
                     </div>
                 </div>
@@ -554,8 +578,8 @@
         <div id="business-sensor">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Sensor+R%26D');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
-                    <h1 class="text-4xl md:text-5xl font-extrabold">센서 개발 R&D</h1>
-                    <p class="mt-4 text-lg md:text-xl text-gray-300">세상의 한계를 넘어서는 감각, AUTOLAB의 센서 기술</p>
+                    <h1 data-key="sensor.hero.title" class="text-4xl md:text-5xl font-extrabold">센서 개발 R&D</h1>
+                    <p data-key="sensor.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">세상의 한계를 넘어서는 감각, AUTOLAB의 센서 기술</p>
                 </div>
             </section>
             <div class="border-b border-gray-200 sticky top-20 bg-white z-40">
@@ -570,30 +594,30 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="grid md:grid-cols-2 gap-12 items-center">
                         <div class="scroll-reveal">
-                            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 보유 장비</h2>
-                            <p class="mt-4 text-base md:text-lg text-gray-600">최첨단 연구 설비는 기술 혁신의 기반입니다.</p>
+                            <h2 data-key="sensor.equipment.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 보유 장비</h2>
+                            <p data-key="sensor.equipment.subtitle" class="mt-4 text-base md:text-lg text-gray-600">최첨단 연구 설비는 기술 혁신의 기반입니다.</p>
                         </div>
                         <div class="scroll-reveal bg-gray-50 p-8 rounded-lg">
                             <ul class="space-y-6 text-base md:text-lg">
                                 <li>
-                                    <h3 class="text-xl font-bold text-gray-800">- 제조 장비:</h3>
+                                    <h3 data-key="sensor.equipment.cat1Title" class="text-xl font-bold text-gray-800">- 제조 장비:</h3>
                                     <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li>3D 프린터</li>
-                                        <li>CNC 정밀 가공기</li>
+                                        <li data-key="sensor.equipment.cat1Item1">3D 프린터</li>
+                                        <li data-key="sensor.equipment.cat1Item2">CNC 정밀 가공기</li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <h3 class="text-xl font-bold text-gray-800">- 측정 장비:</h3>
+                                    <h3 data-key="sensor.equipment.cat2Title" class="text-xl font-bold text-gray-800">- 측정 장비:</h3>
                                     <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li>오실로스코프</li>
-                                        <li>열화상 카메라</li>
+                                        <li data-key="sensor.equipment.cat2Item1">오실로스코프</li>
+                                        <li data-key="sensor.equipment.cat2Item2">열화상 카메라</li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <h3 class="text-xl font-bold text-gray-800">- 소형화 장비:</h3>
+                                    <h3 data-key="sensor.equipment.cat3Title" class="text-xl font-bold text-gray-800">- 소형화 장비:</h3>
                                      <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li>마이크로-FAB 시스템</li>
-                                        <li>PCB 프로토타이핑 머신</li>
+                                        <li data-key="sensor.equipment.cat3Item1">마이크로-FAB 시스템</li>
+                                        <li data-key="sensor.equipment.cat3Item2">PCB 프로토타이핑 머신</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -604,24 +628,24 @@
             <section id="tech-intro" class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
                     <div class="scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">AUTOLAB 기술력 소개</h2>
-                        <p class="text-base md:text-lg text-gray-600 mb-8">AUTOLAB은 다년간 축적된 R&D 경험과 노하우를 바탕으로 고객의 요구에 최적화된 센서 솔루션을 제공합니다. 단순한 부품 개발을 넘어, 데이터 분석과 AI 기술을 융합하여 새로운 가치를 창출합니다.</p>
+                        <h2 data-key="sensor.tech.title" class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">AUTOLAB 기술력 소개</h2>
+                        <p data-key="sensor.tech.description" class="text-base md:text-lg text-gray-600 mb-8">AUTOLAB은 다년간 축적된 R&D 경험과 노하우를 바탕으로 고객의 요구에 최적화된 센서 솔루션을 제공합니다. 단순한 부품 개발을 넘어, 데이터 분석과 AI 기술을 융합하여 새로운 가치를 창출합니다.</p>
                         <ul class="space-y-4 text-base md:text-lg">
-                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span>맞춤형 센서 설계 및 제작</span></li>
-                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span>신호 처리 및 데이터 분석</span></li>
-                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span>AI 기반 불량 탐지 및 예측</span></li>
+                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span data-key="sensor.tech.feature1">맞춤형 센서 설계 및 제작</span></li>
+                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span data-key="sensor.tech.feature2">신호 처리 및 데이터 분석</span></li>
+                            <li class="flex items-center"><i class="fas fa-check text-sky-500 mr-3"></i><span data-key="sensor.tech.feature3">AI 기반 불량 탐지 및 예측</span></li>
                         </ul>
                     </div>
                     <div class="scroll-reveal">
-                        <img src="https://placehold.co/800x600/1e293b/ffffff?text=Core+Technology" alt="Technology" class="rounded-lg shadow-xl">
+                        <img data-key="sensor.tech.image" src="https://placehold.co/800x600/1e293b/ffffff?text=Core+Technology" alt="Technology" class="rounded-lg shadow-xl">
                     </div>
                 </div>
             </section>
             <section id="tech-transfer" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-20 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">기술이전 프로세스</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB의 축적된 센서 기술을 귀사의 것으로 만들어 드립니다.</p>
+                        <h2 data-key="sensor.process.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">기술이전 프로세스</h2>
+                        <p data-key="sensor.process.subtitle" class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB의 축적된 센서 기술을 귀사의 것으로 만들어 드립니다.</p>
                     </div>
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-8 md:space-y-0 md:space-x-4 scroll-reveal">
                         <div class="flex-1 text-center">
@@ -659,8 +683,8 @@
             <section id="contract-process" class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-20 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">센서 개발 R&D 의뢰 프로세스</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">아이디어를 현실로 만드는 가장 확실한 방법입니다.</p>
+                        <h2 data-key="sensor.contract.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">센서 개발 R&D 의뢰 프로세스</h2>
+                        <p data-key="sensor.contract.subtitle" class="mt-4 text-base md:text-lg text-gray-600">아이디어를 현실로 만드는 가장 확실한 방법입니다.</p>
                     </div>
                      <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-8 md:space-y-0 md:space-x-4 scroll-reveal">
                         <div class="flex-1 text-center">
@@ -1696,9 +1720,6 @@
             const loading = document.getElementById('product-loading');
             const adminPanel = document.getElementById('product-admin-panel');
             const addProductBtn = document.getElementById('add-product-btn');
-            
-            // You might need a unique modal for products if the fields are different
-            // For now, assuming it's similar and can be handled dynamically if needed.
             
             function renderProducts() {
                 if (!productGrid) return;
