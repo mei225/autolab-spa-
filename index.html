@@ -122,7 +122,7 @@
             outline-color: rgba(239, 68, 68, 1);
             background-color: rgba(254, 226, 226, 0.3);
         }
-        .edit-btn {
+        .edit-btn-icon {
             display: none;
             position: absolute;
             top: -10px;
@@ -140,7 +140,7 @@
             z-index: 10;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        body.admin-mode [data-key]:hover .edit-btn {
+        body.admin-mode [data-key]:hover .edit-btn-icon {
             display: flex;
         }
         .admin-panel {
@@ -159,7 +159,7 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="#" data-target="home" class="nav-link flex items-center space-x-2 shrink-0">
-                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-8 md:h-10">
+                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-8 md:h-10" onerror="this.onerror=null; this.src='https://placehold.co/200x40/0ea5e9/ffffff?text=AUTOLAB';">
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -375,7 +375,7 @@
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal flex justify-center items-center">
-                            <img data-key="about.ci.logo" src="./logo.png" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full">
+                            <img data-key="about.ci.logo" src="./logo.png" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full" onerror="this.onerror=null; this.src='https://placehold.co/400x150/0ea5e9/ffffff?text=AUTOLAB';">
                         </div>
                         <div class="scroll-reveal space-y-8 text-base md:text-lg">
                             <div>
@@ -1228,6 +1228,15 @@
                 </div>
             </div>
         </div>
+        <!-- Custom Alert/Confirm Modal -->
+        <div id="custom-dialog-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[90] flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6 text-center">
+                <p id="dialog-message" class="text-lg mb-6">메시지 내용</p>
+                <div id="dialog-buttons" class="flex justify-center space-x-4">
+                    <!-- Buttons will be injected here -->
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Firebase SDK -->
@@ -1249,12 +1258,45 @@
         // --- Global Variables & DOM Elements ---
         const appContent = document.getElementById('app-content');
         const pageTemplates = document.getElementById('page-templates');
-        let historyPageInitialized = false;
-        let galleryPageInitialized = false;
-        let aboutUsPageInitialized = false;
-        let productsPageInitialized = false;
         let db; // Firestore instance
         let currentPage = 'home'; // Track the current page
+        let pageInitialized = {}; // Track initialized pages to prevent re-initialization
+
+        // --- Custom Dialog ---
+        const dialogModal = document.getElementById('custom-dialog-modal');
+        const dialogMessage = document.getElementById('dialog-message');
+        const dialogButtons = document.getElementById('dialog-buttons');
+
+        function showDialog(message, buttons) {
+            dialogMessage.textContent = message;
+            dialogButtons.innerHTML = '';
+            buttons.forEach(btn => {
+                const buttonEl = document.createElement('button');
+                buttonEl.textContent = btn.text;
+                buttonEl.className = btn.class;
+                buttonEl.onclick = () => {
+                    dialogModal.classList.add('hidden');
+                    if (btn.onClick) btn.onClick();
+                };
+                dialogButtons.appendChild(buttonEl);
+            });
+            dialogModal.classList.remove('hidden');
+        }
+
+        function customAlert(message) {
+            showDialog(message, [
+                { text: '확인', class: 'bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded' }
+            ]);
+        }
+
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                showDialog(message, [
+                    { text: '취소', class: 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded', onClick: () => resolve(false) },
+                    { text: '확인', class: 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded', onClick: () => resolve(true) }
+                ]);
+            });
+        }
 
         // --- Router Logic ---
         function navigateTo(pageId) {
@@ -1275,20 +1317,26 @@
             
             window.scrollTo(0, 0);
 
-            // Initialize page-specific scripts
-            if (pageId === 'history' && !historyPageInitialized) {
-                initHistoryPage();
-            } else if (pageId === 'community-gallery' && !galleryPageInitialized) {
-                initGalleryPage();
-            } else if (pageId === 'about-us' && !aboutUsPageInitialized) {
-                initAboutUsPage();
-            } else if (pageId === 'products' && !productsPageInitialized) {
-                initProductsPage();
-            }
-            else {
-                initCommonScripts();
+            // Initialize page-specific scripts if not already initialized
+            if (!pageInitialized[pageId]) {
+                 switch(pageId) {
+                    case 'history':
+                        initHistoryPage();
+                        break;
+                    case 'community-gallery':
+                        initGalleryPage();
+                        break;
+                    case 'about-us':
+                        initAboutUsPage();
+                        break;
+                    case 'products':
+                        initProductsPage();
+                        break;
+                 }
+                 pageInitialized[pageId] = true;
             }
             
+            initCommonScripts(); // Run common scripts like scroll animations every time
             bindNavLinks(appContent);
         }
         
@@ -1306,22 +1354,25 @@
             });
         }
 
+        // --- Scroll Animation Handler ---
+        function handleScrollAnimation() {
+            const scrollElements = document.querySelectorAll('.scroll-reveal');
+            const elementInView = (el) => el.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight) - 50;
+            
+            scrollElements.forEach((el) => {
+                if (elementInView(el)) {
+                    el.classList.add('visible');
+                }
+            });
+        }
 
         // --- Page Specific Initializers ---
         function initHistoryPage() {
-            if (!db) {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-            }
             const historyCollection = collection(db, 'history');
-
-            let isAdmin = document.body.classList.contains('admin-mode');
             let localHistory = [];
             
             const timelineContainer = document.getElementById('timeline-container');
             const loading = document.getElementById('loading');
-            const adminPanel = document.getElementById('history-admin-panel');
-            
             const adminModal = document.getElementById('admin-modal');
             const modalTitle = document.getElementById('modal-title');
             const historyForm = document.getElementById('history-form');
@@ -1341,18 +1392,18 @@
 
                 localHistory.forEach(item => {
                     const historyBlock = document.createElement('div');
-                    historyBlock.className = 'mb-16';
+                    historyBlock.className = 'mb-16 scroll-reveal'; // Add scroll-reveal here
                     const eventsHtml = item.events.split('\n').map(event => `<p class="text-gray-600">${event}</p>`).join('');
                     historyBlock.innerHTML = `
                         <div class="flex items-center mb-4">
                             <div class="w-9 h-9 bg-sky-500 rounded-full flex-shrink-0 flex items-center justify-center z-10 shadow">
-                               <span class="text-white font-bold text-lg">${item.year.slice(-2)}</span>
+                                <span class="text-white font-bold text-lg">${item.year.slice(-2)}</span>
                             </div>
                             <h3 class="pl-6 text-2xl font-bold text-gray-800">${item.year}</h3>
                         </div>
                         <div class="ml-16 space-y-2 border-l-2 border-gray-200 pl-6 pb-4">${eventsHtml}</div>
                     `;
-                    if (isAdmin) {
+                    if (document.body.classList.contains('admin-mode')) {
                         const adminButtons = document.createElement('div');
                         adminButtons.className = 'ml-16 pl-6 mt-2 text-left space-x-2';
                         adminButtons.innerHTML = `
@@ -1363,6 +1414,7 @@
                     }
                     timelineContainer.appendChild(historyBlock);
                 });
+                handleScrollAnimation(); // Re-run animation check after rendering
             }
 
             const q = query(historyCollection, orderBy("order", "asc"));
@@ -1412,7 +1464,7 @@
                     closeModal();
                 } catch (error) {
                     console.error("Error saving document: ", error);
-                    alert("저장 중 오류가 발생했습니다.");
+                    customAlert("저장 중 오류가 발생했습니다.");
                 } finally {
                     saveBtn.disabled = false;
                     saveBtn.textContent = '저장';
@@ -1425,34 +1477,24 @@
                     const itemToEdit = localHistory.find(item => item.id === id);
                     openModal(itemToEdit);
                 } else if (e.target.classList.contains('delete-btn')) {
-                    if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+                    const confirmed = await customConfirm('정말로 이 항목을 삭제하시겠습니까?');
+                    if (confirmed) {
                         try {
                             await deleteDoc(doc(db, 'history', id));
                         } catch (error) {
                             console.error("Error removing document: ", error);
-                            alert("삭제 중 오류가 발생했습니다.");
+                            customAlert("삭제 중 오류가 발생했습니다.");
                         }
                     }
                 }
             });
-            
-            historyPageInitialized = true;
-            initCommonScripts();
         }
         
         function initGalleryPage() {
-             if (!db) {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-            }
             const galleryCollection = collection(db, 'gallery');
-
-            let isAdmin = document.body.classList.contains('admin-mode');
             let localPhotos = [];
             
             const galleryGrid = document.getElementById('gallery-grid');
-            const adminPanel = document.getElementById('gallery-admin-panel');
-            
             const adminModal = document.getElementById('gallery-admin-modal');
             const modalTitle = document.getElementById('gallery-modal-title');
             const photoForm = document.getElementById('photo-form');
@@ -1475,7 +1517,7 @@
                 
                 localPhotos.forEach(photo => {
                     const photoWrapper = document.createElement('div');
-                    photoWrapper.className = 'group';
+                    photoWrapper.className = 'group scroll-reveal'; // Add scroll-reveal here
 
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'relative aspect-square';
@@ -1486,10 +1528,12 @@
                     img.className = 'w-full h-full object-cover rounded-lg cursor-pointer';
                     img.dataset.title = photo.title;
                     img.dataset.description = photo.description;
+                    img.onerror = function() { this.src = 'https://placehold.co/400x400/ef4444/ffffff?text=Error'; };
+
 
                     imageContainer.appendChild(img);
 
-                    if (isAdmin) {
+                    if (document.body.classList.contains('admin-mode')) {
                         const overlay = document.createElement('div');
                         overlay.className = 'admin-edit-overlay';
                         overlay.innerHTML = `
@@ -1507,6 +1551,7 @@
                     photoWrapper.appendChild(titleElement);
                     galleryGrid.appendChild(photoWrapper);
                 });
+                handleScrollAnimation(); // Re-run animation check after rendering
             }
 
             const q = query(galleryCollection, orderBy("createdAt", "desc"));
@@ -1562,7 +1607,7 @@
                     closeAdminModal();
                 } catch (error) {
                     console.error("Error saving document: ", error);
-                    alert("저장 중 오류가 발생했습니다.");
+                    customAlert("저장 중 오류가 발생했습니다.");
                 } finally {
                     saveBtn.disabled = false;
                     saveBtn.textContent = '저장';
@@ -1578,15 +1623,16 @@
                     openAdminModal(photoToEdit);
                 } else if (target.classList.contains('delete-btn')) {
                      const id = target.dataset.id;
-                    if (confirm('정말로 이 사진을 삭제하시겠습니까?')) {
+                    const confirmed = await customConfirm('정말로 이 사진을 삭제하시겠습니까?');
+                    if (confirmed) {
                         try {
                             await deleteDoc(doc(db, 'gallery', id));
                         } catch (error) {
                             console.error("Error removing document: ", error);
-                            alert("삭제 중 오류가 발생했습니다.");
+                            customAlert("삭제 중 오류가 발생했습니다.");
                         }
                     }
-                } else if (target.tagName === 'IMG' && !isAdmin) {
+                } else if (target.tagName === 'IMG' && !document.body.classList.contains('admin-mode')) {
                     lightboxImage.src = target.src;
                     const title = target.dataset.title || '';
                     const description = target.dataset.description || '';
@@ -1601,29 +1647,13 @@
                     lightboxModal.classList.add('hidden');
                 }
             });
-            
-            galleryPageInitialized = true;
-            initCommonScripts();
         }
 
         function initAboutUsPage() {
-            if (!db) {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-            }
             const aboutUsCollection = collection(db, 'about_us');
-            
-            let isAdmin = document.body.classList.contains('admin-mode');
             let localItems = [];
             
             const accordionContainer = document.getElementById('about-us-accordion');
-            const adminPanel = document.getElementById('about-us-admin-panel');
-            const adminModal = document.getElementById('about-us-admin-modal');
-            const modalTitle = document.getElementById('about-us-modal-title');
-            const itemForm = document.getElementById('about-us-form');
-            const cancelBtn = document.getElementById('about-us-cancel-btn');
-            const addBtn = document.getElementById('add-about-us-btn');
-            const saveBtn = document.getElementById('about-us-save-btn');
 
             function renderAboutUs() {
                 if (!accordionContainer) return;
@@ -1635,7 +1665,7 @@
                 
                 localItems.forEach((item) => {
                     const itemElement = document.createElement('div');
-                    itemElement.className = 'border-b border-gray-200';
+                    itemElement.className = 'border-b border-gray-200 scroll-reveal'; // Add scroll-reveal
                     const date = item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '';
                     
                     itemElement.innerHTML = `
@@ -1651,7 +1681,7 @@
                         </div>
                     `;
 
-                    if (isAdmin) {
+                    if (document.body.classList.contains('admin-mode')) {
                         const adminButtons = document.createElement('div');
                         adminButtons.className = 'p-4 bg-gray-100 text-right space-x-2';
                         adminButtons.innerHTML = `
@@ -1662,6 +1692,7 @@
                     }
                     accordionContainer.appendChild(itemElement);
                 });
+                handleScrollAnimation(); // Re-run animation check
             }
 
             const q = query(aboutUsCollection, orderBy("createdAt", "desc"));
@@ -1680,33 +1711,30 @@
                 const icon = header.querySelector('i.fa-chevron-down');
                 const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
 
-                accordionContainer.querySelectorAll('.accordion-content').forEach(item => item.style.maxHeight = null);
-                accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(item => item.classList.remove('rotate-180'));
+                // Close all other accordions
+                accordionContainer.querySelectorAll('.accordion-content').forEach(item => {
+                    if (item !== content) item.style.maxHeight = null;
+                });
+                accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(item => {
+                    if(item !== icon) item.classList.remove('rotate-180');
+                });
 
+                // Toggle the clicked one
                 if (!isOpen) {
                     content.style.maxHeight = content.scrollHeight + "px";
                     if (icon) icon.classList.add('rotate-180');
+                } else {
+                    content.style.maxHeight = null;
+                    if (icon) icon.classList.remove('rotate-180');
                 }
             });
-            
-            aboutUsPageInitialized = true;
-            initCommonScripts();
         }
         
         function initProductsPage() {
-            if (!db) {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-            }
             const productsCollection = collection(db, 'products');
-            
-            let isAdmin = document.body.classList.contains('admin-mode');
             let localProducts = [];
             
             const productGrid = document.getElementById('product-grid');
-            const loading = document.getElementById('product-loading');
-            const adminPanel = document.getElementById('product-admin-panel');
-            const addProductBtn = document.getElementById('add-product-btn');
             
             function renderProducts() {
                 if (!productGrid) return;
@@ -1721,18 +1749,18 @@
                     cardWrapper.className = 'relative group scroll-reveal';
                     
                     const link = document.createElement('a');
-                    link.href = product.storeUrl;
+                    link.href = product.storeUrl || '#';
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
                     
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col';
                     card.innerHTML = `
-                        <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover">
+                        <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ef4444/ffffff?text=Error';">
                         <div class="p-6 flex-grow flex flex-col">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">${product.title}</h3>
                             <p class="text-gray-600 flex-grow">${product.description}</p>
-                            <button class="mt-4 w-full bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 transition-colors">구매하기</button>
+                            <span class="mt-4 w-full block text-center bg-sky-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-600 transition-colors">구매하기</span>
                         </div>
                     `;
                     
@@ -1741,6 +1769,9 @@
                     
                     productGrid.appendChild(cardWrapper);
                 });
+
+                // THIS IS THE FIX: Re-run the animation check after products are rendered.
+                handleScrollAnimation();
             }
             
             const q = query(productsCollection, orderBy("createdAt", "desc"));
@@ -1748,28 +1779,26 @@
                 localProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts();
             });
-            
-            productsPageInitialized = true;
-            initCommonScripts();
         }
 
         // --- Common Initializers (for all pages) ---
         function initCommonScripts() {
-            const scrollElements = document.querySelectorAll('.scroll-reveal');
-            const elementInView = (el) => el.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight) - 50;
-            const handleScrollAnimation = () => {
-                scrollElements.forEach((el) => {
-                    if (elementInView(el)) {
-                        el.classList.add('visible');
-                    }
-                });
-            };
             window.addEventListener('scroll', handleScrollAnimation, { passive: true });
-            handleScrollAnimation();
+            handleScrollAnimation(); // Initial check
         }
 
         // --- Global Scripts (run once on load) ---
         document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Firebase ONCE
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
+                return;
+            }
+
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenuContainer = document.getElementById('mobile-menu');
             const desktopNav = document.getElementById('desktop-nav');
@@ -1777,21 +1806,17 @@
 
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
-                // Re-initialize the current page to apply admin mode
-                historyPageInitialized = false;
-                galleryPageInitialized = false;
-                aboutUsPageInitialized = false;
-                productsPageInitialized = false;
-                navigateTo(currentPage);
+                pageInitialized = {}; // Reset initialized pages to force re-render with admin controls
+                navigateTo(currentPage); // Re-load current page
             }
 
             if(adminLoginBtn) {
                 adminLoginBtn.addEventListener('click', () => {
                     const password = prompt('관리자 비밀번호를 입력하세요:');
-                    if (password === 'autolab2025') {
+                    if (password === 'autolab2025') { // NOTE: This is insecure. Use Firebase Auth in a real app.
                         enterAdminMode();
                     } else if (password) {
-                        alert('비밀번호가 틀렸습니다.');
+                        customAlert('비밀번호가 틀렸습니다.');
                     }
                 });
             }
@@ -1879,7 +1904,9 @@
                 if (e.key === 'Enter') {
                     const searchTerm = e.target.value.trim();
                     if (searchTerm) {
-                        window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
+                        // This would ideally lead to a proper search results page
+                        customAlert(`'${searchTerm}' 검색 기능은 현재 준비 중입니다.`);
+                        // window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
                     }
                 }
             });
