@@ -1091,10 +1091,10 @@
                 <button id="privacy-link" class="hover:text-white font-semibold">개인정보처리방침</button>
             </div>
             <div class="mt-6 flex space-x-4 items-center text-xs">
-                <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white">
+                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white">
                     <i class="fab fa-instagram mr-2 text-lg"></i> AUTOLAB 인스타그램
                 </a>
-                <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white">
+                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white">
                     <i class="fab fa-facebook mr-2 text-lg"></i> AUTOLAB 페이스북
                 </a>
             </div>
@@ -1169,6 +1169,25 @@
                     <div class="mt-6 flex justify-end space-x-3">
                         <button type="button" id="about-us-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
                         <button type="submit" id="about-us-save-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Product Admin Modal -->
+        <div id="product-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+                <h2 id="product-modal-title" class="text-2xl font-bold mb-4">시판 제품 추가/수정</h2>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="space-y-4">
+                        <input id="product-title" type="text" placeholder="제품명" class="w-full p-2 border rounded" required>
+                        <textarea id="product-description" placeholder="설명" rows="3" class="w-full p-2 border rounded"></textarea>
+                        <input type="url" id="product-imageUrl" placeholder="이미지 URL" class="w-full p-2 border rounded" required>
+                        <input type="url" id="product-storeUrl" placeholder="스토어 URL" class="w-full p-2 border rounded" required>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" id="product-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
+                        <button type="submit" id="product-save-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded">저장</button>
                     </div>
                 </form>
             </div>
@@ -1761,6 +1780,12 @@
             let localItems = [];
             
             const accordionContainer = document.getElementById('about-us-accordion');
+            const adminModal = document.getElementById('about-us-admin-modal');
+            const modalTitle = document.getElementById('about-us-modal-title');
+            const itemForm = document.getElementById('about-us-form');
+            const cancelBtn = document.getElementById('about-us-cancel-btn');
+            const addBtn = document.getElementById('add-about-us-btn');
+            const saveBtn = document.getElementById('about-us-save-btn');
 
             function renderAboutUs() {
                 if (!accordionContainer) return;
@@ -1807,30 +1832,95 @@
                 localItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAboutUs();
             });
-
-            accordionContainer.addEventListener('click', (e) => {
-                const header = e.target.closest('.accordion-header');
-                if (!header) return;
-
-                const content = header.nextElementSibling;
-                if (!content || !content.classList.contains('accordion-content')) return;
-
-                const icon = header.querySelector('i.fa-chevron-down');
-                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-
-                accordionContainer.querySelectorAll('.accordion-content').forEach(item => {
-                    if (item !== content) item.style.maxHeight = null;
-                });
-                accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(item => {
-                    if(item !== icon) item.classList.remove('rotate-180');
-                });
-
-                if (!isOpen) {
-                    content.style.maxHeight = content.scrollHeight + "px";
-                    if (icon) icon.classList.add('rotate-180');
+            
+            function openAdminModal(item = null) {
+                itemForm.reset();
+                if (item) {
+                    modalTitle.textContent = 'About us 수정';
+                    document.getElementById('about-us-id').value = item.id;
+                    document.getElementById('about-us-title').value = item.title;
+                    document.getElementById('about-us-content').value = item.content;
                 } else {
-                    content.style.maxHeight = null;
-                    if (icon) icon.classList.remove('rotate-180');
+                    modalTitle.textContent = 'About us 작성';
+                     document.getElementById('about-us-id').value = '';
+                }
+                adminModal.classList.remove('hidden');
+            }
+
+            function closeAdminModal() {
+                adminModal.classList.add('hidden');
+            }
+
+            if(addBtn) addBtn.addEventListener('click', () => openAdminModal());
+            if(cancelBtn) cancelBtn.addEventListener('click', closeAdminModal);
+
+            if(itemForm) itemForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                saveBtn.disabled = true;
+                saveBtn.textContent = '저장 중...';
+                const id = document.getElementById('about-us-id').value;
+                const itemData = {
+                    title: document.getElementById('about-us-title').value,
+                    content: document.getElementById('about-us-content').value,
+                };
+                try {
+                    if (id) {
+                        await updateDoc(doc(db, 'about_us', id), itemData);
+                    } else {
+                        itemData.createdAt = serverTimestamp();
+                        await addDoc(aboutUsCollection, itemData);
+                    }
+                    closeAdminModal();
+                } catch (error) {
+                    console.error("Error saving document: ", error);
+                    customAlert("저장 중 오류가 발생했습니다.");
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '저장';
+                }
+            });
+
+            if(accordionContainer) accordionContainer.addEventListener('click', async (e) => {
+                const target = e.target;
+                const id = target.dataset.id;
+
+                if (target.classList.contains('edit-btn')) {
+                    const itemToEdit = localItems.find(item => item.id === id);
+                    openAdminModal(itemToEdit);
+                } else if (target.classList.contains('delete-btn')) {
+                    const confirmed = await customConfirm('정말로 이 게시물을 삭제하시겠습니까?');
+                    if (confirmed) {
+                        try {
+                            await deleteDoc(doc(db, 'about_us', id));
+                        } catch (error) {
+                            console.error("Error removing document: ", error);
+                            customAlert("삭제 중 오류가 발생했습니다.");
+                        }
+                    }
+                } else {
+                    const header = target.closest('.accordion-header');
+                    if (!header) return;
+
+                    const content = header.nextElementSibling;
+                    if (!content || !content.classList.contains('accordion-content')) return;
+
+                    const icon = header.querySelector('i.fa-chevron-down');
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    accordionContainer.querySelectorAll('.accordion-content').forEach(item => {
+                        if (item !== content) item.style.maxHeight = null;
+                    });
+                    accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(item => {
+                        if(item !== icon) item.classList.remove('rotate-180');
+                    });
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        if (icon) icon.classList.add('rotate-180');
+                    } else {
+                        content.style.maxHeight = null;
+                        if (icon) icon.classList.remove('rotate-180');
+                    }
                 }
             });
         }
@@ -1840,7 +1930,13 @@
             let localProducts = [];
             
             const productGrid = document.getElementById('product-grid');
-            
+            const adminModal = document.getElementById('product-admin-modal');
+            const modalTitle = document.getElementById('product-modal-title');
+            const productForm = document.getElementById('product-form');
+            const cancelBtn = document.getElementById('product-cancel-btn');
+            const addProductBtn = document.getElementById('add-product-btn');
+            const saveBtn = document.getElementById('product-save-btn');
+
             function renderProducts() {
                 if (!productGrid) return;
                 productGrid.innerHTML = '';
@@ -1861,7 +1957,9 @@
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full flex flex-col';
                     card.innerHTML = `
-                        <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ef4444/ffffff?text=Error';">
+                        <div class="relative">
+                            <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ef4444/ffffff?text=Error';">
+                        </div>
                         <div class="p-6 flex-grow flex flex-col">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">${product.title}</h3>
                             <p class="text-gray-600 flex-grow">${product.description}</p>
@@ -1869,6 +1967,17 @@
                         </div>
                     `;
                     
+                    if (document.body.classList.contains('admin-mode')) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'admin-edit-overlay rounded-t-lg';
+                        overlay.innerHTML = `
+                            <button data-id="${product.id}" class="edit-btn bg-blue-500 text-white w-16 h-9 rounded-md hover:bg-blue-600 text-sm">수정</button>
+                            <button data-id="${product.id}" class="delete-btn bg-red-500 text-white w-16 h-9 rounded-md hover:bg-red-600 text-sm">삭제</button>
+                        `;
+                        card.querySelector('.relative').appendChild(overlay);
+                        link.href = 'javascript:void(0)'; // Prevent navigation in admin mode
+                    }
+
                     link.appendChild(card);
                     cardWrapper.appendChild(link);
                     
@@ -1881,6 +1990,80 @@
             onSnapshot(q, (snapshot) => {
                 localProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProducts();
+            });
+
+             function openAdminModal(product = null) {
+                productForm.reset();
+                if (product) {
+                    modalTitle.textContent = '시판 제품 수정';
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('product-title').value = product.title;
+                    document.getElementById('product-description').value = product.description;
+                    document.getElementById('product-imageUrl').value = product.imageUrl;
+                    document.getElementById('product-storeUrl').value = product.storeUrl;
+                } else {
+                    modalTitle.textContent = '새 시판 제품 추가';
+                    document.getElementById('product-id').value = '';
+                }
+                adminModal.classList.remove('hidden');
+            }
+
+            function closeAdminModal() {
+                adminModal.classList.add('hidden');
+            }
+
+            if(addProductBtn) addProductBtn.addEventListener('click', () => openAdminModal());
+            if(cancelBtn) cancelBtn.addEventListener('click', closeAdminModal);
+
+            if(productForm) productForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                saveBtn.disabled = true;
+                saveBtn.textContent = '저장 중...';
+
+                const id = document.getElementById('product-id').value;
+                const productData = {
+                    title: document.getElementById('product-title').value,
+                    description: document.getElementById('product-description').value,
+                    imageUrl: document.getElementById('product-imageUrl').value,
+                    storeUrl: document.getElementById('product-storeUrl').value
+                };
+
+                try {
+                    if (id) {
+                        await updateDoc(doc(db, 'products', id), productData);
+                    } else {
+                        productData.createdAt = serverTimestamp();
+                        await addDoc(productsCollection, productData);
+                    }
+                    closeAdminModal();
+                } catch (error) {
+                    console.error("Error saving product: ", error);
+                    customAlert("저장 중 오류가 발생했습니다.");
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '저장';
+                }
+            });
+
+            if(productGrid) productGrid.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const target = e.target;
+                const id = target.dataset.id;
+
+                if (target.classList.contains('edit-btn')) {
+                    const productToEdit = localProducts.find(p => p.id === id);
+                    openAdminModal(productToEdit);
+                } else if (target.classList.contains('delete-btn')) {
+                    const confirmed = await customConfirm('정말로 이 제품을 삭제하시겠습니까?');
+                    if (confirmed) {
+                        try {
+                            await deleteDoc(doc(db, 'products', id));
+                        } catch (error) {
+                            console.error("Error removing product: ", error);
+                            customAlert("삭제 중 오류가 발생했습니다.");
+                        }
+                    }
+                }
             });
         }
 
@@ -1911,6 +2094,9 @@
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
                 initAdminEditButtons();
+                // We need to re-render pages that have dynamic admin elements
+                pageInitialized = {};
+                navigateTo(currentPage);
             }
 
             if(adminLoginBtn) {
