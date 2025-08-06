@@ -110,38 +110,40 @@
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
-        /* Admin Edit Button */
+        /* Admin Edit Button for static content */
          body.admin-mode [data-key] {
             position: relative;
             outline: 2px dashed rgba(239, 68, 68, 0.6);
             outline-offset: 4px;
             border-radius: 4px;
             transition: outline 0.2s ease-in-out;
+            min-height: 1em; /* Ensure empty elements are still editable */
         }
         body.admin-mode [data-key]:hover {
             outline-color: rgba(239, 68, 68, 1);
             background-color: rgba(254, 226, 226, 0.3);
         }
         .edit-btn-icon {
-            display: none;
+            display: none; /* Initially hidden */
             position: absolute;
-            top: -10px;
-            right: -10px;
+            top: -12px;
+            right: -12px;
             background-color: #ef4444; /* red-500 */
             color: white;
             border-radius: 50%;
             width: 24px;
             height: 24px;
-            font-size: 12px;
             cursor: pointer;
             border: none;
-            align-items: center;
-            justify-content: center;
             z-index: 10;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            /* Centering the icon */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         body.admin-mode [data-key]:hover .edit-btn-icon {
-            display: flex;
+            display: flex; /* Show on hover in admin mode */
         }
         .admin-panel {
             display: none;
@@ -1242,7 +1244,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -1261,6 +1263,8 @@
         let db; // Firestore instance
         let currentPage = 'home'; // Track the current page
         let pageInitialized = {}; // Track initialized pages to prevent re-initialization
+        let siteContent = {}; // To cache site content
+        let contentCollection; // Firestore collection reference
 
         // --- Custom Dialog ---
         const dialogModal = document.getElementById('custom-dialog-modal');
@@ -1297,6 +1301,80 @@
                 ]);
             });
         }
+
+        // --- Content Management (for data-key elements) ---
+        function applyContent(key, value) {
+            const elements = document.querySelectorAll(`[data-key="${key}"]`);
+            elements.forEach(el => {
+                if (el.tagName === 'IMG') {
+                    el.src = value;
+                } else {
+                    // Using innerHTML to allow for simple HTML like <br>
+                    el.innerHTML = value;
+                }
+            });
+        }
+
+        function initContentManagement() {
+            if (!db) return;
+            contentCollection = collection(db, 'site_content');
+            onSnapshot(contentCollection, (snapshot) => {
+                snapshot.docs.forEach(doc => {
+                    const key = doc.id;
+                    const value = doc.data().value;
+                    siteContent[key] = value;
+                    applyContent(key, value);
+                });
+                // After initial load or any update, ensure admin buttons are visible if in admin mode
+                if (document.body.classList.contains('admin-mode')) {
+                    initAdminEditButtons();
+                }
+            });
+        }
+
+        async function saveContent(key, value) {
+            if (!db) return;
+            try {
+                // Using setDoc will create or overwrite the document.
+                await setDoc(doc(db, 'site_content', key), { value });
+                customAlert('내용이 저장되었습니다.');
+            } catch (error) {
+                console.error("Error saving content: ", error);
+                customAlert('저장 중 오류가 발생했습니다.');
+            }
+        }
+
+        function initAdminEditButtons() {
+            if (!document.body.classList.contains('admin-mode')) return;
+
+            document.querySelectorAll('[data-key]').forEach(element => {
+                // Prevent adding duplicate buttons
+                if (element.querySelector('.edit-btn-icon')) {
+                    return;
+                }
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn-icon';
+                editBtn.innerHTML = '<i class="fas fa-pencil-alt" style="font-size: 10px;"></i>';
+                
+                editBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const key = element.dataset.key;
+                    // Use innerHTML to get content with tags like <br>
+                    const oldValue = siteContent[key] || element.innerHTML;
+                    const newValue = prompt(`'${key}' 내용 수정:`, oldValue);
+
+                    if (newValue !== null && newValue !== oldValue) {
+                        saveContent(key, newValue);
+                    }
+                });
+
+                element.appendChild(editBtn);
+            });
+        }
+
 
         // --- Router Logic ---
         function navigateTo(pageId) {
@@ -1338,6 +1416,11 @@
             
             initCommonScripts(); // Run common scripts like scroll animations every time
             bindNavLinks(appContent);
+
+            // Apply admin buttons if in admin mode
+            if (document.body.classList.contains('admin-mode')) {
+                initAdminEditButtons();
+            }
         }
         
         function bindNavLinks(container) {
@@ -1793,6 +1876,7 @@
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
+                initContentManagement(); // Initialize content management right after DB is ready
             } catch (e) {
                 console.error("Firebase initialization failed:", e);
                 customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
@@ -1806,8 +1890,8 @@
 
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
-                pageInitialized = {}; // Reset initialized pages to force re-render with admin controls
-                navigateTo(currentPage); // Re-load current page
+                // Re-initialize buttons on the current page content
+                initAdminEditButtons();
             }
 
             if(adminLoginBtn) {
