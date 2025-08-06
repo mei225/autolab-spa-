@@ -1245,9 +1245,11 @@
         let aboutUsPageInitialized = false;
         let productsPageInitialized = false;
         let db; // Firestore instance
+        let currentPage = 'home'; // Track the current page
 
         // --- Router Logic ---
         function navigateTo(pageId) {
+            currentPage = pageId;
             const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
             if (!targetTemplate) {
                 console.warn(`Page "${pageId}" not found. Loading home page.`);
@@ -1304,7 +1306,7 @@
             }
             const historyCollection = collection(db, 'history');
 
-            let isAdmin = false;
+            let isAdmin = document.body.classList.contains('admin-mode');
             let localHistory = [];
             
             const timelineContainer = document.getElementById('timeline-container');
@@ -1436,7 +1438,7 @@
             }
             const galleryCollection = collection(db, 'gallery');
 
-            let isAdmin = false;
+            let isAdmin = document.body.classList.contains('admin-mode');
             let localPhotos = [];
             
             const galleryGrid = document.getElementById('gallery-grid');
@@ -1602,7 +1604,7 @@
             }
             const aboutUsCollection = collection(db, 'about_us');
             
-            let isAdmin = false;
+            let isAdmin = document.body.classList.contains('admin-mode');
             let localItems = [];
             
             const accordionContainer = document.getElementById('about-us-accordion');
@@ -1689,7 +1691,7 @@
             }
             const productsCollection = collection(db, 'products');
             
-            let isAdmin = false;
+            let isAdmin = document.body.classList.contains('admin-mode');
             let localProducts = [];
             
             const productGrid = document.getElementById('product-grid');
@@ -1766,9 +1768,7 @@
 
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
-                // Re-render current page to show admin controls if needed
-                const currentPageId = appContent.querySelector('[id]')?.id || 'home';
-                navigateTo(currentPageId);
+                navigateTo(currentPage);
             }
 
             if(adminLoginBtn) {
