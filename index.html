@@ -134,6 +134,12 @@
         body.admin-mode .edit-btn {
             display: inline-flex;
         }
+        .admin-panel {
+            display: none;
+        }
+        body.admin-mode .admin-panel {
+            display: block; /* Or flex, depending on the panel */
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -422,7 +428,7 @@
         
         <!-- History Page Content -->
         <div id="history">
-            <div id="history-admin-panel" class="hidden sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
+            <div id="history-admin-panel" class="admin-panel sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
                     <div>
@@ -723,7 +729,7 @@
 
         <!-- Community Gallery Page Content -->
         <div id="community-gallery">
-             <div id="gallery-admin-panel" class="hidden sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
+             <div id="gallery-admin-panel" class="admin-panel sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
                     <div>
@@ -756,7 +762,7 @@
         
         <!-- About Us Page Content -->
         <div id="about-us">
-            <div id="about-us-admin-panel" class="hidden sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
+            <div id="about-us-admin-panel" class="admin-panel sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
                     <div>
@@ -858,7 +864,7 @@
         
         <!-- Products Page Content -->
         <div id="products">
-            <div id="product-admin-panel" class="hidden sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
+            <div id="product-admin-panel" class="admin-panel sticky top-20 z-40 bg-sky-600 text-white shadow-lg">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
                     <div>
@@ -1418,21 +1424,6 @@
                     }
                 }
             });
-
-            function enterAdminMode() {
-                isAdmin = true;
-                if(adminPanel) adminPanel.classList.remove('hidden');
-                renderHistory();
-            }
-            
-            document.getElementById('admin-login-btn').onclick = () => {
-                const password = prompt('관리자 비밀번호를 입력하세요:');
-                if (password === 'autolab2025') {
-                    enterAdminMode();
-                } else if (password) {
-                    alert('비밀번호가 틀렸습니다.');
-                }
-            };
             
             historyPageInitialized = true;
             initCommonScripts();
@@ -1599,21 +1590,6 @@
                     lightboxModal.classList.add('hidden');
                 }
             });
-
-            function enterAdminMode() {
-                isAdmin = true;
-                if(adminPanel) adminPanel.classList.remove('hidden');
-                renderGallery();
-            }
-
-            document.getElementById('admin-login-btn').onclick = () => {
-                const password = prompt('관리자 비밀번호를 입력하세요:');
-                if (password === 'autolab2025') {
-                    enterAdminMode();
-                } else if (password) {
-                    alert('비밀번호가 틀렸습니다.');
-                }
-            };
             
             galleryPageInitialized = true;
             initCommonScripts();
