@@ -1441,6 +1441,10 @@
                 }
             });
         }
+        
+        function removeAdminEditButtons() {
+            document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+        }
 
 
         // --- Router Logic ---
@@ -2153,6 +2157,7 @@
             function exitAdminMode() {
                 document.body.classList.remove('admin-mode');
                 adminLoginBtn.textContent = 'Admin Login';
+                removeAdminEditButtons();
                 pageInitialized = {};
                 navigateTo(currentPage);
             }
