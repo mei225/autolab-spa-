@@ -111,16 +111,20 @@
             transition: max-height 0.5s ease-out;
         }
         /* Admin Edit Button */
-        .edit-btn-wrapper {
+        .editable-wrapper {
             position: relative;
-            display: inline-block;
+        }
+        body.admin-mode .editable-wrapper {
+            border: 2px dashed #ef4444; /* red-500 */
+            padding: 4px;
+            border-radius: 5px;
         }
         .edit-btn {
             display: none;
             position: absolute;
-            top: -5px;
-            right: -30px;
-            background-color: #38bdf8;
+            top: -12px;
+            right: -12px;
+            background-color: #ef4444; /* red-500 */
             color: white;
             border-radius: 50%;
             width: 24px;
@@ -130,9 +134,10 @@
             border: none;
             align-items: center;
             justify-content: center;
+            z-index: 10;
         }
-        body.admin-mode .edit-btn {
-            display: inline-flex;
+        body.admin-mode .editable-wrapper:hover .edit-btn {
+            display: flex;
         }
         .admin-panel {
             display: none;
@@ -216,19 +221,31 @@
                 </video>
                 <div class="absolute top-0 left-0 w-full h-full bg-black/50"></div>
                 <div class="relative z-10 text-center text-white px-4 hero-text">
-                    <h1 data-key="home.hero.title" class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">미래를 향한 끝없는 탐구,<br>기술의 한계를 넘어서다.</h1>
-                    <p data-key="home.hero.subtitle" class="mt-6 text-lg md:text-xl opacity-80">AUTOLAB은 혁신적인 기술로 내일의 가능성을 현실로 만듭니다.</p>
+                    <div class="editable-wrapper">
+                        <h1 data-key="home.hero.title" class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">미래를 향한 끝없는 탐구,<br>기술의 한계를 넘어서다.</h1>
+                        <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                    </div>
+                    <div class="editable-wrapper mt-6">
+                        <p data-key="home.hero.subtitle" class="text-lg md:text-xl opacity-80">AUTOLAB은 혁신적인 기술로 내일의 가능성을 현실로 만듭니다.</p>
+                        <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                    </div>
                 </div>
             </section>
             <section class="relative py-24 lg:py-48 bg-cover bg-center mission-bg" style="background-image: linear-gradient(rgba(248, 250, 252, 0.9), rgba(248, 250, 252, 0.9)), url('./background.jpg');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center scroll-reveal">
-                    <h2 data-key="home.mission.title" class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-snug">
-                        우리는 <span class="text-sky-500">창의적인 아이디어</span>로<br>
-                        세상을 움직이는 <span class="text-sky-500">새로운 방법</span>을 제시합니다.
-                    </h2>
-                    <p data-key="home.mission.description" class="mt-8 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
-                        자동차(Auto)와 실험실(Lab)의 결합. AUTOLAB은 끝없는 연구와 실험 정신을 바탕으로, ICT 기술의 경계를 허무는 자동화 기술과 교육 솔루션을 제공합니다.
-                    </p>
+                    <div class="editable-wrapper">
+                        <h2 data-key="home.mission.title" class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-snug">
+                            우리는 <span class="text-sky-500">창의적인 아이디어</span>로<br>
+                            세상을 움직이는 <span class="text-sky-500">새로운 방법</span>을 제시합니다.
+                        </h2>
+                        <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                    </div>
+                    <div class="editable-wrapper mt-8">
+                        <p data-key="home.mission.description" class="mt-8 max-w-3xl mx-auto text-base md:text-lg text-gray-600">
+                            자동차(Auto)와 실험실(Lab)의 결합. AUTOLAB은 끝없는 연구와 실험 정신을 바탕으로, ICT 기술의 경계를 허무는 자동화 기술과 교육 솔루션을 제공합니다.
+                        </p>
+                        <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                    </div>
                     <div class="mt-12">
                         <a href="#" data-target="about-intro" class="nav-link inline-block bg-sky-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-sky-600 transition-all duration-300 shadow-lg hover:shadow-xl">
                             회사소개 더 알아보기
@@ -239,22 +256,35 @@
             <section class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 md:mb-20 scroll-reveal">
-                        <h2 data-key="home.business.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">핵심 사업분야</h2>
-                        <p data-key="home.business.subtitle" class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB은 두 가지 핵심 기술을 통해 미래를 선도합니다.</p>
+                        <div class="editable-wrapper">
+                            <h2 data-key="home.business.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">핵심 사업분야</h2>
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                        </div>
+                        <div class="editable-wrapper mt-4">
+                            <p data-key="home.business.subtitle" class="text-base md:text-lg text-gray-600">AUTOLAB은 두 가지 핵심 기술을 통해 미래를 선도합니다.</p>
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                        </div>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16 md:mb-24">
-                        <div class="relative scroll-reveal">
+                        <div class="relative scroll-reveal editable-wrapper">
                             <img data-key="home.business.sensorImage" src="./sensor.jpg" alt="Sensor R&D" class="rounded-lg shadow-2xl w-full">
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
                         </div>
                         <div class="scroll-reveal">
                             <span class="text-sky-500 font-semibold">01. SENSOR R&D</span>
-                            <h3 data-key="home.business.sensorTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">세상의 한계를<br>넘어서는 감각</h3>
-                            <p data-key="home.business.sensorDescription" class="text-base md:text-lg text-gray-600 mb-8">
-                                초정밀 센서부터 AI 기반 인식 시스템까지, 산업의 미래를 여는 핵심 기술을 연구하고 개발합니다. AUTOLAB의 센서 기술은 보이지 않는 것을 보고, 불가능을 가능하게 만듭니다.
-                            </p>
+                            <div class="editable-wrapper">
+                                <h3 data-key="home.business.sensorTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">세상의 한계를<br>넘어서는 감각</h3>
+                                <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                            </div>
+                            <div class="editable-wrapper">
+                                <p data-key="home.business.sensorDescription" class="text-base md:text-lg text-gray-600 mb-8">
+                                    초정밀 센서부터 AI 기반 인식 시스템까지, 산업의 미래를 여는 핵심 기술을 연구하고 개발합니다. AUTOLAB의 센서 기술은 보이지 않는 것을 보고, 불가능을 가능하게 만듭니다.
+                                </p>
+                                <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                            </div>
                             <ul class="space-y-4 text-gray-700 text-base md:text-lg">
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.sensorFeature1"><strong>초정밀 측정 기술:</strong> 미세한 변화도 놓치지 않는 정밀함</span></li>
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.sensorFeature2"><strong>AI 융합 솔루션:</strong> 데이터를 분석하고 예측하는 스마트 센서</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span class="editable-wrapper"><span data-key="home.business.sensorFeature1"><strong>초정밀 측정 기술:</strong> 미세한 변화도 놓치지 않는 정밀함</span><button class="edit-btn"><i class="fas fa-edit text-xs"></i></button></span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span class="editable-wrapper"><span data-key="home.business.sensorFeature2"><strong>AI 융합 솔루션:</strong> 데이터를 분석하고 예측하는 스마트 센서</span><button class="edit-btn"><i class="fas fa-edit text-xs"></i></button></span></li>
                             </ul>
                             <div class="mt-10">
                                 <a href="#" data-target="business-sensor" class="nav-link font-bold text-sky-600 hover:text-sky-700 group text-lg">
@@ -264,18 +294,25 @@
                         </div>
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                        <div class="scroll-reveal lg:order-2">
+                        <div class="scroll-reveal lg:order-2 editable-wrapper">
                             <img data-key="home.business.ictImage" src="./edu.jpg" alt="ICT Education" class="rounded-lg shadow-2xl w-full">
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
                         </div>
                         <div class="scroll-reveal lg:order-1">
                             <span class="text-sky-500 font-semibold">02. ICT EDUCATION</span>
-                            <h3 data-key="home.business.ictTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">미래를 만드는<br>사람을 키웁니다</h3>
-                            <p data-key="home.business.ictDescription" class="text-base md:text-lg text-gray-600 mb-8">
-                                이론을 넘어 실제적인 문제 해결 능력을 키우는 실습 중심의 교육 프로그램을 통해 미래 인재를 양성합니다. AUTOLAB의 교육은 단순한 지식 전달이 아닌, 경험을 통한 성장을 목표로 합니다.
-                            </p>
+                             <div class="editable-wrapper">
+                                <h3 data-key="home.business.ictTitle" class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mt-2 mb-6">미래를 만드는<br>사람을 키웁니다</h3>
+                                <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                            </div>
+                             <div class="editable-wrapper">
+                                <p data-key="home.business.ictDescription" class="text-base md:text-lg text-gray-600 mb-8">
+                                    이론을 넘어 실제적인 문제 해결 능력을 키우는 실습 중심의 교육 프로그램을 통해 미래 인재를 양성합니다. AUTOLAB의 교육은 단순한 지식 전달이 아닌, 경험을 통한 성장을 목표로 합니다.
+                                </p>
+                                <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                            </div>
                             <ul class="space-y-4 text-gray-700 text-base md:text-lg">
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.ictFeature1"><strong>실무 중심 커리큘럼:</strong> 현장에서 바로 적용 가능한 기술 교육</span></li>
-                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span data-key="home.business.ictFeature2"><strong>최신 장비 활용:</strong> 최고의 환경에서 최고의 기술을 경험</span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span class="editable-wrapper"><span data-key="home.business.ictFeature1"><strong>실무 중심 커리큘럼:</strong> 현장에서 바로 적용 가능한 기술 교육</span><button class="edit-btn"><i class="fas fa-edit text-xs"></i></button></span></li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-sky-500 mt-1 mr-3"></i><span class="editable-wrapper"><span data-key="home.business.ictFeature2"><strong>최신 장비 활용:</strong> 최고의 환경에서 최고의 기술을 경험</span><button class="edit-btn"><i class="fas fa-edit text-xs"></i></button></span></li>
                             </ul>
                             <div class="mt-10">
                                 <a href="#" data-target="business-ict" class="nav-link font-bold text-sky-600 hover:text-sky-700 group text-lg">
@@ -289,22 +326,42 @@
             <section class="py-20 lg:py-32 bg-white">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 data-key="home.products.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">Products</h2>
-                        <p data-key="home.products.subtitle" class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요.</p>
+                         <div class="editable-wrapper">
+                            <h2 data-key="home.products.title" class="text-3xl md:text-4xl font-extrabold text-gray-900">Products</h2>
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                        </div>
+                         <div class="editable-wrapper mt-4">
+                            <p data-key="home.products.subtitle" class="text-base md:text-lg text-gray-600">AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요.</p>
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                        </div>
                     </div>
                     <div class="grid sm:grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300">
+                        <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300 editable-wrapper">
                             <img data-key="home.products.rdImage" src="https://placehold.co/600x400/e2e8f0/334155?text=R%26D+Result" alt="R&D Result" class="w-full h-56 object-cover">
+                             <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
                             <div class="p-6">
-                                <h3 data-key="home.products.rdTitle" class="text-xl font-bold text-gray-800 mb-2">R&D 연구개발 결과물</h3>
-                                <p data-key="home.products.rdDescription" class="text-gray-700">타액 기반 혈당 센서 등 최신 연구 결과물을 확인해보세요.</p>
+                                <div class="editable-wrapper">
+                                    <h3 data-key="home.products.rdTitle" class="text-xl font-bold text-gray-800 mb-2">R&D 연구개발 결과물</h3>
+                                    <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                                </div>
+                                <div class="editable-wrapper">
+                                    <p data-key="home.products.rdDescription" class="text-gray-700">타액 기반 혈당 센서 등 최신 연구 결과물을 확인해보세요.</p>
+                                    <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300" style="transition-delay: 150ms;">
+                        <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-sky-300 transition-all duration-300 editable-wrapper" style="transition-delay: 150ms;">
                             <img data-key="home.products.kitImage" src="https://placehold.co/600x400/e2e8f0/334155?text=Education+Kit" alt="Education Kit" class="w-full h-56 object-cover">
+                            <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
                             <div class="p-6">
-                                <h3 data-key="home.products.kitTitle" class="text-xl font-bold text-gray-800 mb-2">시판 제품</h3>
-                                <p data-key="home.products.kitDescription" class="text-gray-700">미로탈출 RC카, 아두이노 키트 등 교육용 제품을 구매할 수 있습니다.</p>
+                                <div class="editable-wrapper">
+                                    <h3 data-key="home.products.kitTitle" class="text-xl font-bold text-gray-800 mb-2">시판 제품</h3>
+                                    <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                                </div>
+                                <div class="editable-wrapper">
+                                    <p data-key="home.products.kitDescription" class="text-gray-700">미로탈출 RC카, 아두이노 키트 등 교육용 제품을 구매할 수 있습니다.</p>
+                                    <button class="edit-btn"><i class="fas fa-edit text-xs"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
