@@ -1451,71 +1451,60 @@
         }
 
 
-        // <script type="module"> 내부의 navigateTo 함수를 아래 코드로 교체하세요.
+// <script type="module"> 태그 안의 기존 navigateTo 함수를
+// 아래 코드로 완전히 교체해주세요.
+
+                function navigateTo(pageId) {
+                    currentPage = pageId;
+                    window.location.hash = pageId;
         
-        function navigateTo(pageId) {
-            currentPage = pageId;
-            window.location.hash = pageId;
+                    const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
+                    if (!targetTemplate) {
+                        console.warn(`Page "${pageId}" not found. Loading home page.`);
+                        navigateTo('home');
+                        return;
+                    }
+            
+                    const newContent = targetTemplate.cloneNode(true);
+                    newContent.id = '';
+                    newContent.classList.add('page-content');
+            
+                    appContent.innerHTML = '';
+                    appContent.appendChild(newContent);
+            
+                    window.scrollTo(0, 0);
         
-            const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-            if (!targetTemplate) {
-                console.warn(`Page "${pageId}" not found. Loading home page.`);
-                navigateTo('home');
-                return;
-            }
+                    Object.keys(siteContent).forEach(key => {
+                        applyContent(key, siteContent[key]);
+                    });
+            
+                    if (!pageInitialized[pageId] || document.body.classList.contains('admin-mode')) {
+                        switch(pageId) {
+                            case 'history': initHistoryPage(); break;
+                            case 'community-gallery': initGalleryPage(); break;
+                            case 'about-us': initAboutUsPage(); break;
+                            case 'products': initProductsPage(); break;
+                            case 'login': initLoginPage(); break;
+                        }
+                        pageInitialized[pageId] = true;
+                    }
         
-            const newContent = targetTemplate.cloneNode(true);
-            newContent.id = '';
-            newContent.classList.add('page-content');
+                    // DOM에 요소가 렌더링될 시간을 주기 위해 setTimeout을 사용합니다.
+                    // 페이지 전체 등장 및 스크롤 애니메이션을 이 시점에서 한 번에 처리합니다.
+                    setTimeout(() => {
+                        const pageContentElement = appContent.querySelector('.page-content');
+                        if (pageContentElement) {
+                            pageContentElement.classList.add('visible');
+                        }
+                        handleScrollAnimation();
+                    }, 50);
         
-            appContent.innerHTML = '';
-            appContent.appendChild(newContent);
+                    bindNavLinks(appContent);
         
-            window.scrollTo(0, 0);
-        
-            Object.keys(siteContent).forEach(key => {
-                applyContent(key, siteContent[key]);
-            });
-        
-            if (!pageInitialized[pageId] || document.body.classList.contains('admin-mode')) {
-                switch(pageId) {
-                    case 'history':
-                        initHistoryPage();
-                        break;
-                    case 'community-gallery':
-                        initGalleryPage();
-                        break;
-                    case 'about-us':
-                        initAboutUsPage();
-                        break;
-                    case 'products':
-                        initProductsPage();
-                        break;
-                    case 'login':
-                        initLoginPage();
-                        break;
-                }
-                pageInitialized[pageId] = true;
-            }
-        
-            // [수정된 부분]
-            // 1. 기존의 불필요한 requestAnimationFrame 코드를 삭제했습니다.
-            // 2. setTimeout을 사용해 페이지 콘텐츠가 렌더링될 시간을 확보한 후,
-            //    'visible' 클래스를 추가하여 페이지 전체 등장 애니메이션과 스크롤 애니메이션을 동시에 실행합니다.
-            setTimeout(() => {
-                const pageContentElement = appContent.querySelector('.page-content');
-                if (pageContentElement) {
-                    pageContentElement.classList.add('visible');
-                }
-                handleScrollAnimation(); // 애니메이션 검사를 이 시점에 한 번만 실행합니다.
-            }, 50); // 짧은 지연 시간
-        
-            bindNavLinks(appContent);
-        
-            if (document.body.classList.contains('admin-mode')) {
-                initAdminEditButtons();
-            }
-        }
+                    if (document.body.classList.contains('admin-mode')) {
+                        initAdminEditButtons();
+                    }
+                }
         
         function bindNavLinks(container) {
             container.querySelectorAll('.nav-link').forEach(link => {
