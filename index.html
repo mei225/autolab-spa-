@@ -79,11 +79,11 @@
         }
         /* Page transition styles */
         .page-content {
-            animation: fadeIn 0.5s ease-in-out;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .page-content.visible {
+            opacity: 1;
         }
         /* Gallery Admin Overlay */
         .admin-edit-overlay {
@@ -1452,6 +1452,9 @@
 
 
         // --- Router Logic ---
+// <script type="module"> 내부 수정
+
+// --- Router Logic ---
         function navigateTo(pageId) {
             currentPage = pageId;
             window.location.hash = pageId;
@@ -1462,40 +1465,51 @@
                 navigateTo('home');
                 return;
             }
-            
+    
             const newContent = targetTemplate.cloneNode(true);
             newContent.id = ''; 
+            // .page-content 클래스는 이제 애니메이션을 직접 실행하지 않고, 시작 상태(opacity: 0)만 설정합니다.
             newContent.classList.add('page-content');
 
             appContent.innerHTML = '';
             appContent.appendChild(newContent);
-            
+    
             window.scrollTo(0, 0);
 
             Object.keys(siteContent).forEach(key => {
                 applyContent(key, siteContent[key]);
             });
-            
+    
             if (!pageInitialized[pageId] || document.body.classList.contains('admin-mode')) {
-                 switch(pageId) {
-                    case 'history':
-                        initHistoryPage();
-                        break;
-                    case 'community-gallery':
-                        initGalleryPage();
-                        break;
-                    case 'about-us':
-                        initAboutUsPage();
-                        break;
-                    case 'products':
-                        initProductsPage();
-                        break;
-                    case 'login':
-                        initLoginPage();
-                        break;
-                 }
-                 pageInitialized[pageId] = true;
+                // ... (switch 문은 그대로 유지)
+                switch(pageId) {
+                    case 'history': initHistoryPage(); break;
+                    case 'community-gallery': initGalleryPage(); break;
+                    case 'about-us': initAboutUsPage(); break;
+                    case 'products': initProductsPage(); break;
+                    case 'login': initLoginPage(); break;
+                }
+                pageInitialized[pageId] = true;
             }
+
+    // [수정된 부분]
+    // DOM에 요소가 렌더링될 시간을 주기 위해 setTimeout을 사용합니다.
+    // 이렇게 하면 페이지 전체 fadeIn 효과와 스크롤 애니메이션이 모두 정상 작동합니다.
+            setTimeout(() => {
+                const pageContentElement = appContent.querySelector('.page-content');
+                if (pageContentElement) {
+                    pageContentElement.classList.add('visible');
+                }
+                handleScrollAnimation();
+            }, 50); // 50ms 정도의 짧은 지연으로 충분합니다.
+
+
+            bindNavLinks(appContent);
+
+            if (document.body.classList.contains('admin-mode')) {
+                initAdminEditButtons();
+            }
+        }
             
             // Use requestAnimationFrame to ensure DOM is ready for animations
             requestAnimationFrame(() => {
