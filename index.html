@@ -1451,73 +1451,67 @@
         }
 
 
-        // --- Router Logic ---
-// <script type="module"> 내부 수정
-
-// --- Router Logic ---
+        // <script type="module"> 내부의 navigateTo 함수를 아래 코드로 교체하세요.
+        
         function navigateTo(pageId) {
             currentPage = pageId;
             window.location.hash = pageId;
-
+        
             const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
             if (!targetTemplate) {
                 console.warn(`Page "${pageId}" not found. Loading home page.`);
                 navigateTo('home');
                 return;
             }
-    
+        
             const newContent = targetTemplate.cloneNode(true);
-            newContent.id = ''; 
-            // .page-content 클래스는 이제 애니메이션을 직접 실행하지 않고, 시작 상태(opacity: 0)만 설정합니다.
+            newContent.id = '';
             newContent.classList.add('page-content');
-
+        
             appContent.innerHTML = '';
             appContent.appendChild(newContent);
-    
+        
             window.scrollTo(0, 0);
-
+        
             Object.keys(siteContent).forEach(key => {
                 applyContent(key, siteContent[key]);
             });
-    
+        
             if (!pageInitialized[pageId] || document.body.classList.contains('admin-mode')) {
-                // ... (switch 문은 그대로 유지)
                 switch(pageId) {
-                    case 'history': initHistoryPage(); break;
-                    case 'community-gallery': initGalleryPage(); break;
-                    case 'about-us': initAboutUsPage(); break;
-                    case 'products': initProductsPage(); break;
-                    case 'login': initLoginPage(); break;
+                    case 'history':
+                        initHistoryPage();
+                        break;
+                    case 'community-gallery':
+                        initGalleryPage();
+                        break;
+                    case 'about-us':
+                        initAboutUsPage();
+                        break;
+                    case 'products':
+                        initProductsPage();
+                        break;
+                    case 'login':
+                        initLoginPage();
+                        break;
                 }
                 pageInitialized[pageId] = true;
             }
-
-    // [수정된 부분]
-    // DOM에 요소가 렌더링될 시간을 주기 위해 setTimeout을 사용합니다.
-    // 이렇게 하면 페이지 전체 fadeIn 효과와 스크롤 애니메이션이 모두 정상 작동합니다.
+        
+            // [수정된 부분]
+            // 1. 기존의 불필요한 requestAnimationFrame 코드를 삭제했습니다.
+            // 2. setTimeout을 사용해 페이지 콘텐츠가 렌더링될 시간을 확보한 후,
+            //    'visible' 클래스를 추가하여 페이지 전체 등장 애니메이션과 스크롤 애니메이션을 동시에 실행합니다.
             setTimeout(() => {
                 const pageContentElement = appContent.querySelector('.page-content');
                 if (pageContentElement) {
                     pageContentElement.classList.add('visible');
                 }
-                handleScrollAnimation();
-            }, 50); // 50ms 정도의 짧은 지연으로 충분합니다.
-
-
+                handleScrollAnimation(); // 애니메이션 검사를 이 시점에 한 번만 실행합니다.
+            }, 50); // 짧은 지연 시간
+        
             bindNavLinks(appContent);
-
-            if (document.body.classList.contains('admin-mode')) {
-                initAdminEditButtons();
-            }
-        }
-            
-            // Use requestAnimationFrame to ensure DOM is ready for animations
-            requestAnimationFrame(() => {
-                handleScrollAnimation();
-            });
-
-            bindNavLinks(appContent);
-
+        
             if (document.body.classList.contains('admin-mode')) {
                 initAdminEditButtons();
             }
