@@ -617,7 +617,7 @@
                         </div>
                         <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                             <h3 data-key="ict.curriculum.course3Title" class="text-xl font-bold text-blue-800">맞춤형 기업 교육</h3>
-                            <p data-key="ict.curriculum.course3Description" class="mt-2 text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
+                            <p data-key="ict.curriculum.course3Description" class="text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
                         </div>
                     </div>
                 </div>
@@ -1423,6 +1423,7 @@
         
         appContent.innerHTML = '';
         appContent.appendChild(newContent);
+        appContent.dataset.page = pageId; // ★★★ [수정됨] 페이지 식별을 위한 데이터 속성 추가
         
         window.scrollTo(0, 0);
         Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
@@ -1788,47 +1789,59 @@
             } catch (error) { console.error("Error saving product:", error); customAlert('저장 중 오류가 발생했습니다.'); }
         }
         
-        // --- Global Event Listener (Event Delegation) ---
+        // ★★★ [수정됨] Global Event Listener (Event Delegation) ★★★
         document.body.addEventListener('click', async (e) => {
             const target = e.target;
-            
-            // History Page Admin
-            if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) openHistoryModal();
-            if (target.matches('#history .edit-btn')) openHistoryModal(target.dataset.id);
-            if (target.matches('#history .delete-btn')) {
-                if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
+            const currentPage = appContent.dataset.page;
+
+            // --- Admin Actions (Scoped by current page) ---
+            if (document.body.classList.contains('admin-mode')) {
+                if (currentPage === 'history') {
+                    if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
+                        openHistoryModal();
+                    } else if (target.matches('.edit-btn')) {
+                        openHistoryModal(target.dataset.id);
+                    } else if (target.matches('.delete-btn')) {
+                        if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
+                        }
+                    }
+                } else if (currentPage === 'community-gallery') {
+                    if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
+                        openGalleryModal();
+                    } else if (target.matches('.edit-btn')) {
+                        openGalleryModal(target.dataset.id);
+                    } else if (target.matches('.delete-btn')) {
+                        if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, 'gallery', target.dataset.id)).catch(err => console.error(err));
+                        }
+                    }
+                } else if (currentPage === 'about-us') {
+                    if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) {
+                        openAboutUsModal();
+                    } else if (target.matches('.edit-btn')) {
+                        openAboutUsModal(target.dataset.id);
+                    } else if (target.matches('.delete-btn')) {
+                        if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
+                        }
+                    }
+                } else if (currentPage === 'products') {
+                    if (target.matches('#add-product-btn') || target.closest('#add-product-btn')) {
+                        openProductModal();
+                    } else if (target.matches('.edit-btn')) {
+                        e.preventDefault();
+                        openProductModal(target.dataset.id);
+                    } else if (target.matches('.delete-btn')) {
+                        e.preventDefault();
+                        if (await customConfirm("정말로 이 제품을 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, 'products', target.dataset.id)).catch(err => console.error(err));
+                        }
+                    }
                 }
             }
 
-            // Gallery Page Admin
-            if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) openGalleryModal();
-            if (target.matches('#community-gallery .edit-btn')) openGalleryModal(target.dataset.id);
-            if (target.matches('#community-gallery .delete-btn')) {
-                if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, 'gallery', target.dataset.id)).catch(err => console.error(err));
-                }
-            }
-            
-            // About Us Page Admin
-            if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) openAboutUsModal();
-            if (target.matches('#about-us .edit-btn')) openAboutUsModal(target.dataset.id);
-            if (target.matches('#about-us .delete-btn')) {
-                if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
-                }
-            }
-
-            // Products Page Admin
-            if (target.matches('#add-product-btn') || target.closest('#add-product-btn')) openProductModal();
-            if (target.matches('#products .edit-btn')) openProductModal(target.dataset.id);
-            if (target.matches('#products .delete-btn')) {
-                if (await customConfirm("정말로 이 제품을 삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, 'products', target.dataset.id)).catch(err => console.error(err));
-                }
-            }
-            
-            // Accordion Toggle
+            // --- General UI Actions ---
             const accordionHeader = target.closest('.accordion-header');
             if (accordionHeader) {
                 const content = accordionHeader.nextElementSibling;
@@ -1842,7 +1855,6 @@
                 }
             }
 
-            // Lightbox
             if (target.matches('#gallery img')) {
                 lightboxImage.src = target.src;
                 const title = target.dataset.title || '';
