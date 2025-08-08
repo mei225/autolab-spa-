@@ -1362,7 +1362,7 @@
         function initContentManagement() {
             if (!db) return;
             const contentCollection = collection(db, 'site_content');
-            onSnapshot(contentCollection, (snapshot) => {
+            const unsubscribe = onSnapshot(contentCollection, (snapshot) => {
                 snapshot.docs.forEach(doc => {
                     siteContent[doc.id] = doc.data().value;
                     applyContent(doc.id, doc.data().value);
@@ -1372,7 +1372,7 @@
         }
 
         async function saveContent(key, value) {
-            try { await setDoc(doc(db, 'site_content', key), { value }); customAlert('내용이 저장되었습니다.'); } 
+            try { await setDoc(doc(db, 'site_content', key), { value }); customAlert('내용이 저장되었습니다.'); } 
             catch (error) { console.error("Error saving content: ", error); customAlert('저장 중 오류가 발생했습니다.'); }
         }
 
@@ -1423,7 +1423,6 @@
             appContent.className = 'page-content';
             
             window.scrollTo(0, 0);
-
             Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
             
             const pageInitFunctions = {
@@ -1459,19 +1458,18 @@
 
         function handleScrollAnimation() {
             document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
-                if (el.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight) - 50) {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
                     el.classList.add('visible');
                 }
             });
         }
-
-        function initLoginPage() { /* ... */ }
-        function initHistoryPage() { /* ... */ }
-        function initGalleryPage() { /* ... */ }
-        function initAboutUsPage() { /* ... */ }
-        function initProductsPage() { /* ... */ }
-        // (이하 init... 함수들의 내용은 이전과 동일하므로 생략)
-
+        
+        // (이하 페이지별 init 함수들)
+        function initLoginPage() { /* 로그인 페이지 관련 로직 */ }
+        function initHistoryPage() { /* 사업 연혁 페이지 관련 로직 */ }
+        function initGalleryPage() { /* 포토 갤러리 페이지 관련 로직 */ }
+        function initAboutUsPage() { /* About Us 페이지 관련 로직 */ }
+        function initProductsPage() { /* 제품 소개 페이지 관련 로직 */ }
 
         // --- Global Scripts (run once on load) ---
         document.addEventListener('DOMContentLoaded', function () {
@@ -1486,13 +1484,90 @@
                 return;
             }
 
-            // ... Auth, Menu, Header, Modal logic (이전과 동일) ...
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuContainer = document.getElementById('mobile-menu');
+            const desktopNav = document.getElementById('desktop-nav');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
 
-            window.addEventListener('scroll', handleScrollAnimation, { passive: true });
+            function enterAdminMode() { document.body.classList.add('admin-mode'); adminLoginBtn.textContent = 'Logout'; navigateTo(currentPage); }
+            function exitAdminMode() { document.body.classList.remove('admin-mode'); adminLoginBtn.textContent = 'Admin Login'; removeAdminEditButtons(); navigateTo(currentPage); }
+
+            onAuthStateChanged(auth, (user) => { if (user) enterAdminMode(); else exitAdminMode(); });
+
+            adminLoginBtn.onclick = async () => {
+                if (auth.currentUser) { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
+                else { navigateTo('login'); }
+            };
+
+            function buildMobileMenu() {
+                mobileMenuContainer.innerHTML = '';
+                desktopNav.querySelectorAll(':scope > a, :scope > .dropdown').forEach(item => {
+                    const wrapper = document.createElement('div');
+                    if (item.classList.contains('dropdown')) {
+                        const parentLink = item.querySelector('a');
+                        const subMenu = item.querySelector('.dropdown-menu');
+                        const toggleButton = document.createElement('button');
+                        toggleButton.className = 'w-full flex items-center justify-between px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+                        toggleButton.innerHTML = `<span>${parentLink.textContent}</span><i class="fas fa-chevron-down transition-transform duration-200"></i>`;
+                        const mobileSubMenu = document.createElement('div');
+                        mobileSubMenu.className = 'hidden pl-4 bg-gray-50';
+                        subMenu.querySelectorAll('a').forEach(link => {
+                            const clonedLink = link.cloneNode(true);
+                            clonedLink.className = 'nav-link block w-full px-4 py-3 text-gray-700 hover:bg-blue-100';
+                            mobileSubMenu.appendChild(clonedLink);
+                        });
+                        toggleButton.onclick = () => {
+                            mobileSubMenu.classList.toggle('hidden');
+                            toggleButton.querySelector('i').classList.toggle('rotate-180');
+                        };
+                        wrapper.appendChild(toggleButton);
+                        wrapper.appendChild(mobileSubMenu);
+                    } else {
+                        const clonedLink = item.cloneNode(true);
+                        clonedLink.className = 'nav-link block w-full px-4 py-3 text-lg font-medium text-gray-600 hover:bg-blue-50';
+                        wrapper.appendChild(clonedLink);
+                    }
+                    mobileMenuContainer.appendChild(wrapper);
+                });
+                const mobileSearchBtn = document.createElement('button');
+                mobileSearchBtn.className = 'search-btn block w-full px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+                mobileSearchBtn.innerHTML = `<i class="fas fa-search mr-2"></i> 검색`;
+                mobileMenuContainer.appendChild(mobileSearchBtn);
+                document.querySelectorAll('.search-btn').forEach(btn => btn.onclick = openSearch);
+                bindNavLinks(mobileMenuContainer);
+            }
+            buildMobileMenu();
+            mobileMenuButton.onclick = (e) => { e.stopPropagation(); mobileMenuContainer.classList.toggle('hidden'); };
+
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                const isScrolled = window.scrollY > 50;
+                header.classList.toggle('h-16', isScrolled);
+                header.classList.toggle('h-20', !isScrolled);
+                document.querySelectorAll('.sub-nav').forEach(nav => {
+                    nav.style.top = (isScrolled ? 64 : 80) + 'px';
+                });
+                handleScrollAnimation();
+            }, { passive: true });
+
+            const searchModal = document.getElementById('search-modal');
+            const searchInput = document.getElementById('search-input');
+            function openSearch() { searchModal.classList.remove('hidden'); searchInput.focus(); }
+            function closeSearch() { searchModal.classList.add('hidden'); }
+            document.getElementById('close-search-btn').onclick = closeSearch;
+            searchModal.onclick = (e) => { if (e.target === searchModal) closeSearch(); };
+
+            const termsModal = document.getElementById('terms-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+            document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
+            document.getElementById('privacy-link').onclick = () => privacyModal.classList.remove('hidden');
+            document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
+            termsModal.onclick = (e) => { if (e.target === termsModal) termsModal.classList.add('hidden'); };
+            privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
+
             bindNavLinks(document.body);
             
-            const initialPage = window.location.hash.substring(1) || 'home';
-            navigateTo(initialPage);
+            navigateTo(window.location.hash.substring(1) || 'home');
         });
     </script>
 
