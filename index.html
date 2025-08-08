@@ -1483,7 +1483,8 @@
                 applyContent(key, siteContent[key]);
             });
             
-            // [수정됨] 페이지 방문 시 무조건 해당 페이지 초기화 함수를 호출
+            // [수정됨] 페이지를 방문할 때마다 해당 페이지의 데이터 로딩 함수를 항상 호출합니다.
+            // 이렇게 하면 페이지를 다시 방문했을 때 콘텐츠가 정상적으로 표시됩니다.
             switch(pageId) {
                 case 'history': initHistoryPage(); break;
                 case 'community-gallery': initGalleryPage(); break;
@@ -1534,7 +1535,6 @@
         }
 
         // --- Page Specific Initializers ---
-        // (이하 initLoginPage, initHistoryPage 등의 함수들은 모두 그대로 유지합니다)
         function initLoginPage() {
             const loginForm = document.getElementById('login-form');
             if (loginForm) {
@@ -1555,25 +1555,25 @@
 
         function initHistoryPage() {
             const historyCollection = collection(db, 'history');
-            let localHistory = [];
             
             const timelineContainer = document.getElementById('timeline-container');
-            const loading = document.getElementById('loading');
-            const adminModal = document.getElementById('admin-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const historyForm = document.getElementById('history-form');
-            const cancelBtn = document.getElementById('cancel-btn');
-            const addHistoryBtn = document.getElementById('add-history-btn');
-            const saveBtn = document.getElementById('save-btn');
+            if (!timelineContainer) return; // 페이지에 해당 요소가 없으면 종료
+            
+            const q = query(historyCollection, orderBy("order", "asc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const localHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderHistory(localHistory);
+            });
 
-            function renderHistory() {
-                if (!timelineContainer) return;
+            function renderHistory(localHistory) {
+                const loading = document.getElementById('loading');
                 timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0 left-4"></div>';
                 
                 if (localHistory.length === 0) {
                     if(loading) loading.textContent = '등록된 연혁이 없습니다.';
-                } else {
-                   if(loading) loading.style.display = 'none';
+                    timelineContainer.appendChild(loading);
+                } else if (loading) {
+                    loading.remove();
                 }
 
                 localHistory.forEach(item => {
@@ -1603,14 +1603,45 @@
                 handleScrollAnimation();
             }
 
-            const q = query(historyCollection, orderBy("order", "asc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                localHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderHistory();
-            });
+            const adminModal = document.getElementById('admin-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const historyForm = document.getElementById('history-form');
+            const addHistoryBtn = document.getElementById('add-history-btn');
+            if(addHistoryBtn) addHistoryBtn.onclick = () => openModal();
+            document.getElementById('cancel-btn').onclick = closeModal;
 
-            // 페이지를 떠날 때 리스너를 정리하는 로직을 추가할 수 있습니다 (선택사항)
-            // window.addEventListener('hashchange', () => unsubscribe(), { once: true });
+            historyForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('save-btn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = '저장 중...';
+                const id = document.getElementById('history-id').value;
+                const historyData = {
+                    year: document.getElementById('history-year').value,
+                    events: document.getElementById('history-events').value,
+                    order: Number(document.getElementById('history-order').value)
+                };
+                try {
+                    if (id) await updateDoc(doc(db, 'history', id), historyData);
+                    else await addDoc(historyCollection, historyData);
+                    closeModal();
+                } catch (error) { console.error("Error saving document: ", error); customAlert("저장 중 오류가 발생했습니다."); } 
+                finally { saveBtn.disabled = false; saveBtn.textContent = '저장'; }
+            };
+            
+            timelineContainer.onclick = async (e) => {
+                const id = e.target.dataset.id;
+                if (e.target.classList.contains('edit-btn')) {
+                    onSnapshot(doc(db, 'history', id), (docSnap) => {
+                        if (docSnap.exists()) openModal({id: docSnap.id, ...docSnap.data()});
+                    });
+                } else if (e.target.classList.contains('delete-btn')) {
+                    if (await customConfirm('정말로 이 항목을 삭제하시겠습니까?')) {
+                        try { await deleteDoc(doc(db, 'history', id)); } 
+                        catch (error) { console.error("Error removing document: ", error); customAlert("삭제 중 오류가 발생했습니다."); }
+                    }
+                }
+            };
 
             function openModal(item = null) {
                 historyForm.reset();
@@ -1630,74 +1661,24 @@
             function closeModal() {
                 adminModal.classList.add('hidden');
             }
-            
-            if(addHistoryBtn) addHistoryBtn.addEventListener('click', () => openModal());
-            if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
-            if(historyForm) historyForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                saveBtn.disabled = true;
-                saveBtn.textContent = '저장 중...';
-                const id = document.getElementById('history-id').value;
-                const historyData = {
-                    year: document.getElementById('history-year').value,
-                    events: document.getElementById('history-events').value,
-                    order: Number(document.getElementById('history-order').value)
-                };
-                try {
-                    if (id) {
-                        await updateDoc(doc(db, 'history', id), historyData);
-                    } else {
-                        await addDoc(historyCollection, historyData);
-                    }
-                    closeModal();
-                } catch (error) {
-                    console.error("Error saving document: ", error);
-                    customAlert("저장 중 오류가 발생했습니다.");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = '저장';
-                }
-            });
-            
-            if(timelineContainer) timelineContainer.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-                if (e.target.classList.contains('edit-btn')) {
-                    const itemToEdit = localHistory.find(item => item.id === id);
-                    openModal(itemToEdit);
-                } else if (e.target.classList.contains('delete-btn')) {
-                    const confirmed = await customConfirm('정말로 이 항목을 삭제하시겠습니까?');
-                    if (confirmed) {
-                        try {
-                            await deleteDoc(doc(db, 'history', id));
-                        } catch (error) {
-                            console.error("Error removing document: ", error);
-                            customAlert("삭제 중 오류가 발생했습니다.");
-                        }
-                    }
-                }
-            });
         }
         
         function initGalleryPage() {
             const galleryCollection = collection(db, 'gallery');
-            let localPhotos = [];
             
             const galleryGrid = document.getElementById('gallery-grid');
-            const adminModal = document.getElementById('gallery-admin-modal');
-            const modalTitle = document.getElementById('gallery-modal-title');
-            const photoForm = document.getElementById('photo-form');
-            const cancelBtn = document.getElementById('gallery-cancel-btn');
-            const addPhotoBtn = document.getElementById('add-photo-btn');
-            const saveBtn = document.getElementById('gallery-save-btn');
+            if (!galleryGrid) return;
 
-            const lightboxModal = document.getElementById('lightbox-modal');
-            const lightboxImage = document.getElementById('lightbox-image');
-            const lightboxCaption = document.getElementById('lightbox-caption');
-            const closeLightboxBtn = document.getElementById('close-lightbox-btn');
-
-            function renderGallery() {
-                if (!galleryGrid) return;
+            const q = query(galleryCollection, orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const localPhotos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderGallery(localPhotos);
+            }, (error) => {
+                console.error("Firebase 데이터 로딩 실패: ", error);
+                if(galleryGrid) galleryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">데이터를 불러오는 데 실패했습니다.</p>';
+            });
+            
+            function renderGallery(localPhotos) {
                 galleryGrid.innerHTML = '';
                 if (localPhotos.length === 0) {
                     galleryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 사진이 없습니다.</p>';
@@ -1707,10 +1688,8 @@
                 localPhotos.forEach(photo => {
                     const photoWrapper = document.createElement('div');
                     photoWrapper.className = 'group scroll-reveal';
-
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'relative aspect-square';
-
                     const img = document.createElement('img');
                     img.src = photo.imageUrl;
                     img.alt = photo.title;
@@ -1718,7 +1697,6 @@
                     img.dataset.title = photo.title;
                     img.dataset.description = photo.description;
                     img.onerror = function() { this.src = 'https://placehold.co/400x400/ef4444/ffffff?text=Error'; };
-
                     imageContainer.appendChild(img);
 
                     if (document.body.classList.contains('admin-mode')) {
@@ -1742,115 +1720,86 @@
                 handleScrollAnimation();
             }
 
-            const q = query(galleryCollection, orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                localPhotos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderGallery();
-            }, (error) => {
-                console.error("Firebase 데이터 로딩 실패: ", error);
-                if(galleryGrid) galleryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">데이터를 불러오는 데 실패했습니다.</p>';
-            });
-
-            function openAdminModal(photo = null) {
-                photoForm.reset();
-                if (photo) {
-                    modalTitle.textContent = '사진 정보 수정';
-                    document.getElementById('photo-id').value = photo.id;
-                    document.getElementById('photo-title').value = photo.title;
-                    document.getElementById('photo-description').value = photo.description;
-                    document.getElementById('photo-imageUrl').value = photo.imageUrl;
-                } else {
-                    modalTitle.textContent = '새 사진 추가';
-                    document.getElementById('photo-id').value = '';
-                }
-                adminModal.classList.remove('hidden');
-            }
-
-            function closeAdminModal() {
-                adminModal.classList.add('hidden');
-            }
-
-            if(addPhotoBtn) addPhotoBtn.addEventListener('click', () => openAdminModal());
-            if(cancelBtn) cancelBtn.addEventListener('click', closeAdminModal);
-
-            if(photoForm) photoForm.addEventListener('submit', async (e) => {
+            const lightboxModal = document.getElementById('lightbox-modal');
+            const adminModal = document.getElementById('gallery-admin-modal');
+            document.getElementById('add-photo-btn').onclick = () => openAdminModal();
+            document.getElementById('gallery-cancel-btn').onclick = closeAdminModal;
+            document.getElementById('close-lightbox-btn').onclick = () => lightboxModal.classList.add('hidden');
+            
+            document.getElementById('photo-form').onsubmit = async (e) => {
                 e.preventDefault();
+                const saveBtn = document.getElementById('gallery-save-btn');
                 saveBtn.disabled = true;
                 saveBtn.textContent = '저장 중...';
-
                 const id = document.getElementById('photo-id').value;
                 const photoData = {
                     title: document.getElementById('photo-title').value,
                     description: document.getElementById('photo-description').value,
                     imageUrl: document.getElementById('photo-imageUrl').value
                 };
-
                 try {
-                    if (id) {
-                        await updateDoc(doc(db, 'gallery', id), photoData);
-                    } else {
-                        photoData.createdAt = serverTimestamp();
-                        await addDoc(galleryCollection, photoData);
-                    }
+                    if (id) await updateDoc(doc(db, 'gallery', id), photoData);
+                    else await addDoc(galleryCollection, { ...photoData, createdAt: serverTimestamp() });
                     closeAdminModal();
-                } catch (error) {
-                    console.error("Error saving document: ", error);
-                    customAlert("저장 중 오류가 발생했습니다.");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = '저장';
-                }
-            });
-            
-            if(galleryGrid) galleryGrid.addEventListener('click', async (e) => {
+                } catch (error) { console.error("Error saving document: ", error); customAlert("저장 중 오류가 발생했습니다."); }
+                finally { saveBtn.disabled = false; saveBtn.textContent = '저장'; }
+            };
+
+            galleryGrid.onclick = async (e) => {
                 const target = e.target;
-                
+                const id = target.dataset.id;
+
                 if (target.classList.contains('edit-btn')) {
-                    const id = target.dataset.id;
-                    const photoToEdit = localPhotos.find(p => p.id === id);
-                    openAdminModal(photoToEdit);
+                    onSnapshot(doc(db, 'gallery', id), (docSnap) => {
+                        if (docSnap.exists()) openAdminModal({id: docSnap.id, ...docSnap.data()});
+                    });
                 } else if (target.classList.contains('delete-btn')) {
-                     const id = target.dataset.id;
-                    const confirmed = await customConfirm('정말로 이 사진을 삭제하시겠습니까?');
-                    if (confirmed) {
-                        try {
-                            await deleteDoc(doc(db, 'gallery', id));
-                        } catch (error) {
-                            console.error("Error removing document: ", error);
-                            customAlert("삭제 중 오류가 발생했습니다.");
-                        }
+                    if (await customConfirm('정말로 이 사진을 삭제하시겠습니까?')) {
+                        try { await deleteDoc(doc(db, 'gallery', id)); } 
+                        catch (error) { console.error("Error removing document: ", error); customAlert("삭제 중 오류가 발생했습니다."); }
                     }
                 } else if (target.tagName === 'IMG' && !document.body.classList.contains('admin-mode')) {
-                    lightboxImage.src = target.src;
+                    document.getElementById('lightbox-image').src = target.src;
                     const title = target.dataset.title || '';
                     const description = target.dataset.description || '';
-                    lightboxCaption.innerHTML = `<h3 class="font-bold text-xl mb-2">${title}</h3><p>${description}</p>`;
+                    document.getElementById('lightbox-caption').innerHTML = `<h3 class="font-bold text-xl mb-2">${title}</h3><p>${description}</p>`;
                     lightboxModal.classList.remove('hidden');
                 }
-            });
+            };
 
-            if(closeLightboxBtn) closeLightboxBtn.addEventListener('click', () => lightboxModal.classList.add('hidden'));
-            if(lightboxModal) lightboxModal.addEventListener('click', (e) => {
-                if (e.target === lightboxModal) {
-                    lightboxModal.classList.add('hidden');
+            lightboxModal.onclick = (e) => { if (e.target === lightboxModal) lightboxModal.classList.add('hidden'); };
+
+            function openAdminModal(photo = null) {
+                const photoForm = document.getElementById('photo-form');
+                photoForm.reset();
+                if (photo) {
+                    document.getElementById('gallery-modal-title').textContent = '사진 정보 수정';
+                    document.getElementById('photo-id').value = photo.id;
+                    document.getElementById('photo-title').value = photo.title;
+                    document.getElementById('photo-description').value = photo.description;
+                    document.getElementById('photo-imageUrl').value = photo.imageUrl;
+                } else {
+                    document.getElementById('gallery-modal-title').textContent = '새 사진 추가';
+                    document.getElementById('photo-id').value = '';
                 }
-            });
+                adminModal.classList.remove('hidden');
+            }
+            function closeAdminModal() { adminModal.classList.add('hidden'); }
         }
 
         function initAboutUsPage() {
             const aboutUsCollection = collection(db, 'about_us');
-            let localItems = [];
             
             const accordionContainer = document.getElementById('about-us-accordion');
-            const adminModal = document.getElementById('about-us-admin-modal');
-            const modalTitle = document.getElementById('about-us-modal-title');
-            const itemForm = document.getElementById('about-us-form');
-            const cancelBtn = document.getElementById('about-us-cancel-btn');
-            const addBtn = document.getElementById('add-about-us-btn');
-            const saveBtn = document.getElementById('about-us-save-btn');
+            if(!accordionContainer) return;
 
-            function renderAboutUs() {
-                if (!accordionContainer) return;
+            const q = query(aboutUsCollection, orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const localItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAboutUs(localItems);
+            });
+            
+            function renderAboutUs(localItems) {
                 accordionContainer.innerHTML = '';
                 if (localItems.length === 0) {
                     accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>';
@@ -1872,7 +1821,7 @@
                         </button>
                         <div class="accordion-content bg-gray-50">
                             <div class="p-6 whitespace-pre-wrap text-gray-700">${item.content}</div>
-                      </div>
+                        </div>
                     `;
 
                     if (document.body.classList.contains('admin-mode')) {
@@ -1889,35 +1838,43 @@
                 handleScrollAnimation();
             }
 
-            const q = query(aboutUsCollection, orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                localItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAboutUs();
-            });
-            
-            function openAdminModal(item = null) {
-                itemForm.reset();
-                if (item) {
-                    modalTitle.textContent = 'About us 수정';
-                    document.getElementById('about-us-id').value = item.id;
-                    document.getElementById('about-us-title').value = item.title;
-                    document.getElementById('about-us-content').value = item.content;
+            accordionContainer.onclick = async (e) => {
+                const target = e.target;
+                const id = target.dataset.id;
+                if (target.classList.contains('edit-btn')) {
+                    onSnapshot(doc(db, 'about_us', id), (docSnap) => {
+                        if (docSnap.exists()) openAdminModal({id: docSnap.id, ...docSnap.data()});
+                    });
+                } else if (target.classList.contains('delete-btn')) {
+                    if (await customConfirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+                        try { await deleteDoc(doc(db, 'about_us', id)); } 
+                        catch (error) { console.error("Error removing document: ", error); customAlert("삭제 중 오류가 발생했습니다."); }
+                    }
                 } else {
-                    modalTitle.textContent = 'About us 작성';
-                     document.getElementById('about-us-id').value = '';
+                    const header = target.closest('.accordion-header');
+                    if (!header) return;
+                    const content = header.nextElementSibling;
+                    if (!content) return;
+                    const icon = header.querySelector('i.fa-chevron-down');
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    accordionContainer.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                    accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(i => i.classList.remove('rotate-180'));
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        if (icon) icon.classList.add('rotate-180');
+                    }
                 }
-                adminModal.classList.remove('hidden');
-            }
+            };
 
-            function closeAdminModal() {
-                adminModal.classList.add('hidden');
-            }
+            const adminModal = document.getElementById('about-us-admin-modal');
+            document.getElementById('add-about-us-btn').onclick = () => openAdminModal();
+            document.getElementById('about-us-cancel-btn').onclick = closeAdminModal;
 
-            if(addBtn) addBtn.addEventListener('click', () => openAdminModal());
-            if(cancelBtn) cancelBtn.addEventListener('click', closeAdminModal);
-
-            if(itemForm) itemForm.addEventListener('submit', async (e) => {
+            document.getElementById('about-us-form').onsubmit = async (e) => {
                 e.preventDefault();
+                const saveBtn = document.getElementById('about-us-save-btn');
                 saveBtn.disabled = true;
                 saveBtn.textContent = '저장 중...';
                 const id = document.getElementById('about-us-id').value;
@@ -1926,81 +1883,42 @@
                     content: document.getElementById('about-us-content').value,
                 };
                 try {
-                    if (id) {
-                        await updateDoc(doc(db, 'about_us', id), itemData);
-                    } else {
-                        itemData.createdAt = serverTimestamp();
-                        await addDoc(aboutUsCollection, itemData);
-                    }
+                    if (id) await updateDoc(doc(db, 'about_us', id), itemData);
+                    else await addDoc(aboutUsCollection, { ...itemData, createdAt: serverTimestamp() });
                     closeAdminModal();
-                } catch (error) {
-                    console.error("Error saving document: ", error);
-                    customAlert("저장 중 오류가 발생했습니다.");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = '저장';
-                }
-            });
+                } catch (error) { console.error("Error saving document: ", error); customAlert("저장 중 오류가 발생했습니다."); } 
+                finally { saveBtn.disabled = false; saveBtn.textContent = '저장'; }
+            };
 
-            if(accordionContainer) accordionContainer.addEventListener('click', async (e) => {
-                const target = e.target;
-                const id = target.dataset.id;
-
-                if (target.classList.contains('edit-btn')) {
-                    const itemToEdit = localItems.find(item => item.id === id);
-                    openAdminModal(itemToEdit);
-                } else if (target.classList.contains('delete-btn')) {
-                    const confirmed = await customConfirm('정말로 이 게시물을 삭제하시겠습니까?');
-                    if (confirmed) {
-                        try {
-                            await deleteDoc(doc(db, 'about_us', id));
-                        } catch (error) {
-                            console.error("Error removing document: ", error);
-                            customAlert("삭제 중 오류가 발생했습니다.");
-                        }
-                    }
+            function openAdminModal(item = null) {
+                document.getElementById('about-us-form').reset();
+                if (item) {
+                    document.getElementById('about-us-modal-title').textContent = 'About us 수정';
+                    document.getElementById('about-us-id').value = item.id;
+                    document.getElementById('about-us-title').value = item.title;
+                    document.getElementById('about-us-content').value = item.content;
                 } else {
-                    const header = target.closest('.accordion-header');
-                    if (!header) return;
-
-                    const content = header.nextElementSibling;
-                    if (!content || !content.classList.contains('accordion-content')) return;
-
-                    const icon = header.querySelector('i.fa-chevron-down');
-                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-
-                    accordionContainer.querySelectorAll('.accordion-content').forEach(item => {
-                        if (item !== content) item.style.maxHeight = null;
-                    });
-                    accordionContainer.querySelectorAll('.accordion-header i.fa-chevron-down').forEach(item => {
-                        if(item !== icon) item.classList.remove('rotate-180');
-                    });
-
-                    if (!isOpen) {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        if (icon) icon.classList.add('rotate-180');
-                    } else {
-                        content.style.maxHeight = null;
-                        if (icon) icon.classList.remove('rotate-180');
-                    }
+                    document.getElementById('about-us-modal-title').textContent = 'About us 작성';
+                    document.getElementById('about-us-id').value = '';
                 }
-            });
+                adminModal.classList.remove('hidden');
+            }
+            function closeAdminModal() { adminModal.classList.add('hidden'); }
         }
         
         function initProductsPage() {
             const productsCollection = collection(db, 'products');
-            let localProducts = [];
-            
-            const productGrid = document.getElementById('product-grid');
-            const adminModal = document.getElementById('product-admin-modal');
-            const modalTitle = document.getElementById('product-modal-title');
-            const productForm = document.getElementById('product-form');
-            const cancelBtn = document.getElementById('product-cancel-btn');
-            const addProductBtn = document.getElementById('add-product-btn');
-            const saveBtn = document.getElementById('product-save-btn');
 
-            function renderProducts() {
-                if (!productGrid) return;
+            const productGrid = document.getElementById('product-grid');
+            if (!productGrid) return;
+            
+            const q = query(productsCollection, orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const localProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts(localProducts);
+            });
+
+            function renderProducts(localProducts) {
                 productGrid.innerHTML = '';
                 if (localProducts.length === 0) {
                     productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 제품이 없습니다.</p>';
@@ -2047,96 +1965,67 @@
                 });
                 handleScrollAnimation();
             }
-            
-            const q = query(productsCollection, orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                localProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProducts();
-            });
 
-             function openAdminModal(product = null) {
-                productForm.reset();
+            const adminModal = document.getElementById('product-admin-modal');
+            productGrid.onclick = async (e) => {
+                const target = e.target;
+                
+                if (target.classList.contains('edit-btn') || target.classList.contains('delete-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                const id = target.dataset.id;
+
+                if (target.classList.contains('edit-btn')) {
+                    onSnapshot(doc(db, 'products', id), (docSnap) => {
+                        if (docSnap.exists()) openAdminModal({id: docSnap.id, ...docSnap.data()});
+                    });
+                } else if (target.classList.contains('delete-btn')) {
+                    if (await customConfirm('정말로 이 제품을 삭제하시겠습니까?')) {
+                        try { await deleteDoc(doc(db, 'products', id)); } 
+                        catch (error) { console.error("Error removing product: ", error); customAlert("삭제 중 오류가 발생했습니다."); }
+                    }
+                }
+            };
+            
+            document.getElementById('add-product-btn').onclick = () => openAdminModal();
+            document.getElementById('product-cancel-btn').onclick = closeAdminModal;
+            document.getElementById('product-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('product-save-btn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = '저장 중...';
+                const id = document.getElementById('product-id').value;
+                const productData = { title: document.getElementById('product-title').value, description: document.getElementById('product-description').value, imageUrl: document.getElementById('product-imageUrl').value, storeUrl: document.getElementById('product-storeUrl').value };
+                try {
+                    if (id) await updateDoc(doc(db, 'products', id), productData);
+                    else await addDoc(productsCollection, { ...productData, createdAt: serverTimestamp() });
+                    closeAdminModal();
+                } catch (error) { console.error("Error saving product: ", error); customAlert("저장 중 오류가 발생했습니다."); } 
+                finally { saveBtn.disabled = false; saveBtn.textContent = '저장'; }
+            };
+
+            function openAdminModal(product = null) {
+                document.getElementById('product-form').reset();
                 if (product) {
-                    modalTitle.textContent = '시판 제품 수정';
+                    document.getElementById('product-modal-title').textContent = '시판 제품 수정';
                     document.getElementById('product-id').value = product.id;
                     document.getElementById('product-title').value = product.title;
                     document.getElementById('product-description').value = product.description;
                     document.getElementById('product-imageUrl').value = product.imageUrl;
                     document.getElementById('product-storeUrl').value = product.storeUrl;
                 } else {
-                    modalTitle.textContent = '새 시판 제품 추가';
+                    document.getElementById('product-modal-title').textContent = '새 시판 제품 추가';
                     document.getElementById('product-id').value = '';
                 }
                 adminModal.classList.remove('hidden');
             }
-
-            function closeAdminModal() {
-                adminModal.classList.add('hidden');
-            }
-
-            if(addProductBtn) addProductBtn.addEventListener('click', () => openAdminModal());
-            if(cancelBtn) cancelBtn.addEventListener('click', closeAdminModal);
-
-            if(productForm) productForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                saveBtn.disabled = true;
-                saveBtn.textContent = '저장 중...';
-
-                const id = document.getElementById('product-id').value;
-                const productData = {
-                    title: document.getElementById('product-title').value,
-                    description: document.getElementById('product-description').value,
-                    imageUrl: document.getElementById('product-imageUrl').value,
-                    storeUrl: document.getElementById('product-storeUrl').value
-                };
-
-                try {
-                    if (id) {
-                        await updateDoc(doc(db, 'products', id), productData);
-                    } else {
-                        productData.createdAt = serverTimestamp();
-                        await addDoc(productsCollection, productData);
-                    }
-                    closeAdminModal();
-                } catch (error) {
-                    console.error("Error saving product: ", error);
-                    customAlert("저장 중 오류가 발생했습니다.");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = '저장';
-                }
-            });
-
-            if(productGrid) productGrid.addEventListener('click', async (e) => {
-                const target = e.target;
-                
-                if (target.classList.contains('edit-btn') || target.classList.contains('delete-btn')) {
-                     e.preventDefault();
-                     e.stopPropagation();
-                }
-
-                const id = target.dataset.id;
-
-                if (target.classList.contains('edit-btn')) {
-                    const productToEdit = localProducts.find(p => p.id === id);
-                    openAdminModal(productToEdit);
-                } else if (target.classList.contains('delete-btn')) {
-                    const confirmed = await customConfirm('정말로 이 제품을 삭제하시겠습니까?');
-                    if (confirmed) {
-                        try {
-                            await deleteDoc(doc(db, 'products', id));
-                        } catch (error) {
-                            console.error("Error removing product: ", error);
-                            customAlert("삭제 중 오류가 발생했습니다.");
-                        }
-                    }
-                }
-            });
+            function closeAdminModal() { adminModal.classList.add('hidden'); }
         }
 
         // --- Global Scripts (run once on load) ---
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize Firebase ONCE
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -2156,7 +2045,6 @@
             function enterAdminMode() {
                 document.body.classList.add('admin-mode');
                 adminLoginBtn.textContent = 'Logout';
-                pageInitialized = {}; // Reset initialized pages to force re-render with admin controls
                 navigateTo(currentPage);
             }
             
@@ -2164,7 +2052,6 @@
                 document.body.classList.remove('admin-mode');
                 adminLoginBtn.textContent = 'Admin Login';
                 removeAdminEditButtons();
-                pageInitialized = {};
                 navigateTo(currentPage);
             }
 
@@ -2265,7 +2152,7 @@
 
             function openSearch() {
                 searchModal.classList.remove('hidden');
-      _BOS_       searchInput.focus();
+      _BOS_       searchInput.focus();
             }
             function closeSearch() {
                 searchModal.classList.add('hidden');
@@ -2320,8 +2207,14 @@
             
             const initialPage = window.location.hash.substring(1) || 'home';
             navigateTo(initialPage);
+
+        // [수정됨] 첫 페이지 로딩 시 애니메이션을 한 번 더 확실하게 체크합니다.
+            setTimeout(() => {
+                handleScrollAnimation();
+            }, 100); 
         });
     </script>
 
 </body>
 </html>
+
