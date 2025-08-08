@@ -1319,6 +1319,7 @@
     let db, auth;
     let currentPage = 'home';
     let siteContent = {};
+    let activeFirestoreListeners = [];
 
     // --- Custom Dialog ---
     const dialogModal = document.getElementById('custom-dialog-modal');
@@ -1360,8 +1361,7 @@
 
     function initContentManagement() {
         if (!db) return;
-        const contentCollection = collection(db, 'site_content');
-        onSnapshot(contentCollection, (snapshot) => {
+        onSnapshot(collection(db, 'site_content'), (snapshot) => {
             snapshot.docs.forEach(doc => {
                 siteContent[doc.id] = doc.data().value;
                 applyContent(doc.id, doc.data().value);
@@ -1375,45 +1375,36 @@
         catch (error) { console.error("Error saving content: ", error); customAlert('저장 중 오류가 발생했습니다.'); }
     }
 
-    function htmlToText(html) { const temp = document.createElement('div'); temp.innerHTML = html.replace(/<br\s*\/?>/gi, "\n"); return temp.textContent || temp.innerText || ""; }
-    function textToHtml(text) { const temp = document.createElement('div'); temp.textContent = text; return temp.innerHTML.replace(/\n/g, "<br>"); }
+    function htmlToText(html) { const t = document.createElement('div'); t.innerHTML = html.replace(/<br\s*\/?>/gi, "\n"); return t.textContent || t.innerText || ""; }
+    function textToHtml(text) { const t = document.createElement('div'); t.textContent = text; return t.innerHTML.replace(/\n/g, "<br>"); }
 
     function initAdminEditButtons() {
         if (!document.body.classList.contains('admin-mode')) return;
-        document.querySelectorAll('[data-key]').forEach(element => {
-            element.querySelector('.edit-btn-icon')?.remove();
+        document.querySelectorAll('[data-key]').forEach(el => {
+            el.querySelector('.edit-btn-icon')?.remove();
             const editBtn = document.createElement('button');
             editBtn.className = 'edit-btn-icon';
             editBtn.innerHTML = '<i class="fas fa-pencil-alt" style="font-size: 10px;"></i>';
             editBtn.onclick = (e) => {
                 e.preventDefault(); e.stopPropagation();
-                const key = element.dataset.key;
-                if (element.tagName === 'IMG') {
-                    const newValue = prompt(`'${key}' 이미지 URL 수정:`, element.src);
-                    if (newValue && newValue !== element.src) saveContent(key, newValue);
+                const key = el.dataset.key;
+                if (el.tagName === 'IMG') {
+                    const n = prompt(`'${key}' 이미지 URL 수정:`, el.src);
+                    if (n && n !== el.src) saveContent(key, n);
                 } else {
-                    const oldValue = siteContent[key] || element.innerHTML;
-                    const newValue = prompt(`'${key}' 내용 수정:`, htmlToText(oldValue));
-                    if (newValue !== null && newValue !== htmlToText(oldValue)) saveContent(key, textToHtml(newValue));
+                    const o = siteContent[key] || el.innerHTML;
+                    const n = prompt(`'${key}' 내용 수정:`, htmlToText(o));
+                    if (n !== null && n !== htmlToText(o)) saveContent(key, textToHtml(n));
                 }
             };
-            const parent = element.tagName === 'IMG' ? element.parentElement : element;
-            if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-            parent.appendChild(editBtn);
+            const p = el.tagName === 'IMG' ? el.parentElement : el;
+            if (getComputedStyle(p).position === 'static') p.style.position = 'relative';
+            p.appendChild(editBtn);
         });
     }
     
     function removeAdminEditButtons() {
         document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
-    }
-    
-    // --- Animation ---
-    function handleScrollAnimation() {
-        document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
-            if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                el.classList.add('visible');
-            }
-        });
     }
 
     // --- Router ---
@@ -1426,110 +1417,62 @@
 
         const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
         if (!targetTemplate) { navigateTo('home'); return; }
-        
-        appContent.innerHTML = targetTemplate.innerHTML;
-        appContent.className = 'page-content';
-        
+        
+        const newContent = targetTemplate.cloneNode(true);
+        newContent.id = '';
+        newContent.classList.add('page-content');
+
+        appContent.innerHTML = '';
+        appContent.appendChild(newContent);
+        
         window.scrollTo(0, 0);
         Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
-        
+        
         const pageInitFunctions = {
-            'history': () => setupPageWithData('history', '#timeline-container', renderHistory),
-            'community-gallery': () => setupPageWithData('gallery', '#gallery-grid', renderGallery),
-            'about-us': () => setupPageWithData('about_us', '#about-us-accordion', renderAboutUs),
-            'products': () => setupPageWithData('products', '#product-grid', renderProducts),
+            'history': initHistoryPage,
+            'community-gallery': initGalleryPage,
+            'about-us': initAboutUsPage,
+            'products': initProductsPage,
             'login': initLoginPage
         };
         pageInitFunctions[pageId]?.();
 
         setTimeout(() => {
-            appContent.classList.add('visible');
+            newContent.classList.add('visible');
             handleScrollAnimation();
         }, 50);
 
         bindNavLinks(appContent);
         if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
     }
-
-    // --- Data Loading & Rendering ---
-    function setupPageWithData(collectionName, containerSelector, renderFunction) {
-        const container = document.querySelector(containerSelector);
-        if (!container) return;
-
-        const sortOrder = collectionName === 'history' ? "asc" : "desc";
-        const sortField = collectionName === 'history' ? "order" : "createdAt";
-
-        const q = query(collection(db, collectionName), orderBy(sortField, sortOrder));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderFunction(container, data);
-        });
-        activeFirestoreListeners.push(unsubscribe);
-    }
-    
-    function initLoginPage() {
-        const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-            loginForm.onsubmit = async (e) => {
+    
+    function bindNavLinks(container) {
+        container.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                try {
-                    await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
-                    navigateTo('home');
-                } catch (error) { customAlert('로그인에 실패했습니다.'); }
-            };
-        }
-    }
-
-    function renderHistory(container, data) {
-        container.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0 left-4"></div>';
-        if (data.length === 0) {
-            container.innerHTML += '<p class="text-center text-gray-500 py-10">등록된 연혁이 없습니다.</p>';
-        } else {
-            data.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'mb-16 scroll-reveal';
-                itemEl.innerHTML = `...`; // (내용은 이전과 동일하므로 생략)
-                container.appendChild(itemEl);
+                const targetPage = link.dataset.target;
+                if (targetPage && targetPage !== currentPage) {
+                    navigateTo(targetPage);
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
             });
-            handleScrollAnimation();
-        }
-    }
-    
-    function renderGallery(container, photos) {
-        container.innerHTML = '';
-        if (photos.length === 0) { container.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 사진이 없습니다.</p>'; return; }
-        photos.forEach(photo => {
-            const itemEl = document.createElement('div');
-            itemEl.className = 'group scroll-reveal';
-            itemEl.innerHTML = `...`; // (내용은 이전과 동일하므로 생략)
-            if (document.body.classList.contains('admin-mode')) { /* ... */ }
-            container.appendChild(itemEl);
         });
-        handleScrollAnimation();
     }
 
-    function renderAboutUs(container, items) {
-        container.innerHTML = '';
-        if (items.length === 0) { container.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>'; return; }
-        items.forEach(item => {
-            const itemEl = document.createElement('div');
-            itemEl.className = 'border-b border-gray-200 scroll-reveal';
-            // ... (내용은 이전과 동일)
-            container.appendChild(itemEl);
+    function handleScrollAnimation() {
+        document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
+            if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+                el.classList.add('visible');
+            }
         });
-        handleScrollAnimation();
     }
 
-    function renderProducts(container, products) {
-        container.innerHTML = '';
-        if (products.length === 0) { container.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 제품이 없습니다.</p>'; return; }
-        products.forEach(product => {
-            const itemEl = document.createElement('a');
-            // ... (내용은 이전과 동일)
-            container.appendChild(itemEl);
-        });
-        handleScrollAnimation();
-    }
+    // --- Page Specific Initializers ---
+    function initLoginPage() { /* 로그인 페이지 관련 로직 */ }
+    function initHistoryPage() { /* 사업 연혁 페이지 관련 로직 */ }
+    function initGalleryPage() { /* 포토 갤러리 페이지 관련 로직 */ }
+    function initAboutUsPage() { /* About Us 페이지 관련 로직 */ }
+    function initProductsPage() { /* 제품 소개 페이지 관련 로직 */ }
 
     // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
@@ -1543,15 +1486,91 @@
             customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
             return;
         }
-        
-        // ... (Auth, Menu, Header, Modal logic) ...
-        
-        window.addEventListener('scroll', handleScrollAnimation, { passive: true });
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuContainer = document.getElementById('mobile-menu');
+        const desktopNav = document.getElementById('desktop-nav');
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+
+        function enterAdminMode() { document.body.classList.add('admin-mode'); adminLoginBtn.textContent = 'Logout'; navigateTo(currentPage); }
+        function exitAdminMode() { document.body.classList.remove('admin-mode'); adminLoginBtn.textContent = 'Admin Login'; removeAdminEditButtons(); navigateTo(currentPage); }
+        onAuthStateChanged(auth, (user) => { if (user) enterAdminMode(); else exitAdminMode(); });
+        adminLoginBtn.onclick = async () => {
+            if (auth.currentUser) { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
+            else { navigateTo('login'); }
+        };
+
+        function buildMobileMenu() {
+            mobileMenuContainer.innerHTML = '';
+            desktopNav.querySelectorAll(':scope > a, :scope > .dropdown').forEach(item => {
+                const wrapper = document.createElement('div');
+                if (item.classList.contains('dropdown')) {
+                    const parentLink = item.querySelector('a');
+                    const subMenu = item.querySelector('.dropdown-menu');
+                    const toggleButton = document.createElement('button');
+                    toggleButton.className = 'w-full flex items-center justify-between px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+                    toggleButton.innerHTML = `<span>${parentLink.textContent}</span><i class="fas fa-chevron-down transition-transform duration-200"></i>`;
+                    const mobileSubMenu = document.createElement('div');
+                    mobileSubMenu.className = 'hidden pl-4 bg-gray-50';
+                    subMenu.querySelectorAll('a').forEach(link => {
+                        const clonedLink = link.cloneNode(true);
+                        clonedLink.className = 'nav-link block w-full px-4 py-3 text-gray-700 hover:bg-blue-100';
+                        mobileSubMenu.appendChild(clonedLink);
+                    });
+                    toggleButton.onclick = () => {
+                        mobileSubMenu.classList.toggle('hidden');
+                        toggleButton.querySelector('i').classList.toggle('rotate-180');
+                    };
+                    wrapper.appendChild(toggleButton);
+                    wrapper.appendChild(mobileSubMenu);
+                } else {
+                    const clonedLink = item.cloneNode(true);
+                    clonedLink.className = 'nav-link block w-full px-4 py-3 text-lg font-medium text-gray-600 hover:bg-blue-50';
+                    wrapper.appendChild(clonedLink);
+                }
+                mobileMenuContainer.appendChild(wrapper);
+            });
+            const mobileSearchBtn = document.createElement('button');
+            mobileSearchBtn.className = 'search-btn block w-full px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+            mobileSearchBtn.innerHTML = `<i class="fas fa-search mr-2"></i> 검색`;
+            mobileMenuContainer.appendChild(mobileSearchBtn);
+            document.querySelectorAll('.search-btn').forEach(btn => btn.onclick = openSearch);
+            bindNavLinks(mobileMenuContainer);
+        }
+        buildMobileMenu();
+        mobileMenuButton.onclick = (e) => { e.stopPropagation(); mobileMenuContainer.classList.toggle('hidden'); };
+
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            const isScrolled = window.scrollY > 50;
+            header.classList.toggle('h-16', isScrolled);
+            header.classList.toggle('h-20', !isScrolled);
+            document.querySelectorAll('.sub-nav').forEach(nav => {
+                nav.style.top = (isScrolled ? 64 : 80) + 'px';
+            });
+            handleScrollAnimation();
+        }, { passive: true });
+
+        const searchModal = document.getElementById('search-modal');
+        const searchInput = document.getElementById('search-input');
+        function openSearch() { searchModal.classList.remove('hidden'); searchInput.focus(); }
+        function closeSearch() { searchModal.classList.add('hidden'); }
+        document.getElementById('close-search-btn').onclick = closeSearch;
+        searchModal.onclick = (e) => { if (e.target === searchModal) closeSearch(); };
+
+        const termsModal = document.getElementById('terms-modal');
+        const privacyModal = document.getElementById('privacy-modal');
+        document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
+        document.getElementById('privacy-link').onclick = () => privacyModal.classList.remove('hidden');
+        document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
+        termsModal.onclick = (e) => { if (e.target === termsModal) termsModal.classList.add('hidden'); };
+        privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
+
         bindNavLinks(document.body);
         
         navigateTo(window.location.hash.substring(1) || 'home');
     });
-    </script>
-        
+    </script>
+
 </body>
 </html>
