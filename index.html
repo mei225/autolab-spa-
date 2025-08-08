@@ -617,14 +617,14 @@
                         </div>
                         <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                             <h3 data-key="ict.curriculum.course3Title" class="text-xl font-bold text-blue-800">맞춤형 기업 교육</h3>
-                            <p data-key="ict.curriculum.course3Description" class="text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
+                            <p data-key="ict.curriculum.course3Description" class="mt-2 text-gray-700">기업의 특성과 요구에 맞춘 전용 커리큘럼을 설계하여 임직원의 R&D 역량을 강화합니다.</p>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
         
-        <!-- Business Sensor Page Content -->
+        <!-- ★★★ [수정됨] Business Sensor Page Content ★★★ -->
         <div id="business-sensor">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Sensor+R%26D');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
@@ -642,36 +642,38 @@
             </div>
             <section id="equipment" class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid md:grid-cols-2 gap-12 items-center">
-                        <div class="scroll-reveal">
-                            <h2 data-key="sensor.equipment.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 보유 장비</h2>
-                            <p data-key="sensor.equipment.subtitle" class="mt-4 text-base md:text-lg text-gray-600">최첨단 연구 설비는 기술 혁신의 기반입니다.</p>
-                        </div>
-                        <div class="scroll-reveal bg-gray-50 p-8 rounded-lg">
-                            <ul class="space-y-6 text-base md:text-lg">
-                                <li>
-                                    <h3 data-key="sensor.equipment.cat1Title" class="text-xl font-bold text-gray-800">- 제조 장비:</h3>
-                                    <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li data-key="sensor.equipment.cat1Item1">3D 프린터</li>
-                                        <li data-key="sensor.equipment.cat1Item2">CNC 정밀 가공기</li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <h3 data-key="sensor.equipment.cat2Title" class="text-xl font-bold text-gray-800">- 측정 장비:</h3>
-                                    <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li data-key="sensor.equipment.cat2Item1">오실로스코프</li>
-                                        <li data-key="sensor.equipment.cat2Item2">열화상 카메라</li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <h3 data-key="sensor.equipment.cat3Title" class="text-xl font-bold text-gray-800">- 소형화 장비:</h3>
-                                     <ul class="list-disc list-inside pl-4 mt-2 text-gray-600 space-y-1">
-                                        <li data-key="sensor.equipment.cat3Item1">마이크로-FAB 시스템</li>
-                                        <li data-key="sensor.equipment.cat3Item2">PCB 프로토타이핑 머신</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="text-center mb-16 scroll-reveal">
+                        <h2 data-key="sensor.equipment.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">AUTOLAB 보유 장비</h2>
+                        <p data-key="sensor.equipment.subtitle" class="mt-4 text-base md:text-lg text-gray-600">최첨단 연구 설비는 기술 혁신의 기반입니다.</p>
+                    </div>
+                    <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Manufacturing Equipment Card -->
+                        <a href="#" data-target="equipment-manufacturing" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal">
+                            <img data-key="equipment.manufacturing.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=제조+장비" alt="제조 장비" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 data-key="equipment.manufacturing.cardTitle" class="text-xl font-bold text-gray-800 mb-2">제조 장비</h3>
+                                <p data-key="equipment.manufacturing.cardDescription" class="text-gray-700 mb-4">아이디어를 정밀한 시제품으로 구현합니다.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
+                        <!-- Measuring Equipment Card -->
+                        <a href="#" data-target="equipment-measuring" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal" style="transition-delay: 150ms;">
+                            <img data-key="equipment.measuring.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=측정+장비" alt="측정 장비" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 data-key="equipment.measuring.cardTitle" class="text-xl font-bold text-gray-800 mb-2">측정 장비</h3>
+                                <p data-key="equipment.measuring.cardDescription" class="text-gray-700 mb-4">미세한 신호도 놓치지 않고 분석합니다.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
+                        <!-- Miniaturization Equipment Card -->
+                        <a href="#" data-target="equipment-miniaturization" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal" style="transition-delay: 300ms;">
+                            <img data-key="equipment.miniaturization.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=소형화+장비" alt="소형화 장비" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 data-key="equipment.miniaturization.cardTitle" class="text-xl font-bold text-gray-800 mb-2">소형화 장비</h3>
+                                <p data-key="equipment.miniaturization.cardDescription" class="text-gray-700 mb-4">더 작고, 더 효율적인 기술을 구현합니다.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -1096,6 +1098,98 @@
                  </div>
             </section>
         </div>
+        
+        <!-- ★★★ [신규 추가] Equipment Detail Pages ★★★ -->
+        <div id="equipment-manufacturing">
+             <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="business-sensor">&larr; 장비 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img data-key="equipment.manufacturing.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=제조+장비" alt="제조 장비" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 data-key="equipment.manufacturing.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">제조 장비</h1>
+                            <p data-key="equipment.manufacturing.subtitle" class="mt-4 text-lg text-gray-600">상상을 현실로 만드는 정밀한 기술</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                           <p data-key="equipment.manufacturing.description" class="text-gray-700 leading-relaxed text-base md:text-lg">AUTOLAB의 제조 장비는 최신 3D 프린팅 기술과 CNC 정밀 가공 기술을 통합하여, 복잡하고 정교한 센서 프로토타입을 신속하게 제작할 수 있는 능력을 갖추고 있습니다. 이를 통해 개발 초기 단계에서부터 아이디어를 빠르게 검증하고 개선할 수 있습니다.</p>
+                      </div>
+                       <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                           <ul data-key="equipment.manufacturing.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                                <li>맞춤형 센서 하우징 및 부품 제작</li>
+                                <li>신속한 프로토타이핑 및 디자인 검증</li>
+                                <li>소량 맞춤 생산 및 교육용 키트 제작</li>
+                           </ul>
+                      </div>
+                 </div>
+            </section>
+        </div>
+        <div id="equipment-measuring">
+             <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="business-sensor">&larr; 장비 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img data-key="equipment.measuring.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=측정+장비" alt="측정 장비" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 data-key="equipment.measuring.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">측정 장비</h1>
+                            <p data-key="equipment.measuring.subtitle" class="mt-4 text-lg text-gray-600">보이지 않는 데이터를 시각화하는 기술</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                           <p data-key="equipment.measuring.description" class="text-gray-700 leading-relaxed text-base md:text-lg">고성능 오실로스코프와 열화상 카메라 등 최첨단 측정 장비를 통해 센서에서 발생하는 미세한 전기적 신호와 온도 변화를 정밀하게 분석합니다. 이는 센서의 성능을 객관적으로 평가하고, 신뢰성을 확보하는 데 핵심적인 역할을 합니다.</p>
+                      </div>
+                       <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                           <ul data-key="equipment.measuring.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                                <li>센서 신호의 노이즈 분석 및 필터링</li>
+                                <li>제품의 발열 및 열분포 분석</li>
+                                <li>성능 평가 및 품질 관리(QC)</li>
+                           </ul>
+                      </div>
+                 </div>
+            </section>
+        </div>
+        <div id="equipment-miniaturization">
+             <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="business-sensor">&larr; 장비 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img data-key="equipment.miniaturization.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=소형화+장비" alt="소형화 장비" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 data-key="equipment.miniaturization.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">소형화 장비</h1>
+                            <p data-key="equipment.miniaturization.subtitle" class="mt-4 text-lg text-gray-600">더 작고, 더 강력한 기술을 위한 기반</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                           <p data-key="equipment.miniaturization.description" class="text-gray-700 leading-relaxed text-base md:text-lg">마이크로-FAB 시스템과 PCB 프로토타이핑 머신을 활용하여 센서와 회로를 소형화하는 기술을 보유하고 있습니다. 이를 통해 웨어러블 디바이스, IoT 기기 등 공간 제약이 있는 다양한 분야에 적용 가능한 고집적 센서 모듈을 개발합니다.</p>
+                      </div>
+                       <div>
+                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                           <ul data-key="equipment.miniaturization.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                                <li>MEMS(미세전자기계시스템) 센서 개발</li>
+                                <li>웨어러블 디바이스용 소형 PCB 설계 및 제작</li>
+                                <li>IoT 센서 노드 프로토타이핑</li>
+                           </ul>
+                      </div>
+                 </div>
+            </section>
+        </div>
     </div>
 
 
@@ -1423,7 +1517,7 @@
         
         appContent.innerHTML = '';
         appContent.appendChild(newContent);
-        appContent.dataset.page = pageId; // ★★★ [수정됨] 페이지 식별을 위한 데이터 속성 추가
+        appContent.dataset.page = pageId;
         
         window.scrollTo(0, 0);
         Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
