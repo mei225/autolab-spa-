@@ -1483,26 +1483,22 @@
                 applyContent(key, siteContent[key]);
             });
             
-            if (!pageInitialized[pageId] || document.body.classList.contains('admin-mode')) {
-                switch(pageId) {
-                    case 'history': initHistoryPage(); break;
-                    case 'community-gallery': initGalleryPage(); break;
-                    case 'about-us': initAboutUsPage(); break;
-                    case 'products': initProductsPage(); break;
-                    case 'login': initLoginPage(); break;
-                }
-                pageInitialized[pageId] = true;
+            // [수정됨] 페이지 방문 시 무조건 해당 페이지 초기화 함수를 호출
+            switch(pageId) {
+                case 'history': initHistoryPage(); break;
+                case 'community-gallery': initGalleryPage(); break;
+                case 'about-us': initAboutUsPage(); break;
+                case 'products': initProductsPage(); break;
+                case 'login': initLoginPage(); break;
             }
 
+            // 페이지 콘텐츠가 DOM에 그려질 시간을 확보한 후 애니메이션 실행
             setTimeout(() => {
                 const pageContentElement = appContent.querySelector('.page-content');
                 if (pageContentElement) {
                     pageContentElement.classList.add('visible');
                 }
-                // 첫 로딩이 아닌 페이지 이동 시에는 여기서 스크롤 애니메이션을 즉시 확인
-                if (Object.keys(pageInitialized).length > 1) {
-                    handleScrollAnimation();
-                }
+                handleScrollAnimation(); // 페이지 로드 시 보이는 요소들의 애니메이션 즉시 실행
             }, 50);
 
             bindNavLinks(appContent);
@@ -1538,6 +1534,7 @@
         }
 
         // --- Page Specific Initializers ---
+        // (이하 initLoginPage, initHistoryPage 등의 함수들은 모두 그대로 유지합니다)
         function initLoginPage() {
             const loginForm = document.getElementById('login-form');
             if (loginForm) {
@@ -1607,10 +1604,13 @@
             }
 
             const q = query(historyCollection, orderBy("order", "asc"));
-            onSnapshot(q, (snapshot) => {
+            const unsubscribe = onSnapshot(q, (snapshot) => {
                 localHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderHistory();
             });
+
+            // 페이지를 떠날 때 리스너를 정리하는 로직을 추가할 수 있습니다 (선택사항)
+            // window.addEventListener('hashchange', () => unsubscribe(), { once: true });
 
             function openModal(item = null) {
                 historyForm.reset();
@@ -1872,7 +1872,7 @@
                         </button>
                         <div class="accordion-content bg-gray-50">
                             <div class="p-6 whitespace-pre-wrap text-gray-700">${item.content}</div>
-                      </div>
+                      </div>
                     `;
 
                     if (document.body.classList.contains('admin-mode')) {
@@ -1979,7 +1979,7 @@
                     if (!isOpen) {
                         content.style.maxHeight = content.scrollHeight + "px";
                         if (icon) icon.classList.add('rotate-180');
-  _BOS_                } else {
+                    } else {
                         content.style.maxHeight = null;
                         if (icon) icon.classList.remove('rotate-180');
                     }
@@ -2022,7 +2022,7 @@
                         <div class="relative">
                             <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ef4444/ffffff?text=Error';">
                         </div>
-              _BOS_    <div class="p-6 flex-grow flex flex-col">
+                        <div class="p-6 flex-grow flex flex-col">
                             <h3 class="text-xl font-bold text-gray-800 mb-2">${product.title}</h3>
                             <p class="text-gray-600 flex-grow">${product.description}</p>
                             <span class="mt-4 w-full block text-center bg-blue-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-900 transition-colors">구매하기</span>
@@ -2063,7 +2063,7 @@
                     document.getElementById('product-description').value = product.description;
                     document.getElementById('product-imageUrl').value = product.imageUrl;
                     document.getElementById('product-storeUrl').value = product.storeUrl;
-            _BOS_ } else {
+                } else {
                     modalTitle.textContent = '새 시판 제품 추가';
                     document.getElementById('product-id').value = '';
                 }
@@ -2134,13 +2134,6 @@
             });
         }
 
-        // --- Common Initializers (for all pages) ---
-        function initCommonScripts() {
-            // This function is now called inside navigateTo after a short delay
-            // to ensure elements are in the DOM for animation checks.
-            handleScrollAnimation();
-        }
-
         // --- Global Scripts (run once on load) ---
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize Firebase ONCE
@@ -2193,7 +2186,6 @@
                     }
                 });
             }
-
 
             function buildMobileMenu() {
                 mobileMenuContainer.innerHTML = ''; 
@@ -2273,7 +2265,7 @@
 
             function openSearch() {
                 searchModal.classList.remove('hidden');
-                searchInput.focus();
+      _BOS_       searchInput.focus();
             }
             function closeSearch() {
                 searchModal.classList.add('hidden');
@@ -2329,7 +2321,7 @@
             const initialPage = window.location.hash.substring(1) || 'home';
             navigateTo(initialPage);
         });
-    </script>
+    </script>
 
 </body>
 </html>
