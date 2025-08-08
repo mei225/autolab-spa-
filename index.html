@@ -1312,14 +1312,14 @@
         appId: "1:734510998647:web:f5547055d5ab933d279272",
         measurementId: "G-CD93HMRDM5"
     };
-    
+    
     // --- Global Variables & DOM Elements ---
     const appContent = document.getElementById('app-content');
     const pageTemplates = document.getElementById('page-templates');
     let db, auth;
     let currentPage = 'home';
     let siteContent = {};
-    let activeFirestoreListeners = []; // 활성 리스너를 관리하여 메모리 누수 방지
+    let activeFirestoreListeners = [];
 
     // --- Custom Dialog ---
     const dialogModal = document.getElementById('custom-dialog-modal');
@@ -1466,23 +1466,20 @@
 
     function initLoginPage() {
         const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-            loginForm.onsubmit = async (e) => {
-                e.preventDefault();
-                try {
-                    await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
-                    navigateTo('home');
-                } catch (error) { customAlert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.'); }
-            };
-        }
+        if (!loginForm) return;
+        loginForm.onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+                navigateTo('home');
+            } catch (error) { customAlert('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.'); }
+        };
     }
 
     function initHistoryPage() {
         const timelineContainer = document.getElementById('timeline-container');
         if (!timelineContainer) return;
-        
-        const q = query(collection(db, 'history'), orderBy("order", "asc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribe = onSnapshot(query(collection(db, 'history'), orderBy("order", "desc")), (snapshot) => {
             const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0 left-4"></div>';
             if (data.length === 0) {
@@ -1512,20 +1509,11 @@
     function initGalleryPage() {
         const galleryGrid = document.getElementById('gallery-grid');
         if (!galleryGrid) return;
-        
         const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderGallery(photos);
-        }, console.error);
-        activeFirestoreListeners.push(unsubscribe);
-
-        function renderGallery(photos) {
             galleryGrid.innerHTML = '';
-            if (photos.length === 0) {
-                galleryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 사진이 없습니다.</p>';
-                return;
-            }
+            if (photos.length === 0) { galleryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 사진이 없습니다.</p>'; return; }
             photos.forEach(photo => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'group scroll-reveal';
@@ -1544,7 +1532,8 @@
                 galleryGrid.appendChild(itemEl);
             });
             handleScrollAnimation();
-        }
+        });
+        activeFirestoreListeners.push(unsubscribe);
     }
 
     function initAboutUsPage() {
@@ -1554,11 +1543,6 @@
         const q = query(collection(db, 'about_us'), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderAboutUs(items);
-        });
-        activeFirestoreListeners.push(unsubscribe);
-
-        function renderAboutUs(items) {
             accordionContainer.innerHTML = '';
             if (items.length === 0) {
                 accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>';
@@ -1584,7 +1568,8 @@
                 accordionContainer.appendChild(itemEl);
             });
             handleScrollAnimation();
-        }
+        });
+        activeFirestoreListeners.push(unsubscribe);
     }
 
     function initProductsPage() {
@@ -1594,11 +1579,6 @@
         const q = query(collection(db, 'products'), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderProducts(products);
-        });
-        activeFirestoreListeners.push(unsubscribe);
-
-        function renderProducts(products) {
             productGrid.innerHTML = '';
             if (products.length === 0) {
                 productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 제품이 없습니다.</p>';
@@ -1630,8 +1610,10 @@
                 productGrid.appendChild(itemEl);
             });
             handleScrollAnimation();
-        }
+        });
+        activeFirestoreListeners.push(unsubscribe);
     }
+
 
     // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
