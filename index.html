@@ -1159,7 +1159,6 @@
                     <div class="space-y-4">
                         <input id="history-year" type="text" placeholder="연도 (예: 2025)" class="w-full p-2 border rounded" required>
                         <textarea id="history-events" placeholder="내용 (한 줄에 하나씩 입력)" rows="5" class="w-full p-2 border rounded" required></textarea>
-                        <!-- ★★★ [수정됨] 이미지 URL 입력 필드 추가 ★★★ -->
                         <input id="history-imageUrl" type="url" placeholder="이미지 URL (선택 사항)" class="w-full p-2 border rounded">
                         <input id="history-order" type="number" placeholder="순서 (예: 2025, 숫자가 작을수록 위)" class="w-full p-2 border rounded" required>
                     </div>
@@ -1523,7 +1522,6 @@
                             <button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button>
                             <button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>
                         `;
-                        // Insert admin buttons inside the main content area for better structure
                         itemEl.querySelector('.ml-16').appendChild(adminButtons);
                     }
                     timelineContainer.appendChild(itemEl);
@@ -1625,6 +1623,7 @@
             return;
         }
         
+        // --- Modal Element References ---
         const historyAdminModal = document.getElementById('admin-modal');
         const historyForm = document.getElementById('history-form');
         const historyModalTitle = document.getElementById('modal-title');
@@ -1634,13 +1633,41 @@
         const historyImageUrlInput = document.getElementById('history-imageUrl');
         const historyOrderInput = document.getElementById('history-order');
 
+        const galleryAdminModal = document.getElementById('gallery-admin-modal');
+        const photoForm = document.getElementById('photo-form');
+        const galleryModalTitle = document.getElementById('gallery-modal-title');
+        const photoIdInput = document.getElementById('photo-id');
+        const photoTitleInput = document.getElementById('photo-title');
+        const photoDescriptionInput = document.getElementById('photo-description');
+        const photoImageUrlInput = document.getElementById('photo-imageUrl');
+
+        const aboutUsAdminModal = document.getElementById('about-us-admin-modal');
+        const aboutUsForm = document.getElementById('about-us-form');
+        const aboutUsModalTitle = document.getElementById('about-us-modal-title');
+        const aboutUsIdInput = document.getElementById('about-us-id');
+        const aboutUsTitleInput = document.getElementById('about-us-title');
+        const aboutUsContentInput = document.getElementById('about-us-content');
+
+        const productAdminModal = document.getElementById('product-admin-modal');
+        const productForm = document.getElementById('product-form');
+        const productModalTitle = document.getElementById('product-modal-title');
+        const productIdInput = document.getElementById('product-id');
+        const productTitleInput = document.getElementById('product-title');
+        const productDescriptionInput = document.getElementById('product-description');
+        const productImageUrlInput = document.getElementById('product-imageUrl');
+        const productStoreUrlInput = document.getElementById('product-storeUrl');
+
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+
+        // --- Modal Logic Functions ---
         async function openHistoryModal(docId = null) {
             historyForm.reset();
             if (docId) {
                 historyModalTitle.textContent = "연혁 수정";
                 historyIdInput.value = docId;
-                const docRef = doc(db, 'history', docId);
-                const docSnap = await getDoc(docRef);
+                const docSnap = await getDoc(doc(db, 'history', docId));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     historyYearInput.value = data.year;
@@ -1655,31 +1682,189 @@
             historyAdminModal.classList.remove('hidden');
         }
 
+        async function openGalleryModal(docId = null) {
+            photoForm.reset();
+            if (docId) {
+                galleryModalTitle.textContent = "사진 수정";
+                photoIdInput.value = docId;
+                const docSnap = await getDoc(doc(db, 'gallery', docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    photoTitleInput.value = data.title;
+                    photoDescriptionInput.value = data.description;
+                    photoImageUrlInput.value = data.imageUrl;
+                }
+            } else {
+                galleryModalTitle.textContent = "새 사진 추가";
+                photoIdInput.value = '';
+            }
+            galleryAdminModal.classList.remove('hidden');
+        }
+        
+        async function openAboutUsModal(docId = null) {
+            aboutUsForm.reset();
+            if (docId) {
+                aboutUsModalTitle.textContent = "글 수정";
+                aboutUsIdInput.value = docId;
+                const docSnap = await getDoc(doc(db, 'about_us', docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    aboutUsTitleInput.value = data.title;
+                    aboutUsContentInput.value = data.content;
+                }
+            } else {
+                aboutUsModalTitle.textContent = "새 글 추가";
+                aboutUsIdInput.value = '';
+            }
+            aboutUsAdminModal.classList.remove('hidden');
+        }
+
+        async function openProductModal(docId = null) {
+            productForm.reset();
+            if (docId) {
+                productModalTitle.textContent = "제품 수정";
+                productIdInput.value = docId;
+                const docSnap = await getDoc(doc(db, 'products', docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    productTitleInput.value = data.title;
+                    productDescriptionInput.value = data.description;
+                    productImageUrlInput.value = data.imageUrl;
+                    productStoreUrlInput.value = data.storeUrl;
+                }
+            } else {
+                productModalTitle.textContent = "새 제품 추가";
+                productIdInput.value = '';
+            }
+            productAdminModal.classList.remove('hidden');
+        }
+
+        // --- Form Submit Handlers ---
         async function handleHistoryFormSubmit(e) {
             e.preventDefault();
             const docId = historyIdInput.value;
-            const historyData = {
-                year: historyYearInput.value,
-                events: historyEventsInput.value,
-                imageUrl: historyImageUrlInput.value,
-                order: Number(historyOrderInput.value)
-            };
-
+            const data = { year: historyYearInput.value, events: historyEventsInput.value, imageUrl: historyImageUrlInput.value, order: Number(historyOrderInput.value) };
             try {
-                if (docId) {
-                    await updateDoc(doc(db, 'history', docId), historyData);
-                    customAlert('연혁이 수정되었습니다.');
-                } else {
-                    await addDoc(collection(db, 'history'), historyData);
-                    customAlert('새 연혁이 추가되었습니다.');
-                }
+                if (docId) await updateDoc(doc(db, 'history', docId), data);
+                else await addDoc(collection(db, 'history'), data);
                 historyAdminModal.classList.add('hidden');
-            } catch (error) {
-                console.error("Error saving history:", error);
-                customAlert('저장 중 오류가 발생했습니다.');
-            }
+                customAlert('저장되었습니다.');
+            } catch (error) { console.error("Error saving history:", error); customAlert('저장 중 오류가 발생했습니다.'); }
         }
 
+        async function handlePhotoFormSubmit(e) {
+            e.preventDefault();
+            const docId = photoIdInput.value;
+            const data = { title: photoTitleInput.value, description: photoDescriptionInput.value, imageUrl: photoImageUrlInput.value, createdAt: serverTimestamp() };
+            try {
+                if (docId) await updateDoc(doc(db, 'gallery', docId), { title: data.title, description: data.description, imageUrl: data.imageUrl });
+                else await addDoc(collection(db, 'gallery'), data);
+                galleryAdminModal.classList.add('hidden');
+                customAlert('저장되었습니다.');
+            } catch (error) { console.error("Error saving photo:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+        }
+
+        async function handleAboutUsFormSubmit(e) {
+            e.preventDefault();
+            const docId = aboutUsIdInput.value;
+            const data = { title: aboutUsTitleInput.value, content: aboutUsContentInput.value, createdAt: serverTimestamp() };
+             try {
+                if (docId) await updateDoc(doc(db, 'about_us', docId), { title: data.title, content: data.content });
+                else await addDoc(collection(db, 'about_us'), data);
+                aboutUsAdminModal.classList.add('hidden');
+                customAlert('저장되었습니다.');
+            } catch (error) { console.error("Error saving about us:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+        }
+
+        async function handleProductFormSubmit(e) {
+            e.preventDefault();
+            const docId = productIdInput.value;
+            const data = { title: productTitleInput.value, description: productDescriptionInput.value, imageUrl: productImageUrlInput.value, storeUrl: productStoreUrlInput.value, createdAt: serverTimestamp() };
+            try {
+                if (docId) await updateDoc(doc(db, 'products', docId), { title: data.title, description: data.description, imageUrl: data.imageUrl, storeUrl: data.storeUrl });
+                else await addDoc(collection(db, 'products'), data);
+                productAdminModal.classList.add('hidden');
+                customAlert('저장되었습니다.');
+            } catch (error) { console.error("Error saving product:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+        }
+        
+        // --- Global Event Listener (Event Delegation) ---
+        document.body.addEventListener('click', async (e) => {
+            const target = e.target;
+            
+            // History Page Admin
+            if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) openHistoryModal();
+            if (target.matches('#history .edit-btn')) openHistoryModal(target.dataset.id);
+            if (target.matches('#history .delete-btn')) {
+                if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
+                }
+            }
+
+            // Gallery Page Admin
+            if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) openGalleryModal();
+            if (target.matches('#community-gallery .edit-btn')) openGalleryModal(target.dataset.id);
+            if (target.matches('#community-gallery .delete-btn')) {
+                if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, 'gallery', target.dataset.id)).catch(err => console.error(err));
+                }
+            }
+            
+            // About Us Page Admin
+            if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) openAboutUsModal();
+            if (target.matches('#about-us .edit-btn')) openAboutUsModal(target.dataset.id);
+            if (target.matches('#about-us .delete-btn')) {
+                if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
+                }
+            }
+
+            // Products Page Admin
+            if (target.matches('#add-product-btn') || target.closest('#add-product-btn')) openProductModal();
+            if (target.matches('#products .edit-btn')) openProductModal(target.dataset.id);
+            if (target.matches('#products .delete-btn')) {
+                if (await customConfirm("정말로 이 제품을 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, 'products', target.dataset.id)).catch(err => console.error(err));
+                }
+            }
+            
+            // Accordion Toggle
+            const accordionHeader = target.closest('.accordion-header');
+            if (accordionHeader) {
+                const content = accordionHeader.nextElementSibling;
+                const icon = accordionHeader.querySelector('i');
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.classList.remove('rotate-180');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.classList.add('rotate-180');
+                }
+            }
+
+            // Lightbox
+            if (target.matches('#gallery img')) {
+                lightboxImage.src = target.src;
+                const title = target.dataset.title || '';
+                const desc = target.dataset.description || '';
+                lightboxCaption.innerHTML = `<h3 class="font-bold text-lg">${title}</h3><p>${desc}</p>`;
+                lightboxModal.classList.remove('hidden');
+            }
+        });
+
+        // --- Form & Modal Close Button Bindings ---
+        historyForm?.addEventListener('submit', handleHistoryFormSubmit);
+        photoForm?.addEventListener('submit', handlePhotoFormSubmit);
+        aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
+        productForm?.addEventListener('submit', handleProductFormSubmit);
+        
+        document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
+        document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
+        document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
+        document.getElementById('product-cancel-btn')?.addEventListener('click', () => productAdminModal.classList.add('hidden'));
+        document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
+
+        // --- Initial Setup ---
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenuContainer = document.getElementById('mobile-menu');
         const desktopNav = document.getElementById('desktop-nav');
@@ -1693,32 +1878,6 @@
             if (auth.currentUser) { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
             else { navigateTo('login'); }
         };
-
-        document.body.addEventListener('click', async (e) => {
-            // History Edit/Delete/Add Buttons
-            if (e.target.closest('#history-admin-panel #add-history-btn')) {
-                openHistoryModal();
-            }
-            if (e.target.matches('#history .edit-btn')) {
-                openHistoryModal(e.target.dataset.id);
-            }
-            if (e.target.matches('#history .delete-btn')) {
-                const docId = e.target.dataset.id;
-                if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
-                    try {
-                        await deleteDoc(doc(db, 'history', docId));
-                        customAlert("삭제되었습니다.");
-                    } catch (error) {
-                        customAlert("삭제 중 오류가 발생했습니다.");
-                        console.error("Error deleting history:", error);
-                    }
-                }
-            }
-            // Add other dynamic button handlers here (gallery, products, etc.)
-        });
-        
-        historyForm?.addEventListener('submit', handleHistoryFormSubmit);
-        document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
 
         function buildMobileMenu() {
             mobileMenuContainer.innerHTML = '';
