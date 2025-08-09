@@ -16,7 +16,7 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- Favicon: 이 경로에 실제 파비콘 이미지 파일(예: favicon.png)을 넣어주세요 -->
+    <!-- Favicon: This path should contain your actual favicon image file (e.g., favicon.png) -->
     <link rel="icon" href="./favicon.png" type="image/png">
 
     <style>
@@ -25,7 +25,7 @@
             font-family: 'Noto Sans KR', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            word-break: keep-all; /* 모바일에서 단어 잘림 방지 */
+            word-break: keep-all; /* Prevents words from breaking in mobile view */
         }
         html {
             scroll-behavior: smooth;
@@ -111,7 +111,7 @@
             transition: max-height 0.5s ease-out;
         }
         /* Admin Edit Button for static content */
-         body.admin-mode [data-key] {
+        body.admin-mode [data-key] {
             position: relative;
             outline: 2px dashed rgba(239, 68, 68, 0.6);
             outline-offset: 4px;
@@ -347,7 +347,7 @@
                         <div class="bg-gray-50 rounded-lg overflow-hidden group scroll-reveal border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300" style="transition-delay: 150ms;">
                             <img data-key="home.products.kitImage" src="https://placehold.co/600x400/e2e8f0/334155?text=Education+Kit" alt="Education Kit" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 data-key="home.products.kitTitle" class="text-xl font-bold text-gray-800 mb-2">시판 제품</h3>
+                                <h3 data-key="home.products.kitTitle" class="text-xl font-bold text-gray-800 mb-2">ICT 교육 콘텐츠</h3>
                                 <p data-key="home.products.kitDescription" class="text-gray-700">미로탈출 RC카, 아두이노 키트 등 교육용 제품을 구매할 수 있습니다.</p>
                             </div>
                         </div>
@@ -622,7 +622,6 @@
                     </div>
                 </div>
             </section>
-            <!-- ★★★ [수정됨] ICT Education Inquiry Process Section ★★★ -->
             <section id="ict-contract-process" class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-20 scroll-reveal">
@@ -669,7 +668,7 @@
             </section>
         </div>
         
-        <!-- ★★★ [수정됨] Business Sensor Page Content ★★★ -->
+        <!-- Business Sensor Page Content -->
         <div id="business-sensor">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Sensor+R%26D');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
@@ -965,14 +964,6 @@
         
         <!-- Products Page Content -->
         <div id="products">
-            <div id="product-admin-panel" class="admin-panel sub-nav sticky z-40 bg-blue-800 text-white shadow-lg">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-                    <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
-                    <div>
-                        <button id="add-product-btn" class="bg-white text-blue-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors mr-2"><i class="fas fa-plus mr-2"></i>새 제품 추가</button>
-                    </div>
-                </div>
-            </div>
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Our+Products');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
                     <h1 class="text-4xl md:text-5xl font-extrabold">제품소개</h1>
@@ -1016,14 +1007,41 @@
                     </div>
                 </div>
             </section>
-            <section id="commercial-products" class="py-20 lg:py-32 bg-gray-50">
+            <!-- ★★★ [수정됨] ICT 교육 콘텐츠 섹션 ★★★ -->
+            <section id="ict-content-products" class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 scroll-reveal">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">시판 제품</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">네이버 스마트스토어에서 구매 가능한 교육용 제품입니다.</p>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800">ICT 교육 콘텐츠</h2>
+                        <p class="mt-4 text-base md:text-lg text-gray-600">실습 위주의 프로젝트를 통해 배우는 즐거움을 느껴보세요.</p>
                     </div>
-                    <div id="product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <p id="product-loading" class="col-span-full text-center text-gray-500">제품 목록을 불러오는 중...</p>
+                    <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- ICT Content 1 -->
+                        <a href="#" data-target="product-ict-1" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal">
+                            <img src="https://placehold.co/600x400/dbeafe/1e3a8a?text=Arduino+Kit" alt="아두이노 키트" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">아두이노 키트</h3>
+                                <p class="text-gray-700 mb-4">전자공학의 기초부터 IoT 프로젝트까지, 아두이노로 만드는 무한한 가능성.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
+                        <!-- ICT Content 2 -->
+                        <a href="#" data-target="product-ict-2" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal" style="transition-delay: 150ms;">
+                            <img src="https://placehold.co/600x400/dbeafe/1e3a8a?text=RC+Car" alt="미로탈출 RC카" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">미로탈출 RC카</h3>
+                                <p class="text-gray-700 mb-4">초음파 센서와 코딩으로 스스로 길을 찾는 자율주행 RC카를 만들어보세요.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
+                        <!-- ICT Content 3 -->
+                        <a href="#" data-target="product-ict-3" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal" style="transition-delay: 300ms;">
+                            <img src="https://placehold.co/600x400/dbeafe/1e3a8a?text=Smart+Farm" alt="스마트팜 키트" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">스마트팜 키트</h3>
+                                <p class="text-gray-700 mb-4">토양 습도, 조도 센서를 이용해 식물이 자라는 최적의 환경을 자동으로 제어합니다.</p>
+                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -1046,27 +1064,27 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
-                           <p data-key="product-rd-1.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">타액 기반 혈당 센서는 채혈의 고통과 불편함 없이 타액(침)을 이용하여 혈당을 측정하는 혁신적인 비침습적 방식의 센서입니다. AUTOLAB의 독자적인 효소 고정화 기술과 미세 신호 증폭 기술을 통해 타액 속 미량의 글루코스 농도를 정밀하게 측정하여, 당뇨 환자들의 삶의 질을 획기적으로 개선할 수 있습니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p data-key="product-rd-1.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">타액 기반 혈당 센서는 채혈의 고통과 불편함 없이 타액(침)을 이용하여 혈당을 측정하는 혁신적인 비침습적 방식의 센서입니다. AUTOLAB의 독자적인 효소 고정화 기술과 미세 신호 증폭 기술을 통해 타액 속 미량의 글루코스 농도를 정밀하게 측정하여, 당뇨 환자들의 삶의 질을 획기적으로 개선할 수 있습니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
-                           <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li data-key="product-rd-1.result1">기존 혈액 기반 측정 방식 대비 95% 이상의 높은 상관관계 확보</li>
-                                <li data-key="product-rd-1.result2">측정 후 10초 이내 결과 도출 가능한 빠른 반응 속도</li>
-                                <li data-key="product-rd-1.result3">나노 기술을 적용한 센서 민감도 100배 향상</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li data-key="product-rd-1.result1">기존 혈액 기반 측정 방식 대비 95% 이상의 높은 상관관계 확보</li>
+                               <li data-key="product-rd-1.result2">측정 후 10초 이내 결과 도출 가능한 빠른 반응 속도</li>
+                               <li data-key="product-rd-1.result3">나노 기술을 적용한 센서 민감도 100배 향상</li>
+                          </ul>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
-                           <table class="w-full text-left border-collapse text-base md:text-lg">
-                               <tbody class="align-baseline">
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">측정 방식</th><td data-key="product-rd-1.spec1" class="py-2 text-gray-800">전기화학적 효소 반응</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">측정 범위</th><td data-key="product-rd-1.spec2" class="py-2 text-gray-800">20 ~ 500 mg/dL</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">필요 시료량</th><td data-key="product-rd-1.spec3" class="py-2 text-gray-800">0.5 μL (마이크로리터)</td></tr>
-                                   <tr><th class="py-2 pr-2 font-medium text-gray-600">사용 온도</th><td data-key="product-rd-1.spec4" class="py-2 text-gray-800">10°C ~ 40°C</td></tr>
-                               </tbody>
-                           </table>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
+                          <table class="w-full text-left border-collapse text-base md:text-lg">
+                              <tbody class="align-baseline">
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">측정 방식</th><td data-key="product-rd-1.spec1" class="py-2 text-gray-800">전기화학적 효소 반응</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">측정 범위</th><td data-key="product-rd-1.spec2" class="py-2 text-gray-800">20 ~ 500 mg/dL</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">필요 시료량</th><td data-key="product-rd-1.spec3" class="py-2 text-gray-800">0.5 μL (마이크로리터)</td></tr>
+                                  <tr><th class="py-2 pr-2 font-medium text-gray-600">사용 온도</th><td data-key="product-rd-1.spec4" class="py-2 text-gray-800">10°C ~ 40°C</td></tr>
+                              </tbody>
+                          </table>
                       </div>
                  </div>
             </section>
@@ -1087,27 +1105,27 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
-                           <p data-key="product-rd-2.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">종이 기반 포름알데히드 센서는 새집증후군의 주 원인인 포름알데히드를 저렴하고 간편하게 검출할 수 있는 친환경 센서입니다. 특수 시약이 코팅된 종이가 공기 중의 포름알데히드와 반응하여 색이 변하는 원리를 이용하며, 스마트폰 앱으로 색 변화를 촬영하여 농도를 정량적으로 분석할 수 있습니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p data-key="product-rd-2.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">종이 기반 포름알데히드 센서는 새집증후군의 주 원인인 포름알데히드를 저렴하고 간편하게 검출할 수 있는 친환경 센서입니다. 특수 시약이 코팅된 종이가 공기 중의 포름알데히드와 반응하여 색이 변하는 원리를 이용하며, 스마트폰 앱으로 색 변화를 촬영하여 농도를 정량적으로 분석할 수 있습니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
-                           <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li data-key="product-rd-2.result1">WHO 권고 기준치 이하의 극미량 농도(0.01 ppm)까지 검출 가능</li>
-                                <li data-key="product-rd-2.result2">기존 고가 장비 대비 1/100 수준의 생산 단가 달성</li>
-                                <li data-key="product-rd-2.result3">스마트폰 앱 연동 시 98% 이상의 측정 정확도 제공</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li data-key="product-rd-2.result1">WHO 권고 기준치 이하의 극미량 농도(0.01 ppm)까지 검출 가능</li>
+                               <li data-key="product-rd-2.result2">기존 고가 장비 대비 1/100 수준의 생산 단가 달성</li>
+                               <li data-key="product-rd-2.result3">스마트폰 앱 연동 시 98% 이상의 측정 정확도 제공</li>
+                          </ul>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
-                           <table class="w-full text-left border-collapse text-base md:text-lg">
-                               <tbody class="align-baseline">
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">검출 방식</th><td data-key="product-rd-2.spec1" class="py-2 text-gray-800">비색 변화(Colorimetric) 방식</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">검출 범위</th><td data-key="product-rd-2.spec2" class="py-2 text-gray-800">0.01 ~ 1.0 ppm</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">센서 크기</th><td data-key="product-rd-2.spec3" class="py-2 text-gray-800">1cm x 5cm</td></tr>
-                                   <tr><th class="py-2 pr-2 font-medium text-gray-600">유효 기간</th><td data-key="product-rd-2.spec4" class="py-2 text-gray-800">제조 후 12개월</td></tr>
-                               </tbody>
-                           </table>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
+                          <table class="w-full text-left border-collapse text-base md:text-lg">
+                              <tbody class="align-baseline">
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">검출 방식</th><td data-key="product-rd-2.spec1" class="py-2 text-gray-800">비색 변화(Colorimetric) 방식</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">검출 범위</th><td data-key="product-rd-2.spec2" class="py-2 text-gray-800">0.01 ~ 1.0 ppm</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">센서 크기</th><td data-key="product-rd-2.spec3" class="py-2 text-gray-800">1cm x 5cm</td></tr>
+                                  <tr><th class="py-2 pr-2 font-medium text-gray-600">유효 기간</th><td data-key="product-rd-2.spec4" class="py-2 text-gray-800">제조 후 12개월</td></tr>
+                              </tbody>
+                          </table>
                       </div>
                  </div>
             </section>
@@ -1128,33 +1146,155 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
-                           <p data-key="product-rd-3.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">밴드형 스마트 체온계는 피부에 부착하는 유연한 밴드 형태의 웨어러블 기기로, 24시간 지속적으로 체온을 측정하고 스마트폰으로 데이터를 전송합니다. 영유아의 발열 관리, 질병 예측, 여성의 배란일 추적 등 다양한 헬스케어 분야에 활용될 수 있는 차세대 스마트 체온계입니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p data-key="product-rd-3.intro" class="text-gray-700 leading-relaxed text-base md:text-lg">밴드형 스마트 체온계는 피부에 부착하는 유연한 밴드 형태의 웨어러블 기기로, 24시간 지속적으로 체온을 측정하고 스마트폰으로 데이터를 전송합니다. 영유아의 발열 관리, 질병 예측, 여성의 배란일 추적 등 다양한 헬스케어 분야에 활용될 수 있는 차세대 스마트 체온계입니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
-                           <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li data-key="product-rd-3.result1">의료기기 수준의 체온 측정 정확도(±0.1°C) 확보</li>
-                                <li data-key="product-rd-3.result2">초저전력 설계를 통한 1회 충전 시 최대 7일 사용 가능</li>
-                                <li data-key="product-rd-3.result3">피부 자극이 없는 생체 적합성 소재 적용 및 방수 기능 구현</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 결과</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li data-key="product-rd-3.result1">의료기기 수준의 체온 측정 정확도(±0.1°C) 확보</li>
+                               <li data-key="product-rd-3.result2">초저전력 설계를 통한 1회 충전 시 최대 7일 사용 가능</li>
+                               <li data-key="product-rd-3.result3">피부 자극이 없는 생체 적합성 소재 적용 및 방수 기능 구현</li>
+                          </ul>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
-                           <table class="w-full text-left border-collapse text-base md:text-lg">
-                               <tbody class="align-baseline">
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">센서 타입</th><td data-key="product-rd-3.spec1" class="py-2 text-gray-800">고정밀 서미스터</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">무선 통신</th><td data-key="product-rd-3.spec2" class="py-2 text-gray-800">Bluetooth 5.0 LE</td></tr>
-                                   <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">배터리</th><td data-key="product-rd-3.spec3" class="py-2 text-gray-800">리튬 폴리머 50mAh</td></tr>
-                                   <tr><th class="py-2 pr-2 font-medium text-gray-600">방수 등급</th><td data-key="product-rd-3.spec4" class="py-2 text-gray-800">IP67</td></tr>
-                               </tbody>
-                           </table>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">스펙</h2>
+                          <table class="w-full text-left border-collapse text-base md:text-lg">
+                              <tbody class="align-baseline">
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">센서 타입</th><td data-key="product-rd-3.spec1" class="py-2 text-gray-800">고정밀 서미스터</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">무선 통신</th><td data-key="product-rd-3.spec2" class="py-2 text-gray-800">Bluetooth 5.0 LE</td></tr>
+                                  <tr class="border-b"><th class="py-2 pr-2 font-medium text-gray-600">배터리</th><td data-key="product-rd-3.spec3" class="py-2 text-gray-800">리튬 폴리머 50mAh</td></tr>
+                                  <tr><th class="py-2 pr-2 font-medium text-gray-600">방수 등급</th><td data-key="product-rd-3.spec4" class="py-2 text-gray-800">IP67</td></tr>
+                              </tbody>
+                          </table>
                       </div>
                  </div>
             </section>
         </div>
         
-        <!-- ★★★ [신규 추가] Equipment Detail Pages ★★★ -->
+        <!-- ★★★ [신규 추가] ICT Content Detail Pages ★★★ -->
+        <div id="product-ict-1">
+            <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img src="https://placehold.co/800x600/dbeafe/1e3a8a?text=Arduino" alt="아두이노 키트" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">아두이노 키트</h1>
+                            <p class="mt-4 text-lg text-gray-600">전자공학의 기초부터 IoT 프로젝트까지, 상상을 현실로 만드는 첫걸음</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p class="text-gray-700 leading-relaxed text-base md:text-lg">AUTOLAB의 아두이노 키트는 코딩과 전자회로를 처음 접하는 입문자들을 위해 설계되었습니다. LED 제어와 같은 간단한 실습부터 시작하여, 다양한 센서와 액추에이터를 활용하는 복합적인 프로젝트까지 단계별 학습이 가능합니다. 이 키트 하나로 창의적인 아이디어를 직접 구현하고 문제 해결 능력을 키울 수 있습니다.</p>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 내용</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>아두이노 IDE 설치 및 프로그래밍 기초</li>
+                               <li>디지털/아날로그 입출력 제어 (LED, 버튼, 가변저항)</li>
+                               <li>다양한 센서 활용 (온습도, 초음파, 조도 센서 등)</li>
+                               <li>모터 및 서보모터 제어</li>
+                               <li>블루투스 통신을 이용한 스마트폰 연동 프로젝트</li>
+                          </ul>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Project+3" alt="아두이노 프로젝트 3" class="rounded-lg shadow-md w-full h-auto object-cover">
+                          </div>
+                      </div>
+                 </div>
+            </section>
+        </div>
+        <div id="product-ict-2">
+            <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img src="https://placehold.co/800x600/dbeafe/1e3a8a?text=RC+Car" alt="미로탈출 RC카" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">미로탈출 RC카</h1>
+                            <p class="mt-4 text-lg text-gray-600">알고리즘으로 길을 찾는 인공지능 자동차 만들기</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p class="text-gray-700 leading-relaxed text-base md:text-lg">미로탈출 RC카 키트는 자율주행 기술의 핵심 원리를 체험할 수 있는 흥미로운 프로젝트입니다. 초음파 센서로 장애물을 감지하고, 직접 설계한 알고리즘을 통해 복잡한 미로를 스스로 빠져나오는 RC카를 조립하고 프로그래밍합니다. 이 과정을 통해 학생들은 컴퓨팅 사고력과 문제 해결 능력을 자연스럽게 습득하게 됩니다.</p>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 내용</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>RC카 차체 및 모터, 센서 조립</li>
+                               <li>초음파 센서의 원리 이해 및 거리 측정</li>
+                               <li>DC 모터 제어 및 방향 전환 프로그래밍</li>
+                               <li>벽 추종(Wall Following) 알고리즘 설계 및 구현</li>
+                               <li>미로 탈출 알고리즘 최적화 및 성능 개선</li>
+                          </ul>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Assembly" alt="RC카 조립" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Coding" alt="RC카 코딩" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Maze+Run" alt="RC카 미로 주행" class="rounded-lg shadow-md w-full h-auto object-cover">
+                          </div>
+                      </div>
+                 </div>
+            </section>
+        </div>
+        <div id="product-ict-3">
+            <section class="bg-gray-100 py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <img src="https://placehold.co/800x600/dbeafe/1e3a8a?text=Smart+Farm" alt="스마트팜 키트" class="rounded-lg shadow-xl w-full">
+                        <div>
+                            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">스마트팜 키트</h1>
+                            <p class="mt-4 text-lg text-gray-600">데이터로 식물을 키우는 나만의 작은 농장</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 lg:py-24">
+                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">소개</h2>
+                          <p class="text-gray-700 leading-relaxed text-base md:text-lg">스마트팜 키트는 4차 산업혁명의 핵심 기술인 사물인터넷(IoT)과 데이터 과학을 농업에 접목한 교육 콘텐츠입니다. 토양 습도 센서, 조도 센서, 온습도 센서 등을 이용해 식물의 생장 환경을 실시간으로 모니터링하고, 수집된 데이터를 기반으로 물 펌프와 LED 조명을 자동으로 제어하는 시스템을 구축합니다. 이를 통해 미래 농업 기술을 직접 체험할 수 있습니다.</p>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 내용</h2>
+                          <ul class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>스마트팜 시스템 구조 설계 및 조립</li>
+                               <li>다양한 환경 센서(토양 습도, 조도, 온습도) 데이터 수집</li>
+                               <li>수집된 데이터에 따른 조건문 프로그래밍</li>
+                               <li>물 펌프 및 성장용 LED 자동 제어 시스템 구현</li>
+                               <li>스마트폰 앱을 통한 원격 모니터링 및 제어 (심화)</li>
+                          </ul>
+                      </div>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Sensors" alt="스마트팜 센서" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Control" alt="스마트팜 제어" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img src="https://placehold.co/600x400/e0f2fe/334155?text=Growth" alt="식물 성장" class="rounded-lg shadow-md w-full h-auto object-cover">
+                          </div>
+                      </div>
+                 </div>
+            </section>
+        </div>
+
+        <!-- Equipment Detail Pages -->
         <div id="equipment-manufacturing">
              <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -1171,16 +1311,16 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
-                           <p data-key="equipment.manufacturing.description" class="text-gray-700 leading-relaxed text-base md:text-lg">AUTOLAB의 제조 장비는 최신 3D 프린팅 기술과 CNC 정밀 가공 기술을 통합하여, 복잡하고 정교한 센서 프로토타입을 신속하게 제작할 수 있는 능력을 갖추고 있습니다. 이를 통해 개발 초기 단계에서부터 아이디어를 빠르게 검증하고 개선할 수 있습니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                          <p data-key="equipment.manufacturing.description" class="text-gray-700 leading-relaxed text-base md:text-lg">AUTOLAB의 제조 장비는 최신 3D 프린팅 기술과 CNC 정밀 가공 기술을 통합하여, 복잡하고 정교한 센서 프로토타입을 신속하게 제작할 수 있는 능력을 갖추고 있습니다. 이를 통해 개발 초기 단계에서부터 아이디어를 빠르게 검증하고 개선할 수 있습니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
-                           <ul data-key="equipment.manufacturing.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li>맞춤형 센서 하우징 및 부품 제작</li>
-                                <li>신속한 프로토타이핑 및 디자인 검증</li>
-                                <li>소량 맞춤 생산 및 교육용 키트 제작</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                          <ul data-key="equipment.manufacturing.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>맞춤형 센서 하우징 및 부품 제작</li>
+                               <li>신속한 프로토타이핑 및 디자인 검증</li>
+                               <li>소량 맞춤 생산 및 교육용 키트 제작</li>
+                          </ul>
                       </div>
                  </div>
             </section>
@@ -1201,16 +1341,16 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
-                           <p data-key="equipment.measuring.description" class="text-gray-700 leading-relaxed text-base md:text-lg">고성능 오실로스코프와 열화상 카메라 등 최첨단 측정 장비를 통해 센서에서 발생하는 미세한 전기적 신호와 온도 변화를 정밀하게 분석합니다. 이는 센서의 성능을 객관적으로 평가하고, 신뢰성을 확보하는 데 핵심적인 역할을 합니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                          <p data-key="equipment.measuring.description" class="text-gray-700 leading-relaxed text-base md:text-lg">고성능 오실로스코프와 열화상 카메라 등 최첨단 측정 장비를 통해 센서에서 발생하는 미세한 전기적 신호와 온도 변화를 정밀하게 분석합니다. 이는 센서의 성능을 객관적으로 평가하고, 신뢰성을 확보하는 데 핵심적인 역할을 합니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
-                           <ul data-key="equipment.measuring.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li>센서 신호의 노이즈 분석 및 필터링</li>
-                                <li>제품의 발열 및 열분포 분석</li>
-                                <li>성능 평가 및 품질 관리(QC)</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                          <ul data-key="equipment.measuring.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>센서 신호의 노이즈 분석 및 필터링</li>
+                               <li>제품의 발열 및 열분포 분석</li>
+                               <li>성능 평가 및 품질 관리(QC)</li>
+                          </ul>
                       </div>
                  </div>
             </section>
@@ -1231,16 +1371,16 @@
             <section class="py-20 lg:py-24">
                  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl space-y-12">
                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
-                           <p data-key="equipment.miniaturization.description" class="text-gray-700 leading-relaxed text-base md:text-lg">마이크로-FAB 시스템과 PCB 프로토타이핑 머신을 활용하여 센서와 회로를 소형화하는 기술을 보유하고 있습니다. 이를 통해 웨어러블 디바이스, IoT 기기 등 공간 제약이 있는 다양한 분야에 적용 가능한 고집적 센서 모듈을 개발합니다.</p>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">설명</h2>
+                          <p data-key="equipment.miniaturization.description" class="text-gray-700 leading-relaxed text-base md:text-lg">마이크로-FAB 시스템과 PCB 프로토타이핑 머신을 활용하여 센서와 회로를 소형화하는 기술을 보유하고 있습니다. 이를 통해 웨어러블 디바이스, IoT 기기 등 공간 제약이 있는 다양한 분야에 적용 가능한 고집적 센서 모듈을 개발합니다.</p>
                       </div>
-                       <div>
-                           <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
-                           <ul data-key="equipment.miniaturization.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
-                                <li>MEMS(미세전자기계시스템) 센서 개발</li>
-                                <li>웨어러블 디바이스용 소형 PCB 설계 및 제작</li>
-                                <li>IoT 센서 노드 프로토타이핑</li>
-                           </ul>
+                      <div>
+                          <h2 class="text-2xl font-bold text-gray-800 mb-4">주요 용도</h2>
+                          <ul data-key="equipment.miniaturization.use_cases" class="list-disc list-inside space-y-2 text-gray-700 text-base md:text-lg">
+                               <li>MEMS(미세전자기계시스템) 센서 개발</li>
+                               <li>웨어러블 디바이스용 소형 PCB 설계 및 제작</li>
+                               <li>IoT 센서 노드 프로토타이핑</li>
+                          </ul>
                       </div>
                  </div>
             </section>
@@ -1352,25 +1492,6 @@
                     <div class="mt-6 flex justify-end space-x-3">
                         <button type="button" id="about-us-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
                         <button type="submit" id="about-us-save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Product Admin Modal -->
-        <div id="product-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
-                <h2 id="product-modal-title" class="text-2xl font-bold mb-4">시판 제품 추가/수정</h2>
-                <form id="product-form">
-                    <input type="hidden" id="product-id">
-                    <div class="space-y-4">
-                        <input id="product-title" type="text" placeholder="제품명" class="w-full p-2 border rounded" required>
-                        <textarea id="product-description" placeholder="설명" rows="3" class="w-full p-2 border rounded"></textarea>
-                        <input type="url" id="product-imageUrl" placeholder="이미지 URL" class="w-full p-2 border rounded" required>
-                        <input type="url" id="product-storeUrl" placeholder="스토어 URL" class="w-full p-2 border rounded" required>
-                    </div>
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" id="product-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
-                        <button type="submit" id="product-save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
                     </div>
                 </form>
             </div>
@@ -1581,7 +1702,6 @@
             'history': initHistoryPage,
             'community-gallery': initGalleryPage,
             'about-us': initAboutUsPage,
-            'products': initProductsPage,
             'login': initLoginPage
         };
         pageInitFunctions[pageId]?.();
@@ -1730,36 +1850,6 @@
         activeFirestoreListeners.push(unsubscribe);
     }
 
-    function initProductsPage() {
-        const productGrid = document.getElementById('product-grid');
-        if (!productGrid) return;
-        
-        const q = query(collection(db, 'products'), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            productGrid.innerHTML = '';
-            if (products.length === 0) { productGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 제품이 없습니다.</p>'; return; }
-            products.forEach(product => {
-                const itemEl = document.createElement('a');
-                itemEl.href = product.storeUrl || '#';
-                itemEl.target = '_blank';
-                itemEl.rel = 'noopener noreferrer';
-                itemEl.className = 'relative group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal';
-                itemEl.innerHTML = `<div class="relative"><img src="${product.imageUrl}" alt="${product.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ef4444/ffffff?text=Error';"></div><div class="p-6 flex-grow flex flex-col"><h3 class="text-xl font-bold text-gray-800 mb-2">${product.title}</h3><p class="text-gray-600 flex-grow">${product.description}</p><span class="mt-4 w-full block text-center bg-blue-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-900 transition-colors">구매하기</span></div>`;
-                if (document.body.classList.contains('admin-mode')) {
-                    itemEl.href = 'javascript:void(0);';
-                    const overlay = document.createElement('div');
-                    overlay.className = 'admin-edit-overlay rounded-t-lg';
-                    overlay.innerHTML = `<button data-id="${product.id}" class="edit-btn bg-blue-500 text-white w-16 h-9 rounded-md hover:bg-blue-600 text-sm">수정</button><button data-id="${product.id}" class="delete-btn bg-red-500 text-white w-16 h-9 rounded-md hover:bg-red-600 text-sm">삭제</button>`;
-                    itemEl.querySelector('.relative').appendChild(overlay);
-                }
-                productGrid.appendChild(itemEl);
-            });
-            handleScrollAnimation();
-        });
-        activeFirestoreListeners.push(unsubscribe);
-    }
-
     // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
         try {
@@ -1797,15 +1887,6 @@
         const aboutUsIdInput = document.getElementById('about-us-id');
         const aboutUsTitleInput = document.getElementById('about-us-title');
         const aboutUsContentInput = document.getElementById('about-us-content');
-
-        const productAdminModal = document.getElementById('product-admin-modal');
-        const productForm = document.getElementById('product-form');
-        const productModalTitle = document.getElementById('product-modal-title');
-        const productIdInput = document.getElementById('product-id');
-        const productTitleInput = document.getElementById('product-title');
-        const productDescriptionInput = document.getElementById('product-description');
-        const productImageUrlInput = document.getElementById('product-imageUrl');
-        const productStoreUrlInput = document.getElementById('product-storeUrl');
 
         const lightboxModal = document.getElementById('lightbox-modal');
         const lightboxImage = document.getElementById('lightbox-image');
@@ -1869,26 +1950,6 @@
             aboutUsAdminModal.classList.remove('hidden');
         }
 
-        async function openProductModal(docId = null) {
-            productForm.reset();
-            if (docId) {
-                productModalTitle.textContent = "제품 수정";
-                productIdInput.value = docId;
-                const docSnap = await getDoc(doc(db, 'products', docId));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    productTitleInput.value = data.title;
-                    productDescriptionInput.value = data.description;
-                    productImageUrlInput.value = data.imageUrl;
-                    productStoreUrlInput.value = data.storeUrl;
-                }
-            } else {
-                productModalTitle.textContent = "새 제품 추가";
-                productIdInput.value = '';
-            }
-            productAdminModal.classList.remove('hidden');
-        }
-
         // --- Form Submit Handlers ---
         async function handleHistoryFormSubmit(e) {
             e.preventDefault();
@@ -1925,20 +1986,8 @@
                 customAlert('저장되었습니다.');
             } catch (error) { console.error("Error saving about us:", error); customAlert('저장 중 오류가 발생했습니다.'); }
         }
-
-        async function handleProductFormSubmit(e) {
-            e.preventDefault();
-            const docId = productIdInput.value;
-            const data = { title: productTitleInput.value, description: productDescriptionInput.value, imageUrl: productImageUrlInput.value, storeUrl: productStoreUrlInput.value, createdAt: serverTimestamp() };
-            try {
-                if (docId) await updateDoc(doc(db, 'products', docId), { title: data.title, description: data.description, imageUrl: data.imageUrl, storeUrl: data.storeUrl });
-                else await addDoc(collection(db, 'products'), data);
-                productAdminModal.classList.add('hidden');
-                customAlert('저장되었습니다.');
-            } catch (error) { console.error("Error saving product:", error); customAlert('저장 중 오류가 발생했습니다.'); }
-        }
         
-        // ★★★ [수정됨] Global Event Listener (Event Delegation) ★★★
+        // --- Global Event Listener (Event Delegation) ---
         document.body.addEventListener('click', async (e) => {
             const target = e.target;
             const currentPage = appContent.dataset.page;
@@ -1975,18 +2024,6 @@
                             await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
                         }
                     }
-                } else if (currentPage === 'products') {
-                    if (target.matches('#add-product-btn') || target.closest('#add-product-btn')) {
-                        openProductModal();
-                    } else if (target.matches('.edit-btn')) {
-                        e.preventDefault();
-                        openProductModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        e.preventDefault();
-                        if (await customConfirm("정말로 이 제품을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'products', target.dataset.id)).catch(err => console.error(err));
-                        }
-                    }
                 }
             }
 
@@ -2017,12 +2054,10 @@
         historyForm?.addEventListener('submit', handleHistoryFormSubmit);
         photoForm?.addEventListener('submit', handlePhotoFormSubmit);
         aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
-        productForm?.addEventListener('submit', handleProductFormSubmit);
         
         document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
         document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
         document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
-        document.getElementById('product-cancel-btn')?.addEventListener('click', () => productAdminModal.classList.add('hidden'));
         document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
 
         // --- Initial Setup ---
