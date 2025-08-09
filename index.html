@@ -164,7 +164,22 @@
 </head>
 <body class="bg-white text-gray-800">
 
-    <!-- Header -->
+    <form name="rd-inquiry" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="company" />
+        <input type="text" name="name" />
+        <input type="tel" name="phone" />
+        <input type="email" name="email" />
+        <textarea name="message"></textarea>
+        <input type="file" name="file" />
+    </form>
+    <form name="ict-inquiry" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="company" />
+        <input type="text" name="name" />
+        <input type="tel" name="phone" />
+        <input type="email" name="email" />
+        <textarea name="message"></textarea>
+        <input type="file" name="file" />
+    </form>
     <header id="header" class="bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 border-b border-gray-200/80 transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
@@ -1178,8 +1193,12 @@
                                 <p class="text-gray-600 mt-2">센서 개발, 기술 컨설팅 등 R&D 프로젝트에 대해 문의해주세요.</p>
                                 <p class="text-sm text-gray-500 mt-4">연락가능한 시간: 월~금 09:00~18:00</p>
                             </div>
-                            <form name="rd-inquiry" method="POST" data-netlify="true" class="space-y-5">
+                            <form name="rd-inquiry" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-5">
                                 <input type="hidden" name="form-name" value="rd-inquiry">
+                                <div class="hidden">
+                                    <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+                                </div>
+
                                 <input type="text" name="company" placeholder="회사/기관명" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
                                 <input type="text" name="name" placeholder="담당자명" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
                                 <input type="tel" name="phone" placeholder="연락처" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
@@ -1205,8 +1224,12 @@
                                 <p class="text-gray-600 mt-2">기업 맞춤형 교육, 단체 교육 등에 대해 문의해주세요.</p>
                                 <p class="text-sm text-gray-500 mt-4">연락가능한 시간: 월~금 09:00~18:00</p>
                             </div>
-                             <form name="ict-inquiry" method="POST" data-netlify="true" class="space-y-5">
+                            <form name="ict-inquiry" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-5">
                                 <input type="hidden" name="form-name" value="ict-inquiry">
+                                <div class="hidden">
+                                    <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+                                </div>
+
                                 <input type="text" name="company" placeholder="회사/기관명" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
                                 <input type="text" name="name" placeholder="담당자명" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
                                 <input type="tel" name="phone" placeholder="연락처" required class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800">
@@ -2106,7 +2129,51 @@
         });
         activeFirestoreListeners.push(unsubscribe);
     }
+    // --- Netlify Form Submission Handler ---
+    function handleNetlifyFormSubmit(event) {
+        // 1. 기본 동작 막기
+        //    이게 없으면 폼 제출 시 페이지가 깜빡! 하면서 새로고침됩니다.
+        event.preventDefault();
 
+        // 2. 폼 데이터 준비하기
+        //    사용자가 입력한 모든 정보를 'formData'라는 마법 주머니에 담습니다.
+        const form = event.target;
+        const formData = new FormData(form);
+        const formName = formData.get('form-name');
+
+        // 3. 사용자가 기다리는 동안 버튼 처리
+        //    '전송 중...' 메시지를 보여줘서 여러 번 누르는 것을 방지합니다.
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '전송 중...';
+
+        // 4. Netlify로 데이터 전송! (Fetch API)
+        //    보이지 않는 우편배달부가 formData를 Netlify 서버로 보냅니다.
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(formData).toString()
+        })
+        .then(() => {
+            // 5-1. 전송 성공!
+            //      성공 메시지를 보여주고, 폼을 깨끗하게 비웁니다.
+            customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`);
+            form.reset();
+        })
+        .catch((error) => {
+            // 5-2. 전송 실패...
+            //      에러가 나면 사용자에게 알려줍니다.
+            customAlert('오류가 발생했습니다. 다시 시도해주세요.');
+            console.error(error);
+        })
+        .finally(() => {
+            // 6. 버튼 원래대로 돌려놓기
+            //    성공하든 실패하든, 버튼을 다시 누를 수 있게 원상 복구합니다.
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        });
+    }
     // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
         try {
@@ -2316,7 +2383,14 @@
         document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
         document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
         document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
-
+        // 견적문의 폼은 나중에 동적으로 생기므로, 부모인 app-content 영역에서
+        // "혹시 내 자식 중에 폼이 제출됐니?" 라고 항상 귀 기울이고 있게 만듭니다. (이벤트 위임)
+        appContent.addEventListener('submit', function(event) {
+            // 제출된 것이 Netlify 폼이 맞는지 확인하고, 맞으면 전용 배달부를 출동시킵니다.
+            if (event.target.getAttribute('data-netlify') === 'true') {
+                handleNetlifyFormSubmit(event);
+            }
+        });
         // --- Initial Setup ---
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenuContainer = document.getElementById('mobile-menu');
