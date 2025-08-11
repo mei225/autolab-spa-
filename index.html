@@ -1919,7 +1919,22 @@
             if (el.tagName === 'IMG') el.src = value; else el.innerHTML = value;
         });
     }
-
+    // 🆕 마크다운을 HTML로 변환하는 함수 추가
+    function markdownToHtml(text) {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **볼드** → <strong>볼드</strong>
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')              // *이탤릭* → <em>이탤릭</em>
+            .replace(/\n/g, '<br>');                           // 줄바꿈 → <br>
+    }
+    
+    // 🆕 HTML을 마크다운으로 변환하는 함수 추가 (편집할 때 사용)
+    function htmlToMarkdown(html) {
+        return html
+            .replace(/<strong>(.*?)<\/strong>/g, '**$1**')     // <strong>볼드</strong> → **볼드**
+            .replace(/<em>(.*?)<\/em>/g, '*$1*')               // <em>이탤릭</em> → *이탤릭*
+            .replace(/<br\s*\/?>/gi, '\n');                    // <br> → 줄바꿈
+    }
+        
     function initContentManagement() {
         if (!db) return;
         onSnapshot(collection(db, 'site_content'), (snapshot) => {
@@ -1932,12 +1947,17 @@
     }
 
     async function saveContent(key, value) {
-        try { await setDoc(doc(db, 'site_content', key), { value }); customAlert('내용이 저장되었습니다.'); } 
-        catch (error) { console.error("Error saving content: ", error); customAlert('저장 중 오류가 발생했습니다.'); }
+        try { 
+            // 🆕 마크다운을 HTML로 변환해서 저장
+            const htmlValue = markdownToHtml(value);
+            await setDoc(doc(db, 'site_content', key), { value: htmlValue }); 
+            customAlert('내용이 저장되었습니다.'); 
+        } 
+        catch (error) { 
+            console.error("Error saving content: ", error); 
+            customAlert('저장 중 오류가 발생했습니다.'); 
+        }
     }
-
-    function htmlToText(html) { const t = document.createElement('div'); t.innerHTML = html.replace(/<br\s*\/?>/gi, "\n"); return t.textContent || t.innerText || ""; }
-    function textToHtml(text) { const t = document.createElement('div'); t.textContent = text; return t.innerHTML.replace(/\n/g, "<br>"); }
 
     function initAdminEditButtons() {
         if (!document.body.classList.contains('admin-mode')) return;
@@ -1954,8 +1974,10 @@
                     if (n && n !== element.src) saveContent(key, n);
                 } else {
                     const o = siteContent[key] || element.innerHTML;
-                    const n = prompt(`'${key}' 내용 수정:`, htmlToText(o));
-                    if (n !== null && n !== htmlToText(o)) saveContent(key, textToHtml(n));
+                    // 🆕 HTML을 마크다운으로 변환해서 보여주기
+                    const markdownText = htmlToMarkdown(o);
+                    const n = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
+                    if (n !== null && n !== markdownText) saveContent(key, n);
                 }
             };
             const p = element.tagName === 'IMG' ? element.parentElement : element;
