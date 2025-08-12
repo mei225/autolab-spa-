@@ -259,9 +259,15 @@
     </header>
 
     <!-- Main Content Area -->
-    <main id="app-content">
-        <!-- Pages will be injected here -->
-    </main>
+        <main id="app-content">
+            <!-- Loading content... -->
+            <div class="min-h-screen flex items-center justify-center">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800 mx-auto mb-4"></div>
+                    <p class="text-gray-600">페이지를 불러오는 중...</p>
+                </div>
+            </div>
+        </main>
     
     <!-- Page Templates -->
     <div id="page-templates" class="hidden">
@@ -1983,12 +1989,12 @@
     };
     
     // --- Global Variables & DOM Elements ---
-    const appContent = document.getElementById('app-content');
-    const pageTemplates = document.getElementById('page-templates');
-    let db, auth;
-    let currentPage = 'home';
-    let siteContent = {};
-    let activeFirestoreListeners = [];
+        const appContent = document.getElementById('app-content');
+        const pageTemplates = document.getElementById('page-templates');
+        let currentPage = 'home';
+        let siteContent = {};
+        let activeFirestoreListeners = [];
+        let db, auth; // 전역 변수로 선언
 
     // --- Custom Dialog ---
     const dialogModal = document.getElementById('custom-dialog-modal');
@@ -2332,17 +2338,31 @@
         });
     }
     // --- Global Scripts (run once on load) ---
-    document.addEventListener('DOMContentLoaded', function () {
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            initContentManagement();
-        } catch (e) {
-            console.error("Firebase initialization failed:", e);
-            customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
-            return;
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Firebase 초기화를 try-catch 밖에서 먼저 시도
+            let app;
+            
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                console.log("Firebase 초기화 성공");
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                // Firebase 실패해도 기본 UI는 보여주기
+                db = null;
+                auth = null;
+            }
+            
+            // Firebase 성공 여부와 관계없이 기본 페이지는 보여주기
+            setTimeout(() => {
+                navigateTo(window.location.hash.substring(1) || 'home');
+            }, 100);
+            
+            // Firebase가 정상이면 콘텐츠 관리 초기화
+            if (db) {
+                initContentManagement();
+            }
         
         // --- Modal Element References ---
         const historyAdminModal = document.getElementById('admin-modal');
@@ -2946,7 +2966,6 @@
 
         bindNavLinks(document.body);
         
-        navigateTo(window.location.hash.substring(1) || 'home');
     });
     </script>
 
