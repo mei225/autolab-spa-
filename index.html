@@ -2702,182 +2702,90 @@
                 // 검색 결과 표시
                 displaySearchResults(searchResults, query);
             }
-
-<!-- Basic Navigation Script -->
-    <script>
-    console.log("🚀 Basic script loading...");
-
-    // 로딩 메시지 업데이트
-    const loadingMessage = document.getElementById('loading-message');
-    if (loadingMessage) {
-        loadingMessage.textContent = '기본 스크립트 로딩 중...';
-    }
-
-    // DOM이 완전히 로드된 후 실행
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("✅ DOM loaded, starting basic navigation...");
-        
-        // 기본 요소들 확인
-        const appContent = document.getElementById('app-content');
-        const pageTemplates = document.getElementById('page-templates');
-        
-        if (!appContent || !pageTemplates) {
-            console.error("❌ Critical elements missing");
-            if (loadingMessage) {
-                loadingMessage.textContent = 'DOM 요소를 찾을 수 없습니다.';
-            }
-            return;
-        }
-        
-        console.log("✅ Found appContent and pageTemplates");
-        
-        // 🆕 Firebase 없이 기본 네비게이션만 구현
-        function simpleNavigateTo(pageId) {
-            console.log("🧭 Simple navigate to:", pageId);
-            
-            if (loadingMessage) {
-                loadingMessage.textContent = `${pageId} 페이지 로딩 중...`;
-            }
-            
-            const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-            if (!targetTemplate) {
-                console.error("❌ Template not found for:", pageId);
-                if (pageId !== 'home') {
-                    simpleNavigateTo('home');
+    // 검색 결과 표시 함수
+            function displaySearchResults(results, query) {
+                if (results.length === 0) {
+                    customAlert(`"${query}"에 대한 검색 결과가 없습니다.`);
+                    return;
                 }
-                return;
+                
+                if (results.length === 1) {
+                    // 결과가 하나면 바로 이동
+                    navigateTo(results[0].url);
+                    closeSearch();
+                } else {
+                    // 여러 결과가 있으면 선택지 제공
+                    let resultText = `"${query}" 검색 결과:\n\n`;
+                    results.forEach((result, index) => {
+                        resultText += `${index + 1}. ${result.title}\n`;
+                    });
+                    resultText += `\n이동할 페이지 번호를 입력하세요 (1-${results.length}):`;
+                    
+                    const choice = prompt(resultText);
+                    const choiceNum = parseInt(choice);
+                    
+                    if (choiceNum >= 1 && choiceNum <= results.length) {
+                        navigateTo(results[choiceNum - 1].url);
+                        closeSearch();
+                    }
+                }
             }
             
-            console.log("✅ Found template for:", pageId);
-            
-            try {
-                const newContent = targetTemplate.cloneNode(true);
-                newContent.id = '';
-                newContent.className = 'page-content visible'; // 즉시 보이게
+            // 검색 모달 열기
+            function openSearch() {
+                const searchModal = document.getElementById('search-modal');
+                const searchInput = document.getElementById('search-input');
                 
-                appContent.innerHTML = '';
-                appContent.appendChild(newContent);
-                
-                console.log("✅ Page loaded successfully:", pageId);
-                
-                // 네비게이션 링크 바인딩
-                bindNavLinks(newContent);
-                
-                // 스크롤 애니메이션 처리
-                setTimeout(() => {
-                    handleScrollAnimation();
-                }, 100);
-                
-            } catch (error) {
-                console.error("❌ Error loading page:", error);
-                appContent.innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center"><h1 class="text-2xl font-bold text-red-600">페이지 로딩 오류</h1><p class="mt-4 text-gray-600">페이지를 불러올 수 없습니다.</p><button onclick="location.reload()" class="mt-4 bg-blue-800 text-white px-4 py-2 rounded">새로고침</button></div></div>';
+                if (searchModal && searchInput) {
+                    searchModal.classList.remove('hidden');
+                    searchInput.focus();
+                }
             }
-        }
-        
-        // 네비게이션 링크 바인딩
-        function bindNavLinks(container) {
-            container.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetPage = link.dataset.target;
-                    if (targetPage) {
-                        simpleNavigateTo(targetPage);
-                        // 모바일 메뉴 닫기
-                        const mobileMenu = document.getElementById('mobile-menu');
-                        if (mobileMenu) {
-                            mobileMenu.classList.add('hidden');
+            
+            // 검색 모달 닫기
+            function closeSearch() {
+                const searchModal = document.getElementById('search-modal');
+                const searchInput = document.getElementById('search-input');
+                
+                if (searchModal) {
+                    searchModal.classList.add('hidden');
+                }
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+            }
+            
+            // 검색 관련 이벤트 리스너
+            const searchInput = document.getElementById('search-input');
+            const closeSearchBtn = document.getElementById('close-search-btn');
+            
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            performSearch(query);
                         }
                     }
                 });
-            });
-        }
-        
-        // 스크롤 애니메이션 처리
-        function handleScrollAnimation() {
-            document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                    el.classList.add('visible');
-                }
-            });
-        }
-        
-        // 스크롤 이벤트 리스너
-        window.addEventListener('scroll', handleScrollAnimation, { passive: true });
-        
-        // 전역 네비게이션 바인딩
-        bindNavLinks(document.body);
-        
-        // 모바일 메뉴 설정
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (mobileMenuButton && mobileMenu) {
-            // 모바일 메뉴 내용 생성
-            const desktopNav = document.getElementById('desktop-nav');
-            if (desktopNav) {
-                let mobileMenuHTML = '';
-                
-                // 데스크톱 메뉴를 모바일용으로 변환
-                desktopNav.querySelectorAll('a, .dropdown').forEach(item => {
-                    if (item.classList.contains('dropdown')) {
-                        const parentLink = item.querySelector('a');
-                        const subMenu = item.querySelector('.dropdown-menu');
-                        
-                        mobileMenuHTML += `
-                            <div class="border-b border-gray-200">
-                                <button class="mobile-dropdown-toggle w-full flex items-center justify-between px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50">
-                                    <span>${parentLink.textContent}</span>
-                                    <i class="fas fa-chevron-down transition-transform duration-200"></i>
-                                </button>
-                                <div class="mobile-submenu hidden pl-4 bg-gray-50">`;
-                        
-                        subMenu.querySelectorAll('a').forEach(subLink => {
-                            mobileMenuHTML += `<a href="#" data-target="${subLink.dataset.target}" class="nav-link block w-full px-4 py-3 text-gray-700 hover:bg-blue-100">${subLink.textContent}</a>`;
-                        });
-                        
-                        mobileMenuHTML += `</div></div>`;
-                    } else if (item.classList.contains('nav-link')) {
-                        mobileMenuHTML += `<a href="#" data-target="${item.dataset.target}" class="nav-link block w-full px-4 py-3 text-lg font-medium text-gray-600 hover:bg-blue-50 border-b border-gray-200">${item.textContent}</a>`;
-                    }
-                });
-                
-                mobileMenu.innerHTML = mobileMenuHTML;
-                
-                // 모바일 드롭다운 토글 기능
-                mobileMenu.addEventListener('click', (e) => {
-                    if (e.target.closest('.mobile-dropdown-toggle')) {
-                        const toggle = e.target.closest('.mobile-dropdown-toggle');
-                        const submenu = toggle.nextElementSibling;
-                        const icon = toggle.querySelector('i');
-                        
-                        submenu.classList.toggle('hidden');
-                        icon.classList.toggle('rotate-180');
-                    }
-                });
-                
-                // 모바일 메뉴 링크 바인딩
-                bindNavLinks(mobileMenu);
             }
             
-            mobileMenuButton.onclick = () => {
-                mobileMenu.classList.toggle('hidden');
-            };
-        }
-        
-        // 검색 버튼 기본 동작 (나중에 구현)
-        document.querySelectorAll('.search-btn').forEach(btn => {
-            btn.onclick = () => {
-                alert('검색 기능은 현재 개발 중입니다.');
-            };
-        });
-        
-        // 홈페이지 로드
-        console.log("🏠 Loading home page...");
-        setTimeout(() => {
-            simpleNavigateTo('home');
-        }, 100);
-    });
-    </script>
+            if (closeSearchBtn) {
+                closeSearchBtn.onclick = closeSearch;
+            }
+            
+            // 검색 모달 외부 클릭 시 닫기
+            const searchModal = document.getElementById('search-modal');
+            if (searchModal) {
+                searchModal.addEventListener('click', (e) => {
+                    if (e.target === searchModal) {
+                        closeSearch();
+                    }
+                });
+            }
+            
+            }); // DOMContentLoaded 끝
+        </script>
     
 </body>
 </html>
