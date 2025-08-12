@@ -176,100 +176,111 @@
         async function fetchAndSearch() {
             const urlParams = new URLSearchParams(window.location.search);
             const searchTerm = urlParams.get('q');
-
+            const resultsContainer = document.getElementById('results-container');
+        
             if (!searchTerm) {
                 searchQueryDisplay.textContent = "검색어를 입력해주세요.";
                 noResults.classList.remove('hidden');
                 return;
             }
-
+        
             searchQueryDisplay.innerHTML = `'<span class="text-sky-600">${searchTerm}</span>'에 대한 검색 결과입니다.`;
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             let totalResults = 0;
-
-            // Fetch all collections
-            const productsPromise = getDocs(collection(db, 'products'));
+        
+            // 💡 1. 모든 데이터를 가져옵니다. (site_content 추가)
+            const siteContentPromise = getDocs(collection(db, 'site_content'));
             const aboutUsPromise = getDocs(query(collection(db, 'about_us'), orderBy("createdAt", "desc")));
             const galleryPromise = getDocs(query(collection(db, 'gallery'), orderBy("createdAt", "desc")));
-
-            const [productsSnapshot, aboutUsSnapshot, gallerySnapshot] = await Promise.all([productsPromise, aboutUsPromise, galleryPromise]);
-
-            // Filter Products
-            const productsResults = productsSnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter(p => p.title.toLowerCase().includes(lowerCaseSearchTerm) || p.description.toLowerCase().includes(lowerCaseSearchTerm));
-            
-            if (productsResults.length > 0) {
-                const section = document.getElementById('products-results-section');
-                const grid = document.getElementById('products-grid');
-                grid.innerHTML = '';
-                productsResults.forEach(product => {
-                    const item = document.createElement('a');
-                    item.href = './index.html'; // Link to main SPA
-                    item.className = 'block bg-gray-50 rounded-lg overflow-hidden group border border-gray-200 hover:shadow-xl';
-                    item.innerHTML = `
-                        <img src="${product.imageUrl}" alt="${product.title}" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-800 truncate">${product.title}</h3>
-                            <p class="text-sm text-gray-600 line-clamp-2">${product.description}</p>
-                        </div>`;
-                    grid.appendChild(item);
-                });
-                section.classList.remove('hidden');
-                totalResults += productsResults.length;
+        
+            const [siteContentSnapshot, aboutUsSnapshot, gallerySnapshot] = await Promise.all([
+                siteContentPromise,
+                aboutUsPromise,
+                galleryPromise,
+            ]);
+        
+            // site_content 데이터를 검색하기 쉬운 형태로 가공
+            const siteContent = {};
+            siteContentSnapshot.forEach(doc => {
+                siteContent[doc.id] = doc.data().value;
+            });
+        
+            const allData = { ...siteContent };
+        
+            const foundItems = {};
+        
+            // 💡 2. 통합 검색: site_content를 포함한 모든 데이터를 검색합니다.
+            for (const key in allData) {
+                const value = allData[key];
+                if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
+                    // 예: 'product-ict-1.title' -> 'product-ict-1'
+                    const pageKey = key.split('.')[0]; 
+        
+                    if (!foundItems[pageKey]) {
+                        foundItems[pageKey] = {
+                            title: allData[`${pageKey}.title`] || '제목 없음',
+                            subtitle: allData[`${pageKey}.subtitle`] || allData[`${pageKey}.description`] || '',
+                            image: allData[`${pageKey}.image`] || 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=Image',
+                            type: '페이지'
+                        };
+                    }
+                }
             }
-
-            // Filter About Us
-            const aboutUsResults = aboutUsSnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter(n => n.title.toLowerCase().includes(lowerCaseSearchTerm) || n.content.toLowerCase().includes(lowerCaseSearchTerm));
-
-            if (aboutUsResults.length > 0) {
-                const section = document.getElementById('about-us-results-section');
-                const list = document.getElementById('about-us-list');
-                list.innerHTML = '';
-                aboutUsResults.forEach(notice => {
-                    const date = notice.createdAt ? notice.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    const item = document.createElement('a');
-                    item.href = './index.html'; // Link to main SPA
-                    item.className = 'block p-4 border-b border-gray-200 hover:bg-gray-50';
-                    item.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium text-gray-800">${notice.title}</span>
-                            <span class="text-sm text-gray-500">${date}</span>
-                        </div>`;
-                    list.appendChild(item);
-                });
-                section.classList.remove('hidden');
-                totalResults += aboutUsResults.length;
-            }
-
-            // Filter Gallery
-            const galleryResults = gallerySnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter(p => p.title.toLowerCase().includes(lowerCaseSearchTerm) || (p.description && p.description.toLowerCase().includes(lowerCaseSearchTerm)));
-
-            if (galleryResults.length > 0) {
-                const section = document.getElementById('gallery-results-section');
-                const grid = document.getElementById('gallery-grid');
-                grid.innerHTML = '';
-                galleryResults.forEach(photo => {
-                    const item = document.createElement('a');
-                    item.href = './index.html'; // Link to main SPA
-                    item.className = 'block group';
-                    item.innerHTML = `
-                        <div class="aspect-square overflow-hidden rounded-lg">
-                            <img src="${photo.imageUrl}" alt="${photo.title}" class="w-full h-full object-cover">
+        
+            // About Us 검색
+            aboutUsSnapshot.docs.forEach(doc => {
+                const item = doc.data();
+                if (item.title.toLowerCase().includes(lowerCaseSearchTerm) || item.content.toLowerCase().includes(lowerCaseSearchTerm)) {
+                    foundItems[`about-us-item-${doc.id}`] = {
+                        title: item.title,
+                        subtitle: item.content,
+                        date: item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '',
+                        type: 'About us'
+                    };
+                }
+            });
+        
+            // 갤러리 검색
+            gallerySnapshot.docs.forEach(doc => {
+                const item = doc.data();
+                if (item.title.toLowerCase().includes(lowerCaseSearchTerm) || (item.description && item.description.toLowerCase().includes(lowerCaseSearchTerm))) {
+                     foundItems[`gallery-item-${doc.id}`] = {
+                        title: item.title,
+                        subtitle: item.description,
+                        image: item.imageUrl,
+                        type: '포토갤러리'
+                    };
+                }
+            });
+        
+            // 💡 3. 검색 결과를 화면에 동적으로 생성합니다.
+            resultsContainer.innerHTML = ''; // 기존 결과 초기화
+            totalResults = Object.keys(foundItems).length;
+        
+            if (totalResults > 0) {
+                for (const key in foundItems) {
+                    const item = foundItems[key];
+                    const link = `index.html#${key.split('-item-')[0]}`; // 올바른 페이지로 링크
+                    const itemEl = document.createElement('a');
+                    itemEl.href = link;
+                    itemEl.className = 'block p-6 border rounded-lg hover:bg-gray-50 hover:shadow-md transition-all';
+                    itemEl.innerHTML = `
+                        <div class="flex flex-col sm:flex-row gap-6">
+                            ${item.image ? `<img src="${item.image}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0">` : ''}
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-semibold text-sky-600">${item.type}</span>
+                                    ${item.date ? `<span class="text-sm text-gray-500">${item.date}</span>` : ''}
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mt-1">${item.title}</h3>
+                                <p class="text-gray-600 mt-2 line-clamp-2">${item.subtitle}</p>
+                            </div>
                         </div>
-                        <h3 class="mt-2 font-medium text-gray-800 truncate">${photo.title}</h3>`;
-                    grid.appendChild(item);
-                });
-                section.classList.remove('hidden');
-                totalResults += galleryResults.length;
-            }
-
-            if (totalResults === 0) {
-                noResults.classList.remove('hidden');
+                    `;
+                    resultsContainer.appendChild(itemEl);
+                }
+            } else {
+                resultsContainer.innerHTML = '<div id="no-results" class="text-center py-20"><p class="text-xl text-gray-500">검색 결과가 없습니다.</p></div>';
             }
         }
 
