@@ -1986,7 +1986,22 @@
     }
     
     function removeAdminEditButtons() {
+        // 편집 버튼 제거
         document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+        
+        // 모든 data-key 요소의 스타일 초기화
+        document.querySelectorAll('[data-key]').forEach(element => {
+            element.style.outline = '';
+            element.style.outlineOffset = '';
+            element.style.backgroundColor = '';
+            element.style.position = '';
+            
+            // 부모 요소의 position도 초기화
+            const parent = element.tagName === 'IMG' ? element.parentElement : element;
+            if (parent && parent.style.position === 'relative') {
+                parent.style.position = '';
+            }
+        });
     }
 
     // --- Router ---
@@ -2431,7 +2446,7 @@
         const adminLoginBtn = document.getElementById('admin-login-btn');
         
         function enterAdminMode() { document.body.classList.add('admin-mode'); adminLoginBtn.textContent = 'Logout'; navigateTo(currentPage); }
-        function exitAdminMode() { document.body.classList.remove('admin-mode'); adminLoginBtn.textContent = 'Admin Login'; removeAdminEditButtons(); navigateTo(currentPage); }
+        function exitAdminMode() { document.body.classList.remove('admin-mode'); adminLoginBtn.textContent = 'Admin Login'; removeAdminEditButtons(); setTimeout(() => {navigateTo(currentPage);}, 100); }
         onAuthStateChanged(auth, (user) => { if (user) enterAdminMode(); else exitAdminMode(); });
         
         adminLoginBtn.onclick = async () => {
