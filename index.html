@@ -1598,9 +1598,15 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <img data-key="product-ict-1.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            <img data-key="product-ict-1.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            <img data-key="product-ict-1.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+3" alt="아두이노 프로젝트 3" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <div class="relative">
+                                  <img data-key="product-ict-1.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-1.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-1.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+3" alt="아두이노 프로젝트 3" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
                           </div>
                       </div>
                  </div>
@@ -1638,11 +1644,16 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <img data-key="product-ict-2.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Assembly" alt="RC카 조립" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            <img data-key="product-ict-2.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Coding" alt="RC카 코딩" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            <img data-key="product-ict-2.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Maze+Run" alt="RC카 미로 주행" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <div class="relative">
+                                  <img data-key="product-ict-2.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Assembly" alt="RC카 조립" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-2.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Coding" alt="RC카 코딩" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-2.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Maze+Run" alt="RC카 미로 주행" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
                           </div>
-                      </div>
                  </div>
             </section>
         </div>
@@ -1678,11 +1689,16 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <img data-key="product-ict-3.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Sensors" alt="스마트팜 센서" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              <img data-key="product-ict-3.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Control" alt="스마트팜 제어" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              <img data-key="product-ict-3.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Growth" alt="식물 성장" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <div class="relative">
+                                  <img data-key="product-ict-3.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Sensors" alt="스마트팜 센서" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-3.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Control" alt="스마트팜 제어" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
+                              <div class="relative">
+                                  <img data-key="product-ict-3.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Growth" alt="식물 성장" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              </div>
                           </div>
-                      </div>
                  </div>
             </section>
         </div>
@@ -2595,7 +2611,304 @@
         }
         buildMobileMenu();
         mobileMenuButton.onclick = (e) => { e.stopPropagation(); mobileMenuContainer.classList.toggle('hidden'); };
-
+        // ===== 검색 기능 구현 시작 =====
+        
+        // 검색 실행 함수
+        function performSearch(query) {
+            // 검색어가 없으면 리턴
+            if (!query.trim()) return;
+            
+            const searchResults = [];
+            const lowerQuery = query.toLowerCase();
+            
+            // 1. 페이지 정보 데이터베이스
+            const pageData = {
+                'home': { 
+                    title: '홈', 
+                    description: 'AUTOLAB 메인 페이지 - 센서 개발과 ICT 교육의 만남',
+                    keywords: ['메인', '홈', '시작', '소개']
+                },
+                'about-intro': { 
+                    title: 'AUTOLAB 소개', 
+                    description: '회사 소개, 비전, CI, 조직도, 핵심 가치',
+                    keywords: ['회사소개', '비전', '로고', 'CI', '조직도', '가치']
+                },
+                'history': { 
+                    title: '사업연혁', 
+                    description: 'AUTOLAB의 성장 역사와 주요 마일스톤',
+                    keywords: ['연혁', '역사', '성장', '발전', '마일스톤']
+                },
+                'about-location': { 
+                    title: '오시는길', 
+                    description: '위치, 연락처, 지도 정보',
+                    keywords: ['위치', '주소', '연락처', '전화번호', '찾아오기', '지도']
+                },
+                'business-sensor': { 
+                    title: '센서 개발 R&D', 
+                    description: '센서 기술 개발, 연구, 장비 소개',
+                    keywords: ['센서', 'R&D', '연구개발', '기술', '장비', '제조', '측정', '소형화']
+                },
+                'business-ict': { 
+                    title: 'ICT 교육', 
+                    description: '정보통신기술 교육 프로그램 및 커리큘럼',
+                    keywords: ['ICT', '교육', '프로그램', '커리큘럼', '강의', '학습']
+                },
+                'products': { 
+                    title: '제품소개', 
+                    description: 'R&D 연구개발 결과물 및 ICT 교육 콘텐츠',
+                    keywords: ['제품', '결과물', '아두이노', 'RC카', '스마트팜', '센서']
+                },
+                'quote': { 
+                    title: '견적문의', 
+                    description: 'R&D 프로젝트 및 교육 프로그램 견적 문의',
+                    keywords: ['견적', '문의', '상담', '비용', '가격', '연락']
+                },
+                'about-us': { 
+                    title: 'About us', 
+                    description: 'AUTOLAB 소식, 뉴스, 업데이트 정보',
+                    keywords: ['소식', '뉴스', '공지', '업데이트', '새소식']
+                },
+                'community-gallery': { 
+                    title: '포토갤러리', 
+                    description: 'AUTOLAB 활동 사진 및 프로젝트 이미지',
+                    keywords: ['사진', '갤러리', '활동', '프로젝트', '이미지']
+                }
+            };
+            
+            // 2. 페이지 검색 (제목, 설명, 키워드)
+            Object.keys(pageData).forEach(pageId => {
+                const page = pageData[pageId];
+                
+                // 제목 검색
+                if (page.title.toLowerCase().includes(lowerQuery)) {
+                    searchResults.push({
+                        type: 'page',
+                        id: pageId,
+                        title: page.title,
+                        description: page.description,
+                        relevance: 3 // 제목 매치는 높은 점수
+                    });
+                    return; // 이미 추가했으므로 중복 방지
+                }
+                
+                // 설명 검색
+                if (page.description.toLowerCase().includes(lowerQuery)) {
+                    searchResults.push({
+                        type: 'page',
+                        id: pageId,
+                        title: page.title,
+                        description: page.description,
+                        relevance: 2 // 설명 매치는 중간 점수
+                    });
+                    return;
+                }
+                
+                // 키워드 검색
+                const keywordMatch = page.keywords.some(keyword => 
+                    keyword.toLowerCase().includes(lowerQuery)
+                );
+                if (keywordMatch) {
+                    searchResults.push({
+                        type: 'page',
+                        id: pageId,
+                        title: page.title,
+                        description: page.description,
+                        relevance: 1 // 키워드 매치는 낮은 점수
+                    });
+                }
+            });
+            
+            // 3. 사이트 콘텐츠 검색 (관리자가 편집 가능한 내용)
+            Object.keys(siteContent).forEach(key => {
+                const content = siteContent[key];
+                if (typeof content === 'string' && content.toLowerCase().includes(lowerQuery)) {
+                    // 키에서 의미있는 제목 추출
+                    const keyParts = key.split('.');
+                    const section = keyParts[0]; // 예: 'home', 'about'
+                    const element = keyParts[keyParts.length - 1]; // 예: 'title', 'description'
+                    
+                    const title = `${section} - ${element}`;
+                    const cleanContent = content.replace(/<[^>]*>/g, ''); // HTML 태그 제거
+                    const preview = cleanContent.length > 100 ? 
+                        cleanContent.substring(0, 100) + '...' : cleanContent;
+                    
+                    searchResults.push({
+                        type: 'content',
+                        key: key,
+                        title: title,
+                        description: preview,
+                        relevance: 1
+                    });
+                }
+            });
+            
+            // 4. 제품 상세 정보 검색
+            const productKeywords = {
+                '아두이노': ['arduino', 'iot', '전자', '프로그래밍', 'led', '센서'],
+                'RC카': ['rc', '자동차', '미로', '탈출', '알고리즘', '자율주행'],
+                '스마트팜': ['농업', '식물', '자동화', '환경', '토양', '조도'],
+                '혈당센서': ['타액', '혈당', '당뇨', '의료', '바이오'],
+                '포름알데히드': ['공기', '센서', '종이', '환경', '측정'],
+                '체온계': ['밴드', '웨어러블', '건강', '모니터링']
+            };
+            
+            Object.keys(productKeywords).forEach(product => {
+                const keywords = productKeywords[product];
+                if (product.toLowerCase().includes(lowerQuery) || 
+                    keywords.some(keyword => keyword.includes(lowerQuery))) {
+                    searchResults.push({
+                        type: 'product',
+                        title: product,
+                        description: `${product} 관련 제품 정보`,
+                        relevance: 2
+                    });
+                }
+            });
+            
+            // 5. 결과 정렬 (관련도 순)
+            searchResults.sort((a, b) => b.relevance - a.relevance);
+            
+            // 6. 검색 결과 표시
+            displaySearchResults(searchResults, query);
+        }
+        
+        // 검색 결과 표시 함수
+        function displaySearchResults(results, query) {
+            const searchModal = document.getElementById('search-modal');
+            const modalContent = searchModal.querySelector('.relative');
+            
+            // 기존 검색 결과 제거
+            const existingResults = modalContent.querySelector('.search-results');
+            if (existingResults) {
+                existingResults.remove();
+            }
+            
+            // 새로운 검색 결과 컨테이너 생성
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'search-results max-h-96 overflow-y-auto border-t';
+            
+            if (results.length === 0) {
+                // 검색 결과가 없을 때
+                resultsContainer.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-search text-4xl mb-4 opacity-50"></i>
+                        <p class="text-lg font-medium mb-2">검색 결과가 없습니다</p>
+                        <p class="text-sm">"${query}"와 일치하는 내용을 찾을 수 없습니다.</p>
+                        <p class="text-xs mt-4 text-gray-400">다른 키워드로 검색해보세요.</p>
+                    </div>
+                `;
+            } else {
+                // 검색 결과 헤더
+                const headerHtml = `
+                    <div class="p-4 bg-blue-50 border-b border-blue-100">
+                        <p class="text-sm font-medium text-blue-800">
+                            <i class="fas fa-search mr-2"></i>
+                            "${query}" 검색 결과 ${results.length}개
+                        </p>
+                    </div>
+                `;
+                
+                // 검색 결과 아이템들
+                const resultItems = results.map((result, index) => {
+                    let icon = '';
+                    let badgeColor = '';
+                    
+                    // 결과 타입별 아이콘 및 색상
+                    switch(result.type) {
+                        case 'page':
+                            icon = 'fas fa-file-alt';
+                            badgeColor = 'bg-blue-100 text-blue-800';
+                            break;
+                        case 'content':
+                            icon = 'fas fa-edit';
+                            badgeColor = 'bg-green-100 text-green-800';
+                            break;
+                        case 'product':
+                            icon = 'fas fa-cube';
+                            badgeColor = 'bg-purple-100 text-purple-800';
+                            break;
+                        default:
+                            icon = 'fas fa-circle';
+                            badgeColor = 'bg-gray-100 text-gray-800';
+                    }
+                    
+                    return `
+                        <div class="search-result-item p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors" 
+                             data-page="${result.id || ''}" 
+                             data-type="${result.type}">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="${icon} text-gray-400"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 truncate">${result.title}</h3>
+                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">${result.description}</p>
+                                    <div class="flex items-center mt-2">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badgeColor}">
+                                            ${result.type === 'page' ? '페이지' : result.type === 'content' ? '콘텐츠' : '제품'}
+                                        </span>
+                                        ${result.key ? `<span class="ml-2 text-xs text-gray-400">${result.key}</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-chevron-right text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                resultsContainer.innerHTML = headerHtml + resultItems;
+            }
+            
+            // 모달에 검색 결과 추가
+            modalContent.appendChild(resultsContainer);
+            
+            // 검색 결과 클릭 이벤트 추가
+            resultsContainer.addEventListener('click', (e) => {
+                const resultItem = e.target.closest('.search-result-item');
+                if (resultItem) {
+                    const pageId = resultItem.dataset.page;
+                    if (pageId) {
+                        closeSearch();
+                        navigateTo(pageId);
+                    }
+                }
+            });
+        }
+        
+        // 검색 입력 이벤트 처리
+        const searchInput = document.getElementById('search-input');
+        
+        // Enter 키로 검색
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(searchInput.value);
+            }
+        });
+        
+        // 실시간 검색 (2글자 이상 입력 시)
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            
+            const query = e.target.value.trim();
+            if (query.length >= 2) {
+                // 300ms 후에 검색 실행 (너무 빠른 검색 방지)
+                searchTimeout = setTimeout(() => {
+                    performSearch(query);
+                }, 300);
+            } else {
+                // 검색어가 2글자 미만이면 결과 제거
+                const existingResults = document.querySelector('.search-results');
+                if (existingResults) {
+                    existingResults.remove();
+                }
+            }
+        });
+        
+        // ===== 검색 기능 구현 끝 =====
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
             const isScrolled = window.scrollY > 50;
@@ -2610,7 +2923,16 @@
         const searchModal = document.getElementById('search-modal');
         const searchInput = document.getElementById('search-input');
         function openSearch() { searchModal.classList.remove('hidden'); searchInput.focus(); }
-        function closeSearch() { searchModal.classList.add('hidden'); }
+        function closeSearch() { 
+            searchModal.classList.add('hidden'); 
+            searchInput.value = ''; // 검색어 초기화
+            
+            // 검색 결과 제거
+            const existingResults = searchModal.querySelector('.search-results');
+            if (existingResults) {
+                existingResults.remove();
+            }
+        }
         document.getElementById('close-search-btn').onclick = closeSearch;
         searchModal.onclick = (e) => { if (e.target === searchModal) closeSearch(); };
 
