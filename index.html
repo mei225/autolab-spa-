@@ -2678,6 +2678,31 @@
             const lowerQuery = query.toLowerCase();
             
             // 1. 페이지 정보 데이터베이스
+                const pageDatabase = [
+                    { title: "홈", url: "home", content: "센서 개발 ICT 교육 혁신 미래 기술" },
+                    { title: "회사소개", url: "about-intro", content: "AUTOLAB 소개 비전 조직도 핵심가치" },
+                    { title: "사업연혁", url: "history", content: "연혁 역사 발전 과정" },
+                    { title: "오시는길", url: "about-location", content: "위치 주소 연락처 찾아오기" },
+                    { title: "센서 개발 R&D", url: "business-sensor", content: "센서 연구개발 기술 장비" },
+                    { title: "ICT 교육", url: "business-ict", content: "교육 프로그램 아두이노 코딩" },
+                    { title: "견적문의", url: "quote", content: "문의 상담 연락 견적" },
+                    { title: "제품소개", url: "products", content: "제품 솔루션 개발품 결과물" },
+                    { title: "About us", url: "about-us", content: "소식 공지사항 업데이트" },
+                    { title: "포토갤러리", url: "community-gallery", content: "사진 갤러리 활동 모습" }
+                ];
+                
+                // 검색 실행
+                pageDatabase.forEach(page => {
+                    if (page.title.toLowerCase().includes(lowerQuery) || 
+                        page.content.toLowerCase().includes(lowerQuery)) {
+                        searchResults.push(page);
+                    }
+                });
+                
+                // 검색 결과 표시
+                displaySearchResults(searchResults, query);
+            }
+
 <!-- Basic Navigation Script -->
     <script>
     console.log("🚀 Basic script loading...");
@@ -2853,6 +2878,6 @@
         }, 100);
     });
     </script>
-
+    
 </body>
 </html>
