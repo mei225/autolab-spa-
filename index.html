@@ -264,7 +264,8 @@
             <div class="min-h-screen flex items-center justify-center">
                 <div class="text-center">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800 mx-auto mb-4"></div>
-                    <p class="text-gray-600">페이지를 불러오는 중...</p>
+                    <p class="text-gray-600" id="loading-message">JavaScript 로딩 중...</p>
+                    <p class="text-sm text-gray-400 mt-2">잠시만 기다려주세요</p>
                 </div>
             </div>
         </main>
@@ -2121,6 +2122,8 @@
 
     // --- Router ---
     function navigateTo(pageId) {
+        console.log("NavigateTo called with:", pageId); // 디버그용
+        
         currentPage = pageId;
         window.location.hash = pageId;
 
@@ -2128,15 +2131,36 @@
         activeFirestoreListeners = [];
 
         const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-        if (!targetTemplate) { navigateTo('home'); return; }
+        console.log("Target template found:", !!targetTemplate); // 디버그용
         
-        const newContent = targetTemplate.cloneNode(true);
-        newContent.id = ''; 
-        newContent.className = 'page-content'; 
+        if (!targetTemplate) { 
+            if (pageId !== 'home') {
+                navigateTo('home'); 
+            }
+            return; 
+        }
         
-        appContent.innerHTML = '';
-        appContent.appendChild(newContent);
-        appContent.dataset.page = pageId;
+        try {
+                    const newContent = targetTemplate.cloneNode(true);
+                    newContent.id = ''; 
+                    newContent.className = 'page-content'; 
+                    
+                    appContent.innerHTML = '';
+                    appContent.appendChild(newContent);
+                    appContent.dataset.page = pageId;
+                    
+                    console.log("Page content successfully loaded for:", pageId); // 디버그용
+                } catch (error) {
+                    console.error("Error loading page content:", error);
+                    // 폴백: 기본 홈 콘텐츠 표시
+                    if (pageId !== 'home') {
+                        navigateTo('home');
+                        return;
+                    }
+                    // 홈도 실패하면 에러 메시지 표시
+                    appContent.innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center"><h1 class="text-2xl font-bold text-red-600">페이지 로딩 오류</h1><p class="mt-4 text-gray-600">페이지를 불러올 수 없습니다. 새로고침 해주세요.</p></div></div>';
+                    return;
+                }
         
         window.scrollTo(0, 0);
         Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
@@ -2339,6 +2363,16 @@
     }
     // --- Global Scripts (run once on load) ---
         document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM fully loaded"); // 디버그용
+            
+            // DOM 요소들이 제대로 존재하는지 확인
+            if (!appContent || !pageTemplates) {
+                console.error("Critical DOM elements not found");
+                return;
+            }
+            
+            console.log("App content and page templates found"); // 디버그용
+            
             // Firebase 초기화를 try-catch 밖에서 먼저 시도
             let app;
             
@@ -2356,7 +2390,9 @@
             
             // Firebase 성공 여부와 관계없이 기본 페이지는 보여주기
             setTimeout(() => {
-                navigateTo(window.location.hash.substring(1) || 'home');
+                const targetPage = window.location.hash.substring(1) || 'home';
+                console.log("Attempting to navigate to:", targetPage); // 디버그용
+                navigateTo(targetPage);
             }, 100);
             
             // Firebase가 정상이면 콘텐츠 관리 초기화
