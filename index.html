@@ -2641,7 +2641,23 @@
         privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
 
         bindNavLinks(document.body);
+        /* 📂 [추가할 코드] 메인 페이지(index.html)의 검색 기능을 search.html과 연결 */
+        const mainSearchModal = document.getElementById('search-modal');
+        const mainSearchInput = mainSearchModal.querySelector('#search-input');
         
+        mainSearchInput.addEventListener('keypress', (e) => {
+            // 1. 만약 사용자가 'Enter' 키를 누르면
+            if (e.key === 'Enter') {
+                // 2. 입력된 검색어를 가져온다 (앞뒤 공백은 제거)
+                const searchTerm = mainSearchInput.value.trim();
+        
+                // 3. 검색어가 비어있지 않다면
+                if (searchTerm) {
+                    // 4. search.html 페이지로 검색어와 함께 이동시킨다
+                    window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
+                }
+            }
+        });        
         navigateTo(window.location.hash.substring(1) || 'home');
     });
     </script>
