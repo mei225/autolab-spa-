@@ -205,7 +205,7 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="#" data-target="home" class="nav-link flex items-center space-x-2 shrink-0">
-                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-10 md:h-12">
+                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-10 md:h-12" onerror="this.onerror=null; this.src='https://placehold.co/200x40/1e3a8a/ffffff?text=AUTOLAB';">
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -259,16 +259,9 @@
     </header>
 
     <!-- Main Content Area -->
-        <main id="app-content">
-            <!-- Loading content... -->
-            <div class="min-h-screen flex items-center justify-center">
-                <div class="text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800 mx-auto mb-4"></div>
-                    <p class="text-gray-600" id="loading-message">JavaScript 로딩 중...</p>
-                    <p class="text-sm text-gray-400 mt-2">잠시만 기다려주세요</p>
-                </div>
-            </div>
-        </main>
+    <main id="app-content">
+        <!-- Pages will be injected here -->
+    </main>
     
     <!-- Page Templates -->
     <div id="page-templates" class="hidden">
@@ -455,7 +448,7 @@
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal flex justify-center items-center">
-                            <img data-key="about.ci.logo" src="https://placehold.co/400x150/1e3a8a/ffffff?text=AUTOLAB" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full">
+                            <img data-key="about.ci.logo" src="./logo_autolab.png" alt="AUTOLAB Logo" class="max-w-xs md:max-w-sm w-full" onerror="this.onerror=null; this.src='https://placehold.co/400x150/1e3a8a/ffffff?text=AUTOLAB';">
                         </div>
                         <div class="scroll-reveal space-y-8 text-base md:text-lg">
                             <div>
@@ -1605,15 +1598,9 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div class="relative">
-                                  <img data-key="product-ict-1.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-1.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-1.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+3" alt="아두이노 프로젝트 3" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
+                            <img data-key="product-ict-1.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
+                            <img data-key="product-ict-1.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
+                            <img data-key="product-ict-1.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+3" alt="아두이노 프로젝트 3" class="rounded-lg shadow-md w-full h-auto object-cover">
                           </div>
                       </div>
                  </div>
@@ -1651,16 +1638,11 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div class="relative">
-                                  <img data-key="product-ict-2.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Assembly" alt="RC카 조립" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-2.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Coding" alt="RC카 코딩" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-2.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Maze+Run" alt="RC카 미로 주행" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
+                            <img data-key="product-ict-2.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Assembly" alt="RC카 조립" class="rounded-lg shadow-md w-full h-auto object-cover">
+                            <img data-key="product-ict-2.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Coding" alt="RC카 코딩" class="rounded-lg shadow-md w-full h-auto object-cover">
+                            <img data-key="product-ict-2.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Maze+Run" alt="RC카 미로 주행" class="rounded-lg shadow-md w-full h-auto object-cover">
                           </div>
+                      </div>
                  </div>
             </section>
         </div>
@@ -1696,16 +1678,11 @@
                       <div>
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div class="relative">
-                                  <img data-key="product-ict-3.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Sensors" alt="스마트팜 센서" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-3.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Control" alt="스마트팜 제어" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
-                              <div class="relative">
-                                  <img data-key="product-ict-3.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Growth" alt="식물 성장" class="rounded-lg shadow-md w-full h-auto object-cover">
-                              </div>
+                              <img data-key="product-ict-3.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Sensors" alt="스마트팜 센서" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img data-key="product-ict-3.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Control" alt="스마트팜 제어" class="rounded-lg shadow-md w-full h-auto object-cover">
+                              <img data-key="product-ict-3.projectImg3" src="https://placehold.co/600x400/e0f2fe/334155?text=Growth" alt="식물 성장" class="rounded-lg shadow-md w-full h-auto object-cover">
                           </div>
+                      </div>
                  </div>
             </section>
         </div>
@@ -1990,12 +1967,12 @@
     };
     
     // --- Global Variables & DOM Elements ---
-        const appContent = document.getElementById('app-content');
-        const pageTemplates = document.getElementById('page-templates');
-        let currentPage = 'home';
-        let siteContent = {};
-        let activeFirestoreListeners = [];
-        let db, auth; // 전역 변수로 선언
+    const appContent = document.getElementById('app-content');
+    const pageTemplates = document.getElementById('page-templates');
+    let db, auth;
+    let currentPage = 'home';
+    let siteContent = {};
+    let activeFirestoreListeners = [];
 
     // --- Custom Dialog ---
     const dialogModal = document.getElementById('custom-dialog-modal');
@@ -2122,8 +2099,6 @@
 
     // --- Router ---
     function navigateTo(pageId) {
-        console.log("NavigateTo called with:", pageId); // 디버그용
-        
         currentPage = pageId;
         window.location.hash = pageId;
 
@@ -2131,36 +2106,15 @@
         activeFirestoreListeners = [];
 
         const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-        console.log("Target template found:", !!targetTemplate); // 디버그용
+        if (!targetTemplate) { navigateTo('home'); return; }
         
-        if (!targetTemplate) { 
-            if (pageId !== 'home') {
-                navigateTo('home'); 
-            }
-            return; 
-        }
+        const newContent = targetTemplate.cloneNode(true);
+        newContent.id = ''; 
+        newContent.className = 'page-content'; 
         
-        try {
-                    const newContent = targetTemplate.cloneNode(true);
-                    newContent.id = ''; 
-                    newContent.className = 'page-content'; 
-                    
-                    appContent.innerHTML = '';
-                    appContent.appendChild(newContent);
-                    appContent.dataset.page = pageId;
-                    
-                    console.log("Page content successfully loaded for:", pageId); // 디버그용
-                } catch (error) {
-                    console.error("Error loading page content:", error);
-                    // 폴백: 기본 홈 콘텐츠 표시
-                    if (pageId !== 'home') {
-                        navigateTo('home');
-                        return;
-                    }
-                    // 홈도 실패하면 에러 메시지 표시
-                    appContent.innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center"><h1 class="text-2xl font-bold text-red-600">페이지 로딩 오류</h1><p class="mt-4 text-gray-600">페이지를 불러올 수 없습니다. 새로고침 해주세요.</p></div></div>';
-                    return;
-                }
+        appContent.innerHTML = '';
+        appContent.appendChild(newContent);
+        appContent.dataset.page = pageId;
         
         window.scrollTo(0, 0);
         Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
@@ -2362,43 +2316,17 @@
         });
     }
     // --- Global Scripts (run once on load) ---
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("DOM fully loaded"); // 디버그용
-            
-            // DOM 요소들이 제대로 존재하는지 확인
-            if (!appContent || !pageTemplates) {
-                console.error("Critical DOM elements not found");
-                return;
-            }
-            
-            console.log("App content and page templates found"); // 디버그용
-            
-            // Firebase 초기화를 try-catch 밖에서 먼저 시도
-            let app;
-            
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                console.log("Firebase 초기화 성공");
-            } catch (e) {
-                console.error("Firebase initialization failed:", e);
-                // Firebase 실패해도 기본 UI는 보여주기
-                db = null;
-                auth = null;
-            }
-            
-            // Firebase 성공 여부와 관계없이 기본 페이지는 보여주기
-            setTimeout(() => {
-                const targetPage = window.location.hash.substring(1) || 'home';
-                console.log("Attempting to navigate to:", targetPage); // 디버그용
-                navigateTo(targetPage);
-            }, 100);
-            
-            // Firebase가 정상이면 콘텐츠 관리 초기화
-            if (db) {
-                initContentManagement();
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            initContentManagement();
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
+            return;
+        }
         
         // --- Modal Element References ---
         const historyAdminModal = document.getElementById('admin-modal');
@@ -2667,125 +2595,38 @@
         }
         buildMobileMenu();
         mobileMenuButton.onclick = (e) => { e.stopPropagation(); mobileMenuContainer.classList.toggle('hidden'); };
-        // ===== 검색 기능 구현 시작 =====
+
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            const isScrolled = window.scrollY > 50;
+            header.classList.toggle('h-16', isScrolled);
+            header.classList.toggle('h-20', !isScrolled);
+            document.querySelectorAll('.sub-nav').forEach(nav => {
+                nav.style.top = (isScrolled ? 64 : 80) + 'px';
+            });
+            handleScrollAnimation();
+        }, { passive: true });
+
+        const searchModal = document.getElementById('search-modal');
+        const searchInput = document.getElementById('search-input');
+        function openSearch() { searchModal.classList.remove('hidden'); searchInput.focus(); }
+        function closeSearch() { searchModal.classList.add('hidden'); }
+        document.getElementById('close-search-btn').onclick = closeSearch;
+        searchModal.onclick = (e) => { if (e.target === searchModal) closeSearch(); };
+
+        const termsModal = document.getElementById('terms-modal');
+        const privacyModal = document.getElementById('privacy-modal');
+        document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
+        document.getElementById('privacy-link').onclick = () => privacyModal.classList.remove('hidden');
+        document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
+        termsModal.onclick = (e) => { if (e.target === termsModal) termsModal.classList.add('hidden'); };
+        privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
+
+        bindNavLinks(document.body);
         
-        // 검색 실행 함수
-        function performSearch(query) {
-            // 검색어가 없으면 리턴
-            if (!query.trim()) return;
-            
-            const searchResults = [];
-            const lowerQuery = query.toLowerCase();
-            
-            // 1. 페이지 정보 데이터베이스
-                const pageDatabase = [
-                    { title: "홈", url: "home", content: "센서 개발 ICT 교육 혁신 미래 기술" },
-                    { title: "회사소개", url: "about-intro", content: "AUTOLAB 소개 비전 조직도 핵심가치" },
-                    { title: "사업연혁", url: "history", content: "연혁 역사 발전 과정" },
-                    { title: "오시는길", url: "about-location", content: "위치 주소 연락처 찾아오기" },
-                    { title: "센서 개발 R&D", url: "business-sensor", content: "센서 연구개발 기술 장비" },
-                    { title: "ICT 교육", url: "business-ict", content: "교육 프로그램 아두이노 코딩" },
-                    { title: "견적문의", url: "quote", content: "문의 상담 연락 견적" },
-                    { title: "제품소개", url: "products", content: "제품 솔루션 개발품 결과물" },
-                    { title: "About us", url: "about-us", content: "소식 공지사항 업데이트" },
-                    { title: "포토갤러리", url: "community-gallery", content: "사진 갤러리 활동 모습" }
-                ];
-                
-                // 검색 실행
-                pageDatabase.forEach(page => {
-                    if (page.title.toLowerCase().includes(lowerQuery) || 
-                        page.content.toLowerCase().includes(lowerQuery)) {
-                        searchResults.push(page);
-                    }
-                });
-                
-                // 검색 결과 표시
-                displaySearchResults(searchResults, query);
-            }
-    // 검색 결과 표시 함수
-            function displaySearchResults(results, query) {
-                if (results.length === 0) {
-                    customAlert(`"${query}"에 대한 검색 결과가 없습니다.`);
-                    return;
-                }
-                
-                if (results.length === 1) {
-                    // 결과가 하나면 바로 이동
-                    navigateTo(results[0].url);
-                    closeSearch();
-                } else {
-                    // 여러 결과가 있으면 선택지 제공
-                    let resultText = `"${query}" 검색 결과:\n\n`;
-                    results.forEach((result, index) => {
-                        resultText += `${index + 1}. ${result.title}\n`;
-                    });
-                    resultText += `\n이동할 페이지 번호를 입력하세요 (1-${results.length}):`;
-                    
-                    const choice = prompt(resultText);
-                    const choiceNum = parseInt(choice);
-                    
-                    if (choiceNum >= 1 && choiceNum <= results.length) {
-                        navigateTo(results[choiceNum - 1].url);
-                        closeSearch();
-                    }
-                }
-            }
-            
-            // 검색 모달 열기
-            function openSearch() {
-                const searchModal = document.getElementById('search-modal');
-                const searchInput = document.getElementById('search-input');
-                
-                if (searchModal && searchInput) {
-                    searchModal.classList.remove('hidden');
-                    searchInput.focus();
-                }
-            }
-            
-            // 검색 모달 닫기
-            function closeSearch() {
-                const searchModal = document.getElementById('search-modal');
-                const searchInput = document.getElementById('search-input');
-                
-                if (searchModal) {
-                    searchModal.classList.add('hidden');
-                }
-                if (searchInput) {
-                    searchInput.value = '';
-                }
-            }
-            
-            // 검색 관련 이벤트 리스너
-            const searchInput = document.getElementById('search-input');
-            const closeSearchBtn = document.getElementById('close-search-btn');
-            
-            if (searchInput) {
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const query = searchInput.value.trim();
-                        if (query) {
-                            performSearch(query);
-                        }
-                    }
-                });
-            }
-            
-            if (closeSearchBtn) {
-                closeSearchBtn.onclick = closeSearch;
-            }
-            
-            // 검색 모달 외부 클릭 시 닫기
-            const searchModal = document.getElementById('search-modal');
-            if (searchModal) {
-                searchModal.addEventListener('click', (e) => {
-                    if (e.target === searchModal) {
-                        closeSearch();
-                    }
-                });
-            }
-            
-            }); // DOMContentLoaded 끝
-        </script>
-    
+        navigateTo(window.location.hash.substring(1) || 'home');
+    });
+    </script>
+
 </body>
 </html>
