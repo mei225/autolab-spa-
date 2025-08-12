@@ -160,6 +160,26 @@
             transform: translateY(0);
             animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
         }
+        /* ✅ 관리자 모드가 아닐 때 편집 버튼 강제 숨김 */
+        body:not(.admin-mode) .edit-btn-icon {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* ✅ 관리자 모드가 아닐 때 data-key 요소 스타일 초기화 */
+        body:not(.admin-mode) [data-key] {
+            outline: none !important;
+            outline-offset: 0 !important;
+            background-color: transparent !important;
+            position: static !important;
+        }
+        
+        /* ✅ 관리자 모드가 아닐 때 hover 효과도 무력화 */
+        body:not(.admin-mode) [data-key]:hover {
+            outline: none !important;
+            background-color: transparent !important;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
