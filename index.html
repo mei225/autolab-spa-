@@ -87,21 +87,23 @@
         }
         /* Gallery Admin Overlay */
         .admin-edit-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            opacity: 0;
-            transition: all 0.3s ease;
-            cursor: default;
-            backdrop-filter: blur(2px);
-        }
+            .admin-edit-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+                opacity: 0;
+                transition: all 0.3s ease;
+                cursor: default;
+                backdrop-filter: blur(2px);
+                z-index: 10; /* 이 줄 추가 */
+            }
         .group:hover .admin-edit-overlay {
             opacity: 1;
         }
@@ -2387,6 +2389,19 @@
                 const itemEl = document.createElement('div');
                 itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
                 
+                // 카드 전체 클릭 이벤트 추가
+                itemEl.addEventListener('click', (e) => {
+                    // 관리자 버튼 클릭이 아닌 경우에만 라이트박스 열기
+                    if (!e.target.closest('.admin-edit-overlay')) {
+                        const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
+                        const title = photo.title || '';
+                        const description = photo.description || '';
+                        const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                        
+                        openLightbox(images, title, description, 0, createdDate);
+                    }
+                });
+                
                 // 이미지 배열 처리
                 const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
                 const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
@@ -2413,7 +2428,7 @@
                 if (document.body.classList.contains('admin-mode')) {
                     const overlay = document.createElement('div');
                     overlay.className = 'admin-edit-overlay';
-                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white" onclick="event.stopPropagation()">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white" onclick="event.stopPropagation()">삭제</button>`;
+                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium">삭제</button>`;
                     itemEl.querySelector('.relative').appendChild(overlay);
                 }
                 galleryGrid.appendChild(itemEl);
@@ -2765,21 +2780,19 @@
             // --- Admin Actions (Scoped by current page) ---
             if (document.body.classList.contains('admin-mode')) {
                 if (currentPage === 'history') {
-                    if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
-                        openHistoryModal();
-                    } else if (target.matches('.edit-btn')) {
-                        openHistoryModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
-                        }
-                    }
+                    // history 관련 코드...
                 } else if (currentPage === 'community-gallery') {
                     if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         openGalleryModal();
                     } else if (target.matches('.edit-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         openGalleryModal(target.dataset.id);
                     } else if (target.matches('.delete-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
                             await deleteDoc(doc(db, 'gallery', target.dataset.id)).catch(err => console.error(err));
                         }
@@ -2811,7 +2824,7 @@
                 }
             }
             
-            if (target.matches('.gallery-image')) {
+            if (target.matches('.gallery-image') && !target.closest('.admin-edit-overlay')) {
                 const images = JSON.parse(target.dataset.images || '[]');
                 const title = target.dataset.title || '';
                 const description = target.dataset.description || '';
