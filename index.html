@@ -1297,8 +1297,9 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
                     <h1 data-key="gallery.hero.title" class="text-4xl md:text-5xl font-extrabold">포토갤러리</h1>
                     <p data-key="gallery.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">AUTOLAB의 활동 모습을 사진으로 만나보세요.</p>
-                </div>
-            <section class="py-20 lg:py-32 bg-gray-50">
+                            </div>
+                        </section>
+                        <section class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">포토갤러리</h2>
@@ -2412,7 +2413,7 @@
                 if (document.body.classList.contains('admin-mode')) {
                     const overlay = document.createElement('div');
                     overlay.className = 'admin-edit-overlay';
-                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white">삭제</button>`;
+                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white" onclick="event.stopPropagation()">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white" onclick="event.stopPropagation()">삭제</button>`;
                     itemEl.querySelector('.relative').appendChild(overlay);
                 }
                 galleryGrid.appendChild(itemEl);
@@ -2809,7 +2810,7 @@
                     icon.classList.add('rotate-180');
                 }
             }
-
+            
             if (target.matches('.gallery-image')) {
                 const images = JSON.parse(target.dataset.images || '[]');
                 const title = target.dataset.title || '';
@@ -2974,6 +2975,7 @@
         let currentImageIndex = 0;
         let currentTitle = '';
         let currentDescription = '';
+        let currentDate = ''; // 이 줄 추가
 
         function openLightbox(images, title, description, startIndex = 0, date = '') {
             currentImages = images;
