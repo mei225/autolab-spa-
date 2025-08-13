@@ -1991,6 +1991,7 @@
     let currentPage = 'home';
     let siteContent = {};
     let activeFirestoreListeners = [];
+    let isInitialContentLoaded = false;
 
     // --- Custom Dialog ---
     const dialogModal = document.getElementById('custom-dialog-modal');
@@ -2026,7 +2027,13 @@
     // --- Content Management ---
     function applyContent(key, value) {
         document.querySelectorAll(`[data-key="${key}"]`).forEach(el => {
-            if (el.tagName === 'IMG') el.src = value; else el.innerHTML = value;
+            if (el.tagName === 'IMG') {
+                // src를 직접 바꾸지 않고, data-src에만 이미지 주소를 저장합니다.
+                // 실제 이미지 로딩은 navigateTo 함수 안의 IntersectionObserver가 담당하게 됩니다.
+                el.dataset.src = value;
+            } else {
+                el.innerHTML = value;
+            }
         });
     }
     // 🆕 마크다운을 HTML로 변환하는 함수 추가
@@ -2047,12 +2054,26 @@
         
     function initContentManagement() {
         if (!db) return;
+    
         onSnapshot(collection(db, 'site_content'), (snapshot) => {
             snapshot.docs.forEach(doc => {
                 siteContent[doc.id] = doc.data().value;
-                applyContent(doc.id, doc.data().value);
+                // 페이지가 이미 표시된 후 실시간 업데이트를 위해 applyContent 호출
+                if (isInitialContentLoaded) {
+                    applyContent(doc.id, doc.data().value);
+                }
             });
-            if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
+    
+            // ✅ 최초 데이터 로드가 완료되었는지 확인
+            if (!isInitialContentLoaded) {
+                isInitialContentLoaded = true; // 플래그를 true로 설정하여 다시 실행되지 않도록 함
+                // 데이터 로드가 완료되었으므로, 이제 페이지를 그림
+                navigateTo(window.location.hash.substring(1) || 'home');
+            }
+    
+            if (document.body.classList.contains('admin-mode')) {
+                initAdminEditButtons();
+            }
         });
     }
 
@@ -2658,7 +2679,6 @@
                 }
             }
         });        
-        navigateTo(window.location.hash.substring(1) || 'home');
     });
     </script>
 
