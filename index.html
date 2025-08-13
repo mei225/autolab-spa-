@@ -1987,39 +1987,46 @@
         </div>
         <!-- Lightbox Modal -->
         <div id="lightbox-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[80] flex items-center justify-center p-4">
-            <div class="relative max-w-5xl w-full h-full flex flex-col">
+            <div class="relative max-w-4xl w-full max-h-full flex flex-col bg-white rounded-lg overflow-hidden">
                 <!-- 헤더 -->
-                <div class="flex justify-between items-center text-white mb-4">
+                <div class="flex justify-between items-center p-6 border-b bg-white">
                     <div class="flex items-center space-x-4">
-                        <h3 id="lightbox-title" class="text-2xl font-bold"></h3>
-                        <span id="lightbox-counter" class="text-lg text-gray-300"></span>
+                        <h3 id="lightbox-title" class="text-2xl font-bold text-gray-800"></h3>
+                        <span id="lightbox-counter" class="text-sm text-gray-500"></span>
                     </div>
-                    <button id="close-lightbox-btn" class="text-white text-4xl hover:text-gray-300 transition-colors">&times;</button>
+                    <button id="close-lightbox-btn" class="text-gray-500 text-3xl hover:text-gray-700 transition-colors">&times;</button>
                 </div>
                 
-                <!-- 이미지 영역 -->
-                <div class="flex-1 flex items-center justify-center relative">
-                    <!-- 이전 버튼 -->
-                    <button id="prev-image-btn" class="absolute left-4 z-10 bg-black bg-opacity-50 text-white text-3xl w-12 h-12 rounded-full hover:bg-opacity-70 transition-all">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    
-                    <!-- 이미지 -->
-                    <img id="lightbox-image" src="" alt="Gallery photo" class="max-w-full max-h-full object-contain rounded-lg">
-                    
-                    <!-- 다음 버튼 -->
-                    <button id="next-image-btn" class="absolute right-4 z-10 bg-black bg-opacity-50 text-white text-3xl w-12 h-12 rounded-full hover:bg-opacity-70 transition-all">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                
-                <!-- 설명 및 썸네일 -->
-                <div class="mt-4 text-white">
-                    <p id="lightbox-description" class="text-lg mb-4"></p>
-                    
-                    <!-- 썸네일 영역 -->
-                    <div id="lightbox-thumbnails" class="flex space-x-2 overflow-x-auto pb-2">
-                        <!-- 썸네일들이 동적으로 추가됩니다 -->
+                <!-- 블로그 내용 영역 -->
+                <div class="flex-1 overflow-y-auto">
+                    <div class="p-6">
+                        <!-- 날짜 정보 -->
+                        <div id="lightbox-date" class="flex items-center text-gray-500 text-sm mb-4">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            <span></span>
+                        </div>
+                        
+                        <!-- 메인 이미지 -->
+                        <div class="relative mb-6">
+                            <img id="lightbox-image" src="" alt="Gallery photo" class="w-full h-auto rounded-lg">
+                            
+                            <!-- 이미지 네비게이션 버튼 -->
+                            <button id="prev-image-btn" class="absolute left-4 top-1/2 transform -translate-y-1/2 lightbox-nav-btn text-white text-2xl w-10 h-10 rounded-full hover:bg-opacity-70 transition-all">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            
+                            <button id="next-image-btn" class="absolute right-4 top-1/2 transform -translate-y-1/2 lightbox-nav-btn text-white text-2xl w-10 h-10 rounded-full hover:bg-opacity-70 transition-all">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- 설명 -->
+                        <div id="lightbox-description" class="text-gray-700 leading-relaxed mb-6 whitespace-pre-wrap"></div>
+                        
+                        <!-- 썸네일 영역 -->
+                        <div id="lightbox-thumbnails" class="flex space-x-3 overflow-x-auto pb-2">
+                            <!-- 썸네일들이 동적으로 추가됩니다 -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2361,9 +2368,103 @@
     function initGalleryPage() {
         const galleryGrid = document.getElementById('gallery-grid');
         if (!galleryGrid) return;
+        
+        // 초기 로딩 상태 표시
+        showLoadingState();
+        
         const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            galleryGrid.innerHTML = '';
+            
+            if (photos.length === 0) { 
+                showEmptyState();
+                return; 
+            }
+            
+            photos.forEach(photo => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
+                
+                // 이미지 배열 처리
+                const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
+                const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
+                const imageCount = images.length;
+                
+                // 날짜 포맷팅
+                const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                
+                itemEl.innerHTML = `
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" 
+                             data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" 
+                             data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">
+                        ${imageCount > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${imageCount}</div>` : ''}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>
+                        ${createdDate ? `<div class="flex items-center text-gray-400 text-sm">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            <span>${createdDate}</span>
+                        </div>` : ''}
+                    </div>`;
+                
+                if (document.body.classList.contains('admin-mode')) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'admin-edit-overlay';
+                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white">삭제</button>`;
+                    itemEl.querySelector('.relative').appendChild(overlay);
+                }
+                galleryGrid.appendChild(itemEl);
+            });
+            handleScrollAnimation();
+        });
+        activeFirestoreListeners.push(unsubscribe);
+    }
+    
+    // 스켈레톤 로딩 함수 추가
+    function createSkeletonCard() {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
+        skeleton.innerHTML = `
+            <div class="aspect-[4/3] skeleton"></div>
+            <div class="p-6">
+                <div class="h-5 skeleton rounded mb-2"></div>
+                <div class="h-4 skeleton rounded w-1/2"></div>
+            </div>
+        `;
+        return skeleton;
+    }
+    
+    // 로딩 상태 표시
+    function showLoadingState() {
+        const galleryGrid = document.getElementById('gallery-grid');
+        galleryGrid.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            galleryGrid.appendChild(createSkeletonCard());
+        }
+    }
+    
+    // 빈 상태 표시
+    function showEmptyState() {
+        const galleryGrid = document.getElementById('gallery-grid');
+        galleryGrid.innerHTML = `
+            <div class="col-span-full flex flex-col items-center justify-center py-16">
+                <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-images text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3>
+                <p class="text-gray-500 text-center">
+                    ${document.body.classList.contains('admin-mode') ? 
+                        '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : 
+                        '곧 멋진 사진들로 채워질 예정입니다.'}
+                </p>
+                ${document.body.classList.contains('admin-mode') ? 
+                    '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : 
+                    ''}
+            </div>
+        `;
+    }
         // 스켈레톤 로딩 함수 추가
         function createSkeletonCard() {
             const skeleton = document.createElement('div');
@@ -2851,12 +2952,12 @@
             }
 
             if (target.matches('.gallery-image')) {
-                // 🆕 새로운 라이트박스 로직
                 const images = JSON.parse(target.dataset.images || '[]');
                 const title = target.dataset.title || '';
                 const description = target.dataset.description || '';
+                const date = target.dataset.date || '';
                 
-                openLightbox(images, title, description, 0); // 첫 번째 이미지부터 시작
+                openLightbox(images, title, description, 0, date);
             }
         });
 
@@ -3015,30 +3116,33 @@
         let currentTitle = '';
         let currentDescription = '';
 
-        function openLightbox(images, title, description, startIndex = 0) {
+        function openLightbox(images, title, description, startIndex = 0, date = '') {
             currentImages = images;
             currentTitle = title;
             currentDescription = description;
             currentImageIndex = startIndex;
+            currentDate = date;
             
             updateLightboxContent();
             lightboxModal.classList.remove('hidden');
         }
-
+        
         function updateLightboxContent() {
             const lightboxTitle = document.getElementById('lightbox-title');
             const lightboxCounter = document.getElementById('lightbox-counter');
             const lightboxImage = document.getElementById('lightbox-image');
             const lightboxDescription = document.getElementById('lightbox-description');
+            const lightboxDate = document.getElementById('lightbox-date');
             const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
             const prevBtn = document.getElementById('prev-image-btn');
             const nextBtn = document.getElementById('next-image-btn');
             
             lightboxTitle.textContent = currentTitle;
-            lightboxCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+            lightboxCounter.textContent = currentImages.length > 1 ? `${currentImageIndex + 1} / ${currentImages.length}` : '';
             
             lightboxImage.src = currentImages[currentImageIndex];
             lightboxDescription.textContent = currentDescription;
+            lightboxDate.querySelector('span').textContent = currentDate;
             
             prevBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
             nextBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
@@ -3048,7 +3152,7 @@
                 currentImages.forEach((imageUrl, index) => {
                     const thumbnail = document.createElement('img');
                     thumbnail.src = imageUrl;
-                    thumbnail.className = `w-16 h-16 object-cover rounded cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-transparent'} hover:border-blue-300`;
+                    thumbnail.className = `w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-gray-200'} hover:border-blue-300 transition-colors`;
                     thumbnail.onclick = () => {
                         currentImageIndex = index;
                         updateLightboxContent();
