@@ -2466,7 +2466,7 @@
             updateRemoveButtons();
         }
         
-        // 🆕 기존 이미지 URL들을 입력 필드에 로드
+// 🆕 기존 이미지 URL들을 입력 필드에 로드
         function loadImageUrls(images) {
             const container = document.getElementById('image-urls-container');
             container.innerHTML = '';
@@ -2487,6 +2487,15 @@
             } else {
                 updateRemoveButtons();
             }
+        }
+        
+        // 🆕 삭제 버튼 표시/숨김 업데이트
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.image-url-row');
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-image-btn');
+                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
+            });
         }
         
         // 🆕 삭제 버튼 표시/숨김 업데이트
@@ -2753,6 +2762,7 @@
         privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
 
         bindNavLinks(document.body);
+
         /* 📂 [추가할 코드] 메인 페이지(index.html)의 검색 기능을 search.html과 연결 */
         const mainSearchModal = document.getElementById('search-modal');
         const mainSearchInput = mainSearchModal.querySelector('#search-input');
@@ -2769,9 +2779,8 @@
                     window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
                 }
             }
-        });        
-});        
-        
+        });
+
         // 🆕 === 4-3단계: 이미지 URL 관리 기능 ===
         document.getElementById('add-image-url-btn')?.addEventListener('click', () => {
             const container = document.getElementById('image-urls-container');
