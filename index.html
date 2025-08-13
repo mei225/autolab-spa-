@@ -2376,7 +2376,7 @@
         const q = query(collection(db, 'history'), orderBy("order", "desc"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0 left-4"></div>';
+            timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0" style="left: 138px;"></div>';
             
             if (data.length === 0) {
                 timelineContainer.innerHTML += '<p class="text-center text-gray-500 py-10">등록된 연혁이 없습니다.</p>';
@@ -2384,25 +2384,30 @@
                 data.forEach(item => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'mb-16 scroll-reveal';
-
+                
                     const imageHtml = item.imageUrl 
-                        ? `<div class="w-48 md:w-64 flex-shrink-0 ml-6">
-                               <img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full h-auto object-cover" onerror="this.style.display='none'">
+                        ? `<div class="mt-4">
+                               <img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full max-w-md h-auto object-cover" onerror="this.style.display='none'">
                            </div>` 
                         : '';
                     
                     itemEl.innerHTML = `
-                        <div class="flex items-center mb-4">
-                            <div class="w-9 h-9 bg-blue-800 rounded-full flex-shrink-0 flex items-center justify-center z-10 shadow">
-                                <span class="text-white font-bold text-lg">${String(item.year).slice(-2)}</span>
+                        <div class="flex items-start">
+                            <!-- 왼쪽: 연도 -->
+                            <div class="flex-shrink-0 text-right mr-8 w-24">
+                                <h3 class="text-2xl font-bold text-gray-800">${item.year}</h3>
                             </div>
-                            <h3 class="pl-6 text-2xl font-bold text-gray-800">${item.year}</h3>
-                        </div>
-                        <div class="ml-16 flex flex-row-reverse md:flex-row justify-between items-start">
-                            <div class="flex-1 space-y-2 border-l-2 border-gray-200 pl-6 pb-4">
-                                ${item.events.split('\n').map(e => `<p class="text-gray-600">${e}</p>`).join('')}
+                            
+                            <!-- 가운데: 파란 원 (빈 원) -->
+                            <div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div>
+                            
+                            <!-- 오른쪽: 내용과 이미지 -->
+                            <div class="flex-1 ml-8">
+                                <div class="space-y-2">
+                                    ${item.events.split('\n').map(e => `<p class="text-gray-600">${e}</p>`).join('')}
+                                </div>
+                                ${imageHtml}
                             </div>
-                            ${imageHtml}
                         </div>
                     `;
 
