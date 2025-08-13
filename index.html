@@ -2293,8 +2293,9 @@
             // 이미 버튼이 있으면 스킵
             if (element.querySelector('.edit-btn-icon')) return;
             
-            // 🔥 갤러리 이미지는 특별 처리 (오버레이가 있으므로 스킵)
-            if (element.classList.contains('gallery-image')) {
+            // 🔥 갤러리 페이지의 갤러리 이미지만 스킵 (오버레이가 있으므로)
+            const currentPage = document.getElementById('app-content').dataset.page;
+            if (currentPage === 'community-gallery' && element.classList.contains('gallery-image')) {
                 return;
             }
             
@@ -2642,7 +2643,14 @@
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('갤러리 수정 버튼 클릭:', photo.id);
-                    openGalleryModal(photo.id);
+                    
+                    // 함수 존재 여부 확인 및 호출
+                    if (typeof openGalleryModal === 'function') {
+                        await openGalleryModal(photo.id);
+                    } else {
+                        console.error('openGalleryModal 함수를 찾을 수 없습니다.');
+                        customAlert('갤러리 수정 기능을 불러올 수 없습니다.');
+                    }
                 });
                 
                 deleteBtn.addEventListener('click', async (e) => {
@@ -2793,6 +2801,98 @@
             submitButton.innerHTML = originalButtonText;
         });
     }
+    // --- 전역 갤러리 관리 함수들 ---
+    async function openGalleryModal(docId = null) {
+        const galleryAdminModal = document.getElementById('gallery-admin-modal');
+        const photoForm = document.getElementById('photo-form');
+        const galleryModalTitle = document.getElementById('gallery-modal-title');
+        const photoIdInput = document.getElementById('photo-id');
+        const photoTitleInput = document.getElementById('photo-title');
+        const photoDescriptionInput = document.getElementById('photo-description');
+        
+        if (!galleryAdminModal || !photoForm) {
+            console.error('갤러리 모달 요소를 찾을 수 없습니다.');
+            return;
+        }
+        
+        photoForm.reset();
+        initImageUrlInputs();
+        
+        if (docId) {
+            galleryModalTitle.textContent = "사진 수정";
+            photoIdInput.value = docId;
+            try {
+                const docSnap = await getDoc(doc(db, 'gallery', docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    photoTitleInput.value = data.title || '';
+                    photoDescriptionInput.value = data.description || '';
+                    
+                    // 기존 이미지들 로드
+                    const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
+                    loadImageUrls(images);
+                } else {
+                    customAlert('해당 사진을 찾을 수 없습니다.');
+                    return;
+                }
+            } catch (error) {
+                console.error('문서 로드 오류:', error);
+                customAlert('문서를 불러오는 중 오류가 발생했습니다.');
+                return;
+            }
+        } else {
+            galleryModalTitle.textContent = "새 사진 추가";
+            photoIdInput.value = '';
+        }
+        galleryAdminModal.classList.remove('hidden');
+    }
+    
+    function initImageUrlInputs() {
+        const container = document.getElementById('image-urls-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="image-url-row flex gap-2">
+                <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
+                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
+            </div>
+        `;
+        updateRemoveButtons();
+    }
+    
+    function loadImageUrls(images) {
+        const container = document.getElementById('image-urls-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (images.length === 0) {
+            initImageUrlInputs();
+            return;
+        }
+        
+        images.forEach((imageUrl, index) => {
+            const row = document.createElement('div');
+            row.className = 'image-url-row flex gap-2';
+            row.innerHTML = `
+                <input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
+                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
+            `;
+            container.appendChild(row);
+        });
+        
+        updateRemoveButtons();
+    }
+    
+    function updateRemoveButtons() {
+        const rows = document.querySelectorAll('.image-url-row');
+        rows.forEach((row, index) => {
+            const removeBtn = row.querySelector('.remove-image-btn');
+            if (removeBtn) {
+                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
+            }
+        });
+    }
     // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
         try {
@@ -2854,74 +2954,6 @@
                 historyIdInput.value = '';
             }
             historyAdminModal.classList.remove('hidden');
-        }
-
-        async function openGalleryModal(docId = null) {
-            photoForm.reset();
-            initImageUrlInputs(); // 🆕 이미지 입력 필드 초기화
-            
-            if (docId) {
-                galleryModalTitle.textContent = "사진 수정";
-                photoIdInput.value = docId;
-                const docSnap = await getDoc(doc(db, 'gallery', docId));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    photoTitleInput.value = data.title;
-                    photoDescriptionInput.value = data.description;
-                    
-                    // 🆕 기존 이미지들 로드
-                    const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
-                    loadImageUrls(images);
-                }
-            } else {
-                galleryModalTitle.textContent = "새 사진 추가";
-                photoIdInput.value = '';
-            }
-            galleryAdminModal.classList.remove('hidden');
-        }
-        
-        // 🆕 이미지 URL 입력 필드 초기화 함수
-        function initImageUrlInputs() {
-            const container = document.getElementById('image-urls-container');
-            container.innerHTML = `
-                <div class="image-url-row flex gap-2">
-                    <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
-                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
-                </div>
-            `;
-            updateRemoveButtons();
-        }
-        
-// 🆕 기존 이미지 URL들을 입력 필드에 로드
-        function loadImageUrls(images) {
-            const container = document.getElementById('image-urls-container');
-            container.innerHTML = '';
-            
-            images.forEach((imageUrl, index) => {
-                const row = document.createElement('div');
-                row.className = 'image-url-row flex gap-2';
-                row.innerHTML = `
-                    <input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
-                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
-                `;
-                container.appendChild(row);
-            });
-            
-            // 이미지가 없으면 기본 빈 입력 필드 하나 추가
-            if (images.length === 0) {
-                initImageUrlInputs();
-            } else {
-                updateRemoveButtons();
-            }
-        }
-        
-        // 🆕 삭제 버튼 표시/숨김 업데이트
-        function updateRemoveButtons() {
-            const rows = document.querySelectorAll('.image-url-row');
-            rows.forEach((row, index) => {
-                const removeBtn = row.querySelector('.remove-image-btn');
-                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
-            });
         }
         
         // 🆕 삭제 버튼 표시/숨김 업데이트
