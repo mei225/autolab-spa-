@@ -173,7 +173,7 @@
             overflow: hidden !important;
         }
         body.admin-mode .admin-panel {
-            display: flex !important;
+            display: block !important; /* flex → block으로 변경 */
             visibility: visible !important;
             opacity: 1 !important;
             height: auto !important;
@@ -2366,10 +2366,10 @@
     function navigateTo(pageId) {
         currentPage = pageId;
         window.location.hash = pageId;
-
+    
         activeFirestoreListeners.forEach(unsubscribe => unsubscribe());
         activeFirestoreListeners = [];
-
+    
         const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
         if (!targetTemplate) { navigateTo('home'); return; }
         
@@ -2391,14 +2391,39 @@
             'login': initLoginPage
         };
         pageInitFunctions[pageId]?.();
-
+    
         setTimeout(() => {
             newContent.classList.add('visible');
             handleScrollAnimation();
         }, 50);
-
+    
         bindNavLinks(appContent);
-        if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
+        
+        // 🔥 관리자 모드일 때 현재 페이지에 맞는 패널 표시
+        if (document.body.classList.contains('admin-mode')) {
+            const adminPanels = {
+                'history': 'history-admin-panel',
+                'community-gallery': 'gallery-admin-panel', 
+                'about-us': 'about-us-admin-panel',
+                'products': 'products-admin-panel'
+            };
+            
+            // 모든 패널 숨기기
+            document.querySelectorAll('.admin-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            // 현재 페이지 패널만 보이기
+            if (adminPanels[pageId]) {
+                const panel = document.getElementById(adminPanels[pageId]);
+                if (panel) {
+                    panel.classList.remove('hidden');
+                    console.log(`페이지 이동 시 패널 표시: ${adminPanels[pageId]}`); // 디버깅용
+                }
+            }
+            
+            initAdminEditButtons();
+        }
     }
     
     function bindNavLinks(container) {
@@ -2970,7 +2995,6 @@
                     }
                 }
             }
-
             // --- General UI Actions ---
             const accordionHeader = target.closest('.accordion-header');
             if (accordionHeader) {
@@ -3022,8 +3046,12 @@
             document.body.classList.add('admin-mode'); 
             adminLoginBtn.textContent = 'Logout'; 
             
-            // 🆕 현재 페이지에 맞는 관리자 패널 보이기
-            const currentPage = appContent.dataset.page;
+            console.log('관리자 모드 진입'); // 디버깅용
+            
+            // 🔥 현재 페이지에 맞는 관리자 패널 보이기
+            const currentPage = appContent.dataset.page || 'home';
+            console.log('현재 페이지:', currentPage); // 디버깅용
+            
             const adminPanels = {
                 'history': 'history-admin-panel',
                 'community-gallery': 'gallery-admin-panel', 
@@ -3031,16 +3059,28 @@
                 'products': 'products-admin-panel'
             };
             
+            // 🔥 모든 관리자 패널을 먼저 숨기고, 현재 페이지 패널만 보이기
+            document.querySelectorAll('.admin-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
             if (adminPanels[currentPage]) {
                 const panel = document.getElementById(adminPanels[currentPage]);
-                if (panel) panel.classList.remove('hidden');
+                console.log('패널 요소:', panel); // 디버깅용
+                if (panel) {
+                    panel.classList.remove('hidden');
+                    console.log(`관리자 패널 표시: ${adminPanels[currentPage]}`); // 디버깅용
+                }
             }
             
+            // 페이지 새로고침하여 관리자 버튼들 표시
             navigateTo(currentPage); 
         }
         function exitAdminMode() { 
             document.body.classList.remove('admin-mode'); 
             adminLoginBtn.textContent = 'Admin Login'; 
+            
+            console.log('관리자 모드 종료'); // 디버깅용
             
             // 🆕 관리자 패널 숨기기
             document.querySelectorAll('.admin-panel').forEach(panel => {
