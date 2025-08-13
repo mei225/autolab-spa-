@@ -362,6 +362,10 @@
             align-items: center;
             justify-content: center;
         }
+        /* 관리자 모드에서 편집 아이콘을 담을 컨테이너 스타일 */
+        body.admin-mode .admin-editable-container {
+            position: relative !important; /* 다른 스타일에 덮어쓰이지 않도록 !important를 사용합니다. */
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -2283,43 +2287,46 @@
         }
     }
 
+    // 📄 수정 후 코드
     function initAdminEditButtons() {
         if (!document.body.classList.contains('admin-mode')) return;
-        
-        // 기존 편집 버튼들 제거
+    
+        // 기존에 남아있을 수 있는 버튼과 클래스를 먼저 정리합니다.
         document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
-        
+        document.querySelectorAll('.admin-editable-container').forEach(el => el.classList.remove('admin-editable-container'));
+    
         document.querySelectorAll('[data-key]').forEach(element => {
-            // 이미 버튼이 있으면 스킵
+            // 이미 버튼이 있다면 건너뜁니다.
             if (element.querySelector('.edit-btn-icon')) return;
-            
-            // 🔥 갤러리 페이지의 갤러리 이미지만 스킵 (오버레이가 있으므로)
+    
+            // 갤러리 페이지의 이미지는 별도 처리하므로 건너뜁니다.
             const currentPage = document.getElementById('app-content').dataset.page;
             if (currentPage === 'community-gallery' && element.classList.contains('gallery-image')) {
                 return;
             }
-            
+    
             const editBtn = document.createElement('button');
             editBtn.className = 'edit-btn-icon';
             editBtn.innerHTML = '✎';
             editBtn.onclick = (e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 e.stopPropagation();
                 const key = element.dataset.key;
                 if (element.tagName === 'IMG') {
-                    const n = prompt(`'${key}' 이미지 URL 수정:`, element.src);
-                    if (n && n !== element.src) saveContent(key, n);
+                    const newUrl = prompt(`'${key}' 이미지 URL 수정:`, element.src);
+                    if (newUrl && newUrl !== element.src) saveContent(key, newUrl);
                 } else {
-                    const o = siteContent[key] || element.innerHTML;
-                    const markdownText = htmlToMarkdown(o);
-                    const n = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
-                    if (n !== null && n !== markdownText) saveContent(key, n);
+                    const originalHtml = siteContent[key] || element.innerHTML;
+                    const markdownText = htmlToMarkdown(originalHtml);
+                    const newText = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
+                    if (newText !== null && newText !== markdownText) saveContent(key, newText);
                 }
             };
-            
-            const p = element.tagName === 'IMG' ? element.parentElement : element;
-            if (getComputedStyle(p).position === 'static') p.style.position = 'relative';
-            p.appendChild(editBtn);
+    
+            // ⭐️ 핵심 수정 부분: 스타일을 직접 넣는 대신 클래스를 추가합니다.
+            const parentContainer = element.tagName === 'IMG' ? element.parentElement : element;
+            parentContainer.classList.add('admin-editable-container');
+            parentContainer.appendChild(editBtn);
         });
     }
     
@@ -3175,26 +3182,24 @@
             // 페이지 새로고침하여 관리자 버튼들 표시
             navigateTo(currentPage); 
         }
-        function exitAdminMode() { 
-            document.body.classList.remove('admin-mode'); 
-            adminLoginBtn.textContent = 'Admin Login'; 
-            
-            console.log('관리자 모드 종료'); // 디버깅용
-            
-            // 🆕 관리자 패널 숨기기
+        // 📄 수정 후 코드
+        function exitAdminMode() {
+            document.body.classList.remove('admin-mode');
+            document.getElementById('admin-login-btn').textContent = 'Admin Login';
+            console.log('관리자 모드 종료');
+        
             document.querySelectorAll('.admin-panel').forEach(panel => {
                 panel.classList.add('hidden');
             });
-            
-            removeAdminEditButtons(); 
-            setTimeout(() => {navigateTo(currentPage);}, 100); 
-        }
-        onAuthStateChanged(auth, (user) => { if (user) enterAdminMode(); else exitAdminMode(); });
         
-        adminLoginBtn.onclick = async () => {
-            if (auth.currentUser) { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
-            else { navigateTo('login'); }
-        };
+            // ⭐️ 추가된 부분: 관리자 모드용으로 추가했던 클래스를 모두 제거합니다.
+            document.querySelectorAll('.admin-editable-container').forEach(el => {
+                el.classList.remove('admin-editable-container');
+            });
+        
+            removeAdminEditButtons();
+            setTimeout(() => { navigateTo(currentPage); }, 100);
+        }
 
         function buildMobileMenu() {
             mobileMenuContainer.innerHTML = '';
