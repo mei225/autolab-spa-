@@ -962,18 +962,41 @@
                 </div>
             </section>
             <section id="tech-intro" class="py-20 lg:py-32 bg-gray-50">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-                    <div class="scroll-reveal">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- 중앙 정렬된 제목과 설명 -->
+                    <div class="text-center mb-16 scroll-reveal">
                         <h2 data-key="sensor.tech.title" class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">AUTOLAB 기술력 소개</h2>
-                        <p data-key="sensor.tech.description" class="text-base md:text-lg text-gray-600 mb-8">AUTOLAB은 다년간 축적된 R&D 경험과 노하우를 바탕으로 고객의 요구에 최적화된 센서 솔루션을 제공합니다. 단순한 부품 개발을 넘어, 데이터 분석과 AI 기술을 융합하여 새로운 가치를 창출합니다.</p>
-                        <ul class="space-y-4 text-base md:text-lg">
-                            <li class="flex items-center"><i class="fas fa-check text-blue-800 mr-3"></i><span data-key="sensor.tech.feature1">맞춤형 센서 설계 및 제작</span></li>
-                            <li class="flex items-center"><i class="fas fa-check text-blue-800 mr-3"></i><span data-key="sensor.tech.feature2">신호 처리 및 데이터 분석</span></li>
-                            <li class="flex items-center"><i class="fas fa-check text-blue-800 mr-3"></i><span data-key="sensor.tech.feature3">AI 기반 불량 탐지 및 예측</span></li>
-                        </ul>
+                        <p data-key="sensor.tech.description" class="max-w-3xl mx-auto text-base md:text-lg text-gray-600">AUTOLAB은 다년간 축적된 R&D 경험과 노하우를 바탕으로 고객의 요구에 최적화된 센서 솔루션을 제공합니다. 단순한 부품 개발을 넘어, 데이터 분석과 AI 기술을 융합하여 새로운 가치를 창출합니다.</p>
                     </div>
-                    <div class="scroll-reveal">
-                        <img data-key="sensor.tech.image" src="https://placehold.co/800x600/1e293b/ffffff?text=Core+Technology" alt="Technology" class="rounded-lg shadow-xl">
+                    
+                    <!-- 3개 카드 영역 -->
+                    <div class="grid md:grid-cols-3 gap-8 text-center">
+                        <!-- 카드 1: 맞춤형 센서 설계 -->
+                        <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal">
+                            <div class="w-16 h-16 mx-auto bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-3xl mb-6">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <h3 data-key="sensor.tech.card1.title" class="text-xl font-bold text-gray-800 mb-4">맞춤형 센서 설계 및 제작</h3>
+                            <p data-key="sensor.tech.card1.description" class="text-gray-600">고객의 요구에 최적화된 센서 솔루션 제공</p>
+                        </div>
+                        
+                        <!-- 카드 2: 실습형 ICT 교육 -->
+                        <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal" style="transition-delay: 150ms;">
+                            <div class="w-16 h-16 mx-auto bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-3xl mb-6">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <h3 data-key="sensor.tech.card2.title" class="text-xl font-bold text-gray-800 mb-4">실습형 ICT 전문 교육</h3>
+                            <p data-key="sensor.tech.card2.description" class="text-gray-600">실습 중심 교육 프로그램으로 산업과 인재를 연결</p>
+                        </div>
+                        
+                        <!-- 카드 3: 데이터 기반 기술 -->
+                        <div class="p-8 bg-white rounded-lg shadow-md scroll-reveal" style="transition-delay: 300ms;">
+                            <div class="w-16 h-16 mx-auto bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-3xl mb-6">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 data-key="sensor.tech.card3.title" class="text-xl font-bold text-gray-800 mb-4">데이터 기반 기술 고도화</h3>
+                            <p data-key="sensor.tech.card3.description" class="text-gray-600">센서 데이터 분석과 첨단 기술 조합으로 새로운 가치 창출</p>
+                        </div>
                     </div>
                 </div>
             </section>
