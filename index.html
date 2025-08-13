@@ -205,7 +205,7 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="#" data-target="home" class="nav-link flex items-center space-x-2 shrink-0">
-                    <img data-src="./logo.png" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" loading="lazy" class="lazyload h-10 md:h-12" alt="AUTOLAB Logo" onerror="this.onerror=null; this.src='https://placehold.co/200x40/1e3a8a/ffffff?text=AUTOLAB';">
+                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-10 md:h-12" onerror="this.onerror=null; this.src='https://placehold.co/200x40/1e3a8a/ffffff?text=AUTOLAB';">
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -347,7 +347,7 @@
                     </div>
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="scroll-reveal lg:order-2">
-                            <img data-key="home.business.sensorImage" data-src="./sensor.jpg" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" loading="lazy" class="lazyload rounded-lg shadow-2xl w-full" alt="Sensor R&D">
+                            <img data-key="home.business.ictImage" src="./edu.jpg" alt="ICT Education" class="rounded-lg shadow-2xl w-full">
                         </div>
                         <div class="scroll-reveal lg:order-1">
                             <span class="text-blue-800 font-semibold">02. ICT EDUCATION</span>
@@ -1447,7 +1447,7 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
-                        <img data-key="product-rd-1.image" data-src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=Saliva+Sensor" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" loading="lazy" class="lazyload rounded-lg shadow-xl w-full" alt="타액 기반 혈당 센서">
+                        <img data-key="product-rd-1.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=Saliva+Sensor" alt="타액 기반 혈당 센서" class="rounded-lg shadow-xl w-full">
                         <div>
                             <h1 data-key="product-rd-1.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">타액 기반 혈당 센서</h1>
                             <p data-key="product-rd-1.subtitle" class="mt-4 text-lg text-gray-600">바늘 없이, 침 한 방울로 혈당을 관리하는 새로운 시대</p>
@@ -1599,7 +1599,7 @@
                           <h2 class="text-2xl font-bold text-gray-800 mb-4">프로젝트 이미지</h2>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div class="relative">
-                                  <img data-key="product-ict-1.projectImg1" data-src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" loading="lazy" class="lazyload" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
+                                  <img data-key="product-ict-1.projectImg1" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+1" alt="아두이노 프로젝트 1" class="rounded-lg shadow-md w-full h-auto object-cover">
                               </div>
                               <div class="relative">
                                   <img data-key="product-ict-1.projectImg2" src="https://placehold.co/600x400/e0f2fe/334155?text=Project+2" alt="아두이노 프로젝트 2" class="rounded-lg shadow-md w-full h-auto object-cover">
@@ -2151,18 +2151,6 @@
         }, 50);
 
         bindNavLinks(appContent);
-            // --- Lazy Loading Images ---
-    // 페이지에 새로 추가된 .lazyload 클래스를 가진 모든 이미지를 찾습니다.
-    appContent.querySelectorAll('.lazyload').forEach(img => {
-        // data-src 속성이 있다면 src 속성으로 값을 옮겨줍니다.
-        if (img.dataset.src) {
-            img.src = img.dataset.src;
-            // 로딩이 완료되면 lazyload 클래스를 제거하여 중복 실행을 방지합니다.
-            img.onload = () => {
-                img.classList.remove('lazyload');
-            };
-        }
-    });
         if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
     }
     
