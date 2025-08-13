@@ -1842,16 +1842,26 @@
         </div>
         <!-- Gallery Admin Modal -->
         <div id="gallery-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
                 <h2 id="gallery-modal-title" class="text-2xl font-bold mb-4">사진 추가/수정</h2>
                 <form id="photo-form">
                     <input type="hidden" id="photo-id">
                     <div class="space-y-4">
                         <input id="photo-title" type="text" placeholder="제목" class="w-full p-2 border rounded" required>
                         <textarea id="photo-description" placeholder="설명" rows="3" class="w-full p-2 border rounded"></textarea>
+                        
+                        <!-- 이미지 URL 입력 섹션 -->
                         <div>
-                            <label for="photo-imageUrl" class="block text-sm font-medium text-gray-700">이미지 URL</label>
-                            <input type="url" id="photo-imageUrl" placeholder="https://i.imgur.com/image.png" class="mt-1 w-full p-2 border rounded" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">이미지 URL들</label>
+                            <div id="image-urls-container" class="space-y-2">
+                                <div class="image-url-row flex gap-2">
+                                    <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
+                                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-image-url-btn" class="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                <i class="fas fa-plus mr-1"></i>이미지 추가
+                            </button>
                         </div>
                     </div>
                     <div class="mt-6 flex justify-end space-x-3">
@@ -1879,11 +1889,42 @@
             </div>
         </div>
         <!-- Lightbox Modal -->
-        <div id="lightbox-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[80] flex items-center justify-center p-4">
-            <div class="relative max-w-4xl w-full">
-                <button id="close-lightbox-btn" class="absolute -top-12 right-0 text-white text-4xl">&times;</button>
-                <img id="lightbox-image" src="" alt="Enlarged photo" class="max-w-full max-h-[75vh] rounded-lg mx-auto">
-                <div id="lightbox-caption" class="text-white text-left mt-4 p-4 bg-black bg-opacity-50 rounded-b-lg"></div>
+        <div id="lightbox-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[80] flex items-center justify-center p-4">
+            <div class="relative max-w-5xl w-full h-full flex flex-col">
+                <!-- 헤더 -->
+                <div class="flex justify-between items-center text-white mb-4">
+                    <div class="flex items-center space-x-4">
+                        <h3 id="lightbox-title" class="text-2xl font-bold"></h3>
+                        <span id="lightbox-counter" class="text-lg text-gray-300"></span>
+                    </div>
+                    <button id="close-lightbox-btn" class="text-white text-4xl hover:text-gray-300 transition-colors">&times;</button>
+                </div>
+                
+                <!-- 이미지 영역 -->
+                <div class="flex-1 flex items-center justify-center relative">
+                    <!-- 이전 버튼 -->
+                    <button id="prev-image-btn" class="absolute left-4 z-10 bg-black bg-opacity-50 text-white text-3xl w-12 h-12 rounded-full hover:bg-opacity-70 transition-all">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <!-- 이미지 -->
+                    <img id="lightbox-image" src="" alt="Gallery photo" class="max-w-full max-h-full object-contain rounded-lg">
+                    
+                    <!-- 다음 버튼 -->
+                    <button id="next-image-btn" class="absolute right-4 z-10 bg-black bg-opacity-50 text-white text-3xl w-12 h-12 rounded-full hover:bg-opacity-70 transition-all">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- 설명 및 썸네일 -->
+                <div class="mt-4 text-white">
+                    <p id="lightbox-description" class="text-lg mb-4"></p>
+                    
+                    <!-- 썸네일 영역 -->
+                    <div id="lightbox-thumbnails" class="flex space-x-2 overflow-x-auto pb-2">
+                        <!-- 썸네일들이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Terms of Service Modal -->
@@ -2231,7 +2272,21 @@
             photos.forEach(photo => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'group scroll-reveal';
-                itemEl.innerHTML = `<div class="relative aspect-square"><img src="${photo.imageUrl}" alt="${photo.title}" class="w-full h-full object-cover rounded-lg cursor-pointer" data-title="${photo.title}" data-description="${photo.description}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';"></div><h3 class="mt-2 font-medium text-gray-800 truncate">${photo.title}</h3>`;
+                
+                // 🆕 이미지 배열 처리: 기존 imageUrl과 새로운 images 배열 모두 지원
+                const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
+                const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
+                const imageCount = images.length;
+                
+                itemEl.innerHTML = `
+                    <div class="relative aspect-square">
+                        <img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover rounded-lg cursor-pointer gallery-image" 
+                             data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" 
+                             data-images='${JSON.stringify(images)}' onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">
+                        ${imageCount > 1 ? `<div class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded">${imageCount} 장</div>` : ''}
+                    </div>
+                    <h3 class="mt-2 font-medium text-gray-800 truncate">${photo.title}</h3>`;
+                
                 if (document.body.classList.contains('admin-mode')) {
                     const overlay = document.createElement('div');
                     overlay.className = 'admin-edit-overlay';
@@ -2377,6 +2432,8 @@
 
         async function openGalleryModal(docId = null) {
             photoForm.reset();
+            initImageUrlInputs(); // 🆕 이미지 입력 필드 초기화
+            
             if (docId) {
                 galleryModalTitle.textContent = "사진 수정";
                 photoIdInput.value = docId;
@@ -2385,13 +2442,60 @@
                     const data = docSnap.data();
                     photoTitleInput.value = data.title;
                     photoDescriptionInput.value = data.description;
-                    photoImageUrlInput.value = data.imageUrl;
+                    
+                    // 🆕 기존 이미지들 로드
+                    const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
+                    loadImageUrls(images);
                 }
             } else {
                 galleryModalTitle.textContent = "새 사진 추가";
                 photoIdInput.value = '';
             }
             galleryAdminModal.classList.remove('hidden');
+        }
+        
+        // 🆕 이미지 URL 입력 필드 초기화 함수
+        function initImageUrlInputs() {
+            const container = document.getElementById('image-urls-container');
+            container.innerHTML = `
+                <div class="image-url-row flex gap-2">
+                    <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
+                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
+                </div>
+            `;
+            updateRemoveButtons();
+        }
+        
+        // 🆕 기존 이미지 URL들을 입력 필드에 로드
+        function loadImageUrls(images) {
+            const container = document.getElementById('image-urls-container');
+            container.innerHTML = '';
+            
+            images.forEach((imageUrl, index) => {
+                const row = document.createElement('div');
+                row.className = 'image-url-row flex gap-2';
+                row.innerHTML = `
+                    <input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
+                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
+                `;
+                container.appendChild(row);
+            });
+            
+            // 이미지가 없으면 기본 빈 입력 필드 하나 추가
+            if (images.length === 0) {
+                initImageUrlInputs();
+            } else {
+                updateRemoveButtons();
+            }
+        }
+        
+        // 🆕 삭제 버튼 표시/숨김 업데이트
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.image-url-row');
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-image-btn');
+                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
+            });
         }
         
         async function openAboutUsModal(docId = null) {
@@ -2428,13 +2532,41 @@
         async function handlePhotoFormSubmit(e) {
             e.preventDefault();
             const docId = photoIdInput.value;
-            const data = { title: photoTitleInput.value, description: photoDescriptionInput.value, imageUrl: photoImageUrlInput.value, createdAt: serverTimestamp() };
+            
+            // 🆕 모든 이미지 URL 수집
+            const imageInputs = document.querySelectorAll('.image-url-input');
+            const images = Array.from(imageInputs)
+                .map(input => input.value.trim())
+                .filter(url => url); // 빈 값 제거
+            
+            if (images.length === 0) {
+                customAlert('최소 하나의 이미지 URL을 입력해주세요.');
+                return;
+            }
+            
+            const data = { 
+                title: photoTitleInput.value, 
+                description: photoDescriptionInput.value, 
+                images: images, // 🆕 이미지 배열로 저장
+                createdAt: serverTimestamp() 
+            };
+            
             try {
-                if (docId) await updateDoc(doc(db, 'gallery', docId), { title: data.title, description: data.description, imageUrl: data.imageUrl });
-                else await addDoc(collection(db, 'gallery'), data);
+                if (docId) {
+                    await updateDoc(doc(db, 'gallery', docId), { 
+                        title: data.title, 
+                        description: data.description, 
+                        images: data.images 
+                    });
+                } else {
+                    await addDoc(collection(db, 'gallery'), data);
+                }
                 galleryAdminModal.classList.add('hidden');
                 customAlert('저장되었습니다.');
-            } catch (error) { console.error("Error saving photo:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+            } catch (error) { 
+                console.error("Error saving photo:", error); 
+                customAlert('저장 중 오류가 발생했습니다.'); 
+            }
         }
 
         async function handleAboutUsFormSubmit(e) {
@@ -2503,12 +2635,13 @@
                 }
             }
 
-            if (target.matches('#gallery img')) {
-                lightboxImage.src = target.src;
+            if (target.matches('.gallery-image')) {
+                // 🆕 새로운 라이트박스 로직
+                const images = JSON.parse(target.dataset.images || '[]');
                 const title = target.dataset.title || '';
-                const desc = target.dataset.description || '';
-                lightboxCaption.innerHTML = `<h3 class="font-bold text-lg">${title}</h3><p>${desc}</p>`;
-                lightboxModal.classList.remove('hidden');
+                const description = target.dataset.description || '';
+                
+                openLightbox(images, title, description, 0); // 첫 번째 이미지부터 시작
             }
         });
 
@@ -2637,6 +2770,104 @@
                 }
             }
         });        
+});        
+        
+        // 🆕 === 4-3단계: 이미지 URL 관리 기능 ===
+        document.getElementById('add-image-url-btn')?.addEventListener('click', () => {
+            const container = document.getElementById('image-urls-container');
+            const rowCount = container.children.length;
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'image-url-row flex gap-2';
+            newRow.innerHTML = `
+                <input type="url" placeholder="https://i.imgur.com/image${rowCount + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
+                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
+            `;
+            container.appendChild(newRow);
+            updateRemoveButtons();
+        });
+
+        document.getElementById('image-urls-container')?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-image-btn')) {
+                e.target.closest('.image-url-row').remove();
+                updateRemoveButtons();
+            }
+        });
+        
+        // 🆕 === 4-6단계: 라이트박스 기능 ===
+        let currentImages = [];
+        let currentImageIndex = 0;
+        let currentTitle = '';
+        let currentDescription = '';
+
+        function openLightbox(images, title, description, startIndex = 0) {
+            currentImages = images;
+            currentTitle = title;
+            currentDescription = description;
+            currentImageIndex = startIndex;
+            
+            updateLightboxContent();
+            lightboxModal.classList.remove('hidden');
+        }
+
+        function updateLightboxContent() {
+            const lightboxTitle = document.getElementById('lightbox-title');
+            const lightboxCounter = document.getElementById('lightbox-counter');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxDescription = document.getElementById('lightbox-description');
+            const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
+            const prevBtn = document.getElementById('prev-image-btn');
+            const nextBtn = document.getElementById('next-image-btn');
+            
+            lightboxTitle.textContent = currentTitle;
+            lightboxCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+            
+            lightboxImage.src = currentImages[currentImageIndex];
+            lightboxDescription.textContent = currentDescription;
+            
+            prevBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
+            nextBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
+            
+            lightboxThumbnails.innerHTML = '';
+            if (currentImages.length > 1) {
+                currentImages.forEach((imageUrl, index) => {
+                    const thumbnail = document.createElement('img');
+                    thumbnail.src = imageUrl;
+                    thumbnail.className = `w-16 h-16 object-cover rounded cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-transparent'} hover:border-blue-300`;
+                    thumbnail.onclick = () => {
+                        currentImageIndex = index;
+                        updateLightboxContent();
+                    };
+                    lightboxThumbnails.appendChild(thumbnail);
+                });
+            }
+        }
+
+        function showPrevImage() {
+            if (currentImages.length > 1) {
+                currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+                updateLightboxContent();
+            }
+        }
+
+        function showNextImage() {
+            if (currentImages.length > 1) {
+                currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+                updateLightboxContent();
+            }
+        }
+
+        document.getElementById('prev-image-btn')?.addEventListener('click', showPrevImage);
+        document.getElementById('next-image-btn')?.addEventListener('click', showNextImage);
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightboxModal.classList.contains('hidden')) {
+                if (e.key === 'ArrowLeft') showPrevImage();
+                if (e.key === 'ArrowRight') showNextImage();
+                if (e.key === 'Escape') lightboxModal.classList.add('hidden');
+            }
+        });
+        
         navigateTo(window.location.hash.substring(1) || 'home');
     });
     </script>
