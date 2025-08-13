@@ -334,6 +334,35 @@
             background-color: #f8fafc;
             border-radius: 0.25rem;
         }
+        /* 편집 버튼 아이콘 수정 */
+        .edit-btn-icon {
+            display: none;
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            border: none;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 10px;
+            line-height: 1;
+        }
+        
+        .edit-btn-icon::before {
+            content: "✎";
+            font-size: 12px;
+        }
+        
+        body.admin-mode [data-key]:hover .edit-btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -2257,25 +2286,32 @@
 
     function initAdminEditButtons() {
         if (!document.body.classList.contains('admin-mode')) return;
+        
+        // 기존 편집 버튼들 제거
+        document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+        
         document.querySelectorAll('[data-key]').forEach(element => {
-            element.querySelector('.edit-btn-icon')?.remove();
+            // 이미 버튼이 있으면 스킵
+            if (element.querySelector('.edit-btn-icon')) return;
+            
             const editBtn = document.createElement('button');
             editBtn.className = 'edit-btn-icon';
-            editBtn.innerHTML = '<i class="fas fa-pencil-alt" style="font-size: 10px;"></i>';
+            editBtn.innerHTML = '✎'; // 연필 이모지 사용
             editBtn.onclick = (e) => {
-                e.preventDefault(); e.stopPropagation();
+                e.preventDefault(); 
+                e.stopPropagation();
                 const key = element.dataset.key;
                 if (element.tagName === 'IMG') {
                     const n = prompt(`'${key}' 이미지 URL 수정:`, element.src);
                     if (n && n !== element.src) saveContent(key, n);
                 } else {
                     const o = siteContent[key] || element.innerHTML;
-                    // 🆕 HTML을 마크다운으로 변환해서 보여주기
                     const markdownText = htmlToMarkdown(o);
                     const n = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
                     if (n !== null && n !== markdownText) saveContent(key, n);
                 }
             };
+            
             const p = element.tagName === 'IMG' ? element.parentElement : element;
             if (getComputedStyle(p).position === 'static') p.style.position = 'relative';
             p.appendChild(editBtn);
@@ -2461,7 +2497,7 @@
                             </div>
                         </div>
                     `;
-
+    
                     if (document.body.classList.contains('admin-mode')) {
                         const adminButtons = document.createElement('div');
                         adminButtons.className = 'ml-16 pl-6 mt-4 text-left space-x-2';
@@ -2469,7 +2505,7 @@
                             <button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button>
                             <button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>
                         `;
-                        itemEl.querySelector('.ml-16').appendChild(adminButtons);
+                        itemEl.appendChild(adminButtons); // 🔥 이 부분 수정!
                     }
                     timelineContainer.appendChild(itemEl);
                 });
@@ -2891,7 +2927,21 @@
             // --- Admin Actions (Scoped by current page) ---
             if (document.body.classList.contains('admin-mode')) {
                 if (currentPage === 'history') {
-                    // history 관련 코드...
+                    if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openHistoryModal();
+                    } else if (target.matches('.edit-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openHistoryModal(target.dataset.id);
+                    } else if (target.matches('.delete-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
+                        }
+                    }
                 } else if (currentPage === 'community-gallery') {
                     if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
                         e.preventDefault();
