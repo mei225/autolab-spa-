@@ -164,11 +164,20 @@
         body.admin-mode [data-key]:hover .edit-btn-icon {
             display: flex; /* Show on hover in admin mode */
         }
+        /* ✅ 관리자 패널 기본 숨김 처리 강화 */
         .admin-panel {
-            display: none;
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
         body.admin-mode .admin-panel {
-            display: flex; /* Or block, depending on the panel */
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            overflow: visible !important;
         }
         /* Sub-navigation bar styling */
         .sub-nav {
