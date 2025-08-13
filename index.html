@@ -285,6 +285,26 @@
             ring-offset: 2px;
             ring-offset-color: rgba(0, 0, 0, 0.5);
         }
+        /* 🆕 관리자 모드 강제 숨김 보강 */
+        body:not(.admin-mode) .admin-panel {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        body:not(.admin-mode) .admin-edit-overlay {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        body:not(.admin-mode) .edit-btn,
+        body:not(.admin-mode) .delete-btn {
+            display: none !important;
+            visibility: hidden !important;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -2233,10 +2253,23 @@
     }
     
     function removeAdminEditButtons() {
-        // 편집 버튼 제거
+        // 1. 모든 편집 버튼 제거
         document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
         
-        // 모든 data-key 요소의 스타일 초기화
+        // 2. 갤러리 관리자 오버레이 제거
+        document.querySelectorAll('.admin-edit-overlay').forEach(overlay => overlay.remove());
+        
+        // 3. 히스토리/About us 관리자 버튼들 제거
+        document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
+            if (btn.closest('.admin-edit-overlay') || 
+                btn.closest('[class*="admin"]') || 
+                btn.classList.contains('bg-blue-500') || 
+                btn.classList.contains('bg-red-500')) {
+                btn.remove();
+            }
+        });
+        
+        // 4. 모든 data-key 요소의 스타일 완전 초기화
         document.querySelectorAll('[data-key]').forEach(element => {
             element.style.outline = '';
             element.style.outlineOffset = '';
@@ -2247,6 +2280,18 @@
             const parent = element.tagName === 'IMG' ? element.parentElement : element;
             if (parent && parent.style.position === 'relative') {
                 parent.style.position = '';
+            }
+        });
+        
+        // 5. 관리자 버튼이 포함된 div들 제거
+        document.querySelectorAll('div').forEach(div => {
+            if (div.innerHTML && 
+                (div.innerHTML.includes('수정</button>') || 
+                 div.innerHTML.includes('삭제</button>')) &&
+                (div.className.includes('admin') || 
+                 div.className.includes('space-x-2') || 
+                 div.className.includes('text-right'))) {
+                div.remove();
             }
         });
     }
@@ -2866,8 +2911,38 @@
         const desktopNav = document.getElementById('desktop-nav');
         const adminLoginBtn = document.getElementById('admin-login-btn');
         
-        function enterAdminMode() { document.body.classList.add('admin-mode'); adminLoginBtn.textContent = 'Logout'; navigateTo(currentPage); }
-        function exitAdminMode() { document.body.classList.remove('admin-mode'); adminLoginBtn.textContent = 'Admin Login'; removeAdminEditButtons(); setTimeout(() => {navigateTo(currentPage);}, 100); }
+        function enterAdminMode() { 
+            document.body.classList.add('admin-mode'); 
+            adminLoginBtn.textContent = 'Logout'; 
+            
+            // 🆕 현재 페이지에 맞는 관리자 패널 보이기
+            const currentPage = appContent.dataset.page;
+            const adminPanels = {
+                'history': 'history-admin-panel',
+                'community-gallery': 'gallery-admin-panel', 
+                'about-us': 'about-us-admin-panel',
+                'products': 'products-admin-panel'
+            };
+            
+            if (adminPanels[currentPage]) {
+                const panel = document.getElementById(adminPanels[currentPage]);
+                if (panel) panel.classList.remove('hidden');
+            }
+            
+            navigateTo(currentPage); 
+        }
+        function exitAdminMode() { 
+            document.body.classList.remove('admin-mode'); 
+            adminLoginBtn.textContent = 'Admin Login'; 
+            
+            // 🆕 관리자 패널 숨기기
+            document.querySelectorAll('.admin-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            removeAdminEditButtons(); 
+            setTimeout(() => {navigateTo(currentPage);}, 100); 
+        }
         onAuthStateChanged(auth, (user) => { if (user) enterAdminMode(); else exitAdminMode(); });
         
         adminLoginBtn.onclick = async () => {
