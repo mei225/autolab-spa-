@@ -87,23 +87,22 @@
         }
         /* Gallery Admin Overlay */
         .admin-edit-overlay {
-            .admin-edit-overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.75rem;
-                opacity: 0;
-                transition: all 0.3s ease;
-                cursor: default;
-                backdrop-filter: blur(2px);
-                z-index: 10; /* 이 줄 추가 */
-            }
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: default;
+            backdrop-filter: blur(2px);
+            z-index: 10;
+        }
         .group:hover .admin-edit-overlay {
             opacity: 1;
         }
@@ -2319,8 +2318,13 @@
     }
     
     function removeAdminEditButtons() {
-        // 1. 모든 편집 버튼 제거
-        document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+        console.log('관리자 편집 버튼 제거 중...'); // 디버깅용
+        
+        // 1. 모든 편집 버튼 제거 (더 강력하게)
+        document.querySelectorAll('.edit-btn-icon').forEach(btn => {
+            console.log('편집 버튼 제거:', btn); // 디버깅용
+            btn.remove();
+        });
         
         // 2. 갤러리 관리자 오버레이 제거
         document.querySelectorAll('.admin-edit-overlay').forEach(overlay => overlay.remove());
@@ -2335,17 +2339,25 @@
             }
         });
         
-        // 4. 모든 data-key 요소의 스타일 완전 초기화
+        // 4. 🔥 모든 data-key 요소의 스타일과 버튼 완전 초기화
         document.querySelectorAll('[data-key]').forEach(element => {
+            // 스타일 초기화
             element.style.outline = '';
             element.style.outlineOffset = '';
             element.style.backgroundColor = '';
             element.style.position = '';
             
+            // 🔥 내부의 편집 버튼들도 강제 제거
+            const editBtns = element.querySelectorAll('.edit-btn-icon');
+            editBtns.forEach(btn => btn.remove());
+            
             // 부모 요소의 position도 초기화
             const parent = element.tagName === 'IMG' ? element.parentElement : element;
             if (parent && parent.style.position === 'relative') {
                 parent.style.position = '';
+                // 🔥 부모 요소의 편집 버튼도 제거
+                const parentEditBtns = parent.querySelectorAll('.edit-btn-icon');
+                parentEditBtns.forEach(btn => btn.remove());
             }
         });
         
@@ -2360,6 +2372,14 @@
                 div.remove();
             }
         });
+        
+        // 6. 🔥 DOM 전체에서 편집 버튼 강제 제거 (마지막 보험)
+        setTimeout(() => {
+            document.querySelectorAll('.edit-btn-icon').forEach(btn => {
+                console.log('지연 제거:', btn); // 디버깅용
+                btn.remove();
+            });
+        }, 100);
     }
 
     // --- Router ---
@@ -2600,7 +2620,20 @@
                 if (document.body.classList.contains('admin-mode')) {
                     const overlay = document.createElement('div');
                     overlay.className = 'admin-edit-overlay';
-                    overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium">수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium">삭제</button>`;
+                    overlay.innerHTML = `
+                        <button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium">
+                            <i class="fas fa-edit mr-1"></i>수정
+                        </button>
+                        <button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium">
+                            <i class="fas fa-trash mr-1"></i>삭제
+                        </button>
+                    `;
+                    
+                    // 🔥 오버레이 클릭 이벤트 전파 방지
+                    overlay.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                    
                     itemEl.querySelector('.relative').appendChild(overlay);
                 }
                 galleryGrid.appendChild(itemEl);
@@ -2949,52 +2982,67 @@
             const target = e.target;
             const currentPage = appContent.dataset.page;
 
-            // --- Admin Actions (Scoped by current page) ---
-            if (document.body.classList.contains('admin-mode')) {
-                if (currentPage === 'history') {
-                    if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openHistoryModal();
-                    } else if (target.matches('.edit-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openHistoryModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
-                        }
+        // --- Admin Actions (Scoped by current page) ---
+        if (document.body.classList.contains('admin-mode')) {
+            if (currentPage === 'history') {
+                if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openHistoryModal();
+                } else if (target.matches('.edit-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openHistoryModal(target.dataset.id);
+                } else if (target.matches('.delete-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
+                        await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
                     }
-                } else if (currentPage === 'community-gallery') {
-                    if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openGalleryModal();
-                    } else if (target.matches('.edit-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openGalleryModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'gallery', target.dataset.id)).catch(err => console.error(err));
-                        }
+                }
+            } else if (currentPage === 'community-gallery') {
+                // 🔥 갤러리 관련 이벤트 처리 수정
+                if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openGalleryModal();
+                } else if (target.matches('.edit-btn') || target.closest('.edit-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btnElement = target.matches('.edit-btn') ? target : target.closest('.edit-btn');
+                    const photoId = btnElement.dataset.id;
+                    console.log('갤러리 수정 버튼 클릭:', photoId); // 디버깅용
+                    if (photoId) {
+                        openGalleryModal(photoId);
                     }
-                } else if (currentPage === 'about-us') {
-                    if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) {
-                        openAboutUsModal();
-                    } else if (target.matches('.edit-btn')) {
-                        openAboutUsModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
+                } else if (target.matches('.delete-btn') || target.closest('.delete-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btnElement = target.matches('.delete-btn') ? target : target.closest('.delete-btn');
+                    const photoId = btnElement.dataset.id;
+                    console.log('갤러리 삭제 버튼 클릭:', photoId); // 디버깅용
+                    if (photoId && await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
+                        try {
+                            await deleteDoc(doc(db, 'gallery', photoId));
+                            customAlert('사진이 삭제되었습니다.');
+                        } catch (error) {
+                            console.error('삭제 중 오류:', error);
+                            customAlert('삭제 중 오류가 발생했습니다.');
                         }
                     }
                 }
+            } else if (currentPage === 'about-us') {
+                if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) {
+                    openAboutUsModal();
+                } else if (target.matches('.edit-btn')) {
+                    openAboutUsModal(target.dataset.id);
+                } else if (target.matches('.delete-btn')) {
+                    if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
+                        await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
+                    }
+                }
             }
+        }
             // --- General UI Actions ---
             const accordionHeader = target.closest('.accordion-header');
             if (accordionHeader) {
