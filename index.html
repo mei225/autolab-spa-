@@ -305,6 +305,35 @@
             display: none !important;
             visibility: hidden !important;
         }
+        /* 타임라인 스타일 개선 */
+        .timeline-date {
+            display: inline-block;
+            min-width: 120px;
+            font-weight: 600;
+            color: #1e40af; /* 파란색 */
+            font-size: 0.95rem;
+        }
+        
+        .timeline-content {
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: #4b5563; /* 회색 */
+            line-height: 1.5;
+        }
+        
+        .timeline-item {
+            margin-bottom: 0.75rem;
+            padding: 0.25rem 0;
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .timeline-item:hover {
+            border-left-color: #3b82f6;
+            background-color: #f8fafc;
+            border-radius: 0.25rem;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -2401,10 +2430,32 @@
                             <!-- 가운데: 파란 원 (빈 원) -->
                             <div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div>
                             
-                            <!-- 오른쪽: 내용과 이미지 -->
+                            <!-- 오른쪽: 월별 내용과 이미지 -->
                             <div class="flex-1 ml-8">
-                                <div class="space-y-2">
-                                    ${item.events.split('\n').map(e => `<p class="text-gray-600">${e}</p>`).join('')}
+                                <div class="space-y-1">
+                                    ${item.events.split('\n').map(e => {
+                                        const trimmed = e.trim();
+                                        if (!trimmed) return '';
+                                        
+                                        // 월.일 형식을 찾아서 스타일 적용
+                                        if (/^\d{1,2}\.\d{1,2}\./.test(trimmed)) {
+                                            // "09.15. 내용" 형식인 경우
+                                            const parts = trimmed.split('.');
+                                            const month = parts[0];
+                                            const day = parts[1];
+                                            const content = trimmed.substring(month.length + day.length + 2).trim();
+                                            
+                                            return `<div class="timeline-item">
+                                                <span class="timeline-date">${item.year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}.</span>
+                                                <span class="timeline-content">${content}</span>
+                                            </div>`;
+                                        } else {
+                                            // 일반 내용인 경우 (월.일 없이)
+                                            return `<div class="timeline-item">
+                                                <span class="timeline-content">${trimmed}</span>
+                                            </div>`;
+                                        }
+                                    }).filter(item => item).join('')}
                                 </div>
                                 ${imageHtml}
                             </div>
