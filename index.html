@@ -849,22 +849,14 @@
                     
                     <!-- 좌측 텍스트 + 우측 이미지 레이아웃 -->
                     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-                        <!-- 좌측: 교육 과정 내용 -->
-                        <div class="scroll-reveal">
-                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                        <!-- 좌측: 교육 과정 내용만 (이미지 제거) -->
+                        <div class="scroll-reveal space-y-6">
+                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                                 <h3 data-key="ict.curriculum.course1Title" class="text-xl font-bold text-blue-800">기초 과정: 센서 데이터 분석 입문</h3>
                                 <p data-key="ict.curriculum.course1Description" class="mt-2 text-gray-700">센서의 기본 원리를 이해하고, Python을 활용하여 데이터를 수집하고 분석하는 기초를 다집니다.</p>
                             </div>
                             
-                            <!-- 첫 번째 이미지와 높이 맞추기 위한 여백 -->
-                            <div class="mb-6">
-                                <img data-key="ict.curriculum.image1" 
-                                     src="https://placehold.co/600x300/e0f2fe/1e3a8a?text=교육+현장+1" 
-                                     alt="ICT 교육 현장 1" 
-                                     class="rounded-lg shadow-xl w-full h-48 object-cover">
-                            </div>
-                            
-                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                                 <h3 data-key="ict.curriculum.course2Title" class="text-xl font-bold text-blue-800">심화 과정: AI 기반 자동화 시스템 구축</h3>
                                 <p data-key="ict.curriculum.course2Description" class="mt-2 text-gray-700">머신러닝/딥러닝 모델을 활용하여 실제 산업 현장의 문제를 해결하는 자동화 시스템을 직접 구축합니다.</p>
                             </div>
@@ -875,18 +867,16 @@
                             </div>
                         </div>
                         
-                        <!-- 우측: 이미지 2개 -->
-                        <div class="scroll-reveal" style="transition-delay: 150ms;">
-                            <!-- 첫 번째 텍스트 박스와 높이 맞추기 -->
-                            <div class="mb-6">
+                        <!-- 우측: 이미지 2개만 -->
+                        <div class="scroll-reveal space-y-6" style="transition-delay: 150ms;">
+                            <div>
                                 <img data-key="ict.curriculum.image2" 
                                      src="https://placehold.co/600x300/dbeafe/1e3a8a?text=교육+현장+2" 
                                      alt="ICT 교육 현장 2" 
-                                     class="rounded-lg shadow-xl w-full h-48 object-cover">
+                                     class="rounded-lg shadow-xl w-full h-auto object-cover">
                             </div>
                             
-                            <!-- 나머지 공간을 채우는 큰 이미지 -->
-                            <div class="relative">
+                            <div>
                                 <img data-key="ict.curriculum.image3" 
                                      src="https://placehold.co/600x400/f0f9ff/1e3a8a?text=교육+성과" 
                                      alt="ICT 교육 성과" 
