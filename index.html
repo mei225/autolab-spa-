@@ -2259,7 +2259,7 @@
     import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
         
-    const firebaseConfig = {
+const firebaseConfig = {
         apiKey: "AIzaSyAr1yhQMfO0Xww2GAEKu_WJWIQ3Rvzly1g",
         authDomain: "autolab-d06cf.firebaseapp.com",
         projectId: "autolab-d06cf",
@@ -2269,10 +2269,21 @@
         measurementId: "G-QPM7KR2MM6"
     };
     
+    // --- Firebase 초기화 (최상단에서 한 번만) ---
+    let app, db, auth;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        console.log('✅ Firebase 초기화 성공');
+    } catch (error) {
+        console.error('❌ Firebase 초기화 실패:', error);
+        alert('데이터베이스 연결에 실패했습니다. 페이지를 새로고침 해주세요.');
+    }
+    
     // --- Global Variables & DOM Elements ---
     const appContent = document.getElementById('app-content');
     const pageTemplates = document.getElementById('page-templates');
-    let db, auth;
     let currentPage = 'home';
     let siteContent = {};
     let activeFirestoreListeners = [];
@@ -2921,8 +2932,9 @@
             submitButton.innerHTML = originalButtonText;
         });
     }
-    // --- 전역 갤러리 관리 함수들 ---
-    async function openGalleryModal(docId = null) {
+    // --- 전역 갤러리 관리 함수들 (window 객체에 추가하여 전역 접근 가능하게) ---
+    window.openGalleryModal = async function(docId = null) {
+        console.log('🎯 openGalleryModal 호출됨, docId:', docId);
         const galleryAdminModal = document.getElementById('gallery-admin-modal');
         const photoForm = document.getElementById('photo-form');
         const galleryModalTitle = document.getElementById('gallery-modal-title');
@@ -2942,9 +2954,11 @@
             galleryModalTitle.textContent = "사진 수정";
             photoIdInput.value = docId;
             try {
+                console.log('📄 Firebase에서 문서 로드 중...');
                 const docSnap = await getDoc(doc(db, 'gallery', docId));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    console.log('✅ 문서 로드 성공:', data);
                     photoTitleInput.value = data.title || '';
                     photoDescriptionInput.value = data.description || '';
                     
@@ -2952,6 +2966,7 @@
                     const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
                     loadImageUrls(images);
                 } else {
+                    console.error('❌ 해당 사진을 찾을 수 없습니다.');
                     customAlert('해당 사진을 찾을 수 없습니다.');
                     return;
                 }
