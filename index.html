@@ -2269,18 +2269,6 @@ const firebaseConfig = {
         measurementId: "G-QPM7KR2MM6"
     };
     
-    // --- Firebase 초기화 (최상단에서 한 번만) ---
-    let app, db, auth;
-    try {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        console.log('✅ Firebase 초기화 성공');
-    } catch (error) {
-        console.error('❌ Firebase 초기화 실패:', error);
-        alert('데이터베이스 연결에 실패했습니다. 페이지를 새로고침 해주세요.');
-    }
-    
     // --- Global Variables & DOM Elements ---
     const appContent = document.getElementById('app-content');
     const pageTemplates = document.getElementById('page-templates');
@@ -3028,15 +3016,31 @@ const firebaseConfig = {
             }
         });
     }
-    // --- Global Scripts (run once on load) ---
     document.addEventListener('DOMContentLoaded', function () {
+        // ✅ Firebase 변수 선언 (여기서만!)
+        let app, db, auth;
+        
+        // ✅ Firebase 초기화 (딱 한 번만!)
         try {
-            const app = initializeApp(firebaseConfig);
+            app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
+            console.log('✅ Firebase 초기화 성공');
+            
+            // 인증 상태 감지
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    enterAdminMode();
+                } else {
+                    exitAdminMode();
+                }
+            });
+            
+            // 콘텐츠 관리 초기화
             initContentManagement();
+            
         } catch (e) {
-            console.error("Firebase initialization failed:", e);
+            console.error("❌ Firebase 초기화 실패:", e);
             customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
             return;
         }
