@@ -2255,1111 +2255,640 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-        
-    const firebaseConfig = {
-        apiKey: "AIzaSyAr1yhQMfO0Xww2GAEKu_WJWIQ3Rvzly1g",
-        authDomain: "autolab-d06cf.firebaseapp.com",
-        projectId: "autolab-d06cf",
-        storageBucket: "autolab-d06cf.firebasestorage.app",
-        messagingSenderId: "377868298631",
-        appId: "1:377868298631:web:c204e4bffdfc2d9a4c4b22",
-        measurementId: "G-QPM7KR2MM6"
-    };
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+            
+        const firebaseConfig = {
+            apiKey: "AIzaSyAr1yhQMfO0Xww2GAEKu_WJWIQ3Rvzly1g",
+            authDomain: "autolab-d06cf.firebaseapp.com",
+            projectId: "autolab-d06cf",
+            storageBucket: "autolab-d06cf.firebasestorage.app",
+            messagingSenderId: "377868298631",
+            appId: "1:377868298631:web:c204e4bffdfc2d9a4c4b22",
+            measurementId: "G-QPM7KR2MM6"
+        };
     
-    // --- Global Variables & DOM Elements ---
-    const appContent = document.getElementById('app-content');
-    const pageTemplates = document.getElementById('page-templates');
-    let db, auth;
-    let currentPage = 'home';
-    let siteContent = {};
-    let activeFirestoreListeners = [];
-
-    // --- Custom Dialog ---
-    const dialogModal = document.getElementById('custom-dialog-modal');
-    const dialogMessage = document.getElementById('dialog-message');
-    const dialogButtons = document.getElementById('dialog-buttons');
-
-    function showDialog(message, buttons) {
-        dialogMessage.textContent = message;
-        dialogButtons.innerHTML = '';
-        buttons.forEach(btn => {
-            const buttonEl = document.createElement('button');
-            buttonEl.textContent = btn.text;
-            buttonEl.className = btn.class;
-            buttonEl.onclick = () => {
-                dialogModal.classList.add('hidden');
-                if (btn.onClick) btn.onClick();
-            };
-            dialogButtons.appendChild(buttonEl);
-        });
-        dialogModal.classList.remove('hidden');
-    }
-
-    function customAlert(message) { showDialog(message, [{ text: '확인', class: 'bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded' }]); }
-    function customConfirm(message) {
-        return new Promise((resolve) => {
-            showDialog(message, [
-                { text: '취소', class: 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded', onClick: () => resolve(false) },
-                { text: '확인', class: 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded', onClick: () => resolve(true) }
-            ]);
-        });
-    }
-
-    // --- Content Management ---
-    function applyContent(key, value) {
-        document.querySelectorAll(`[data-key="${key}"]`).forEach(el => {
-            if (el.tagName === 'IMG') el.src = value; else el.innerHTML = value;
-        });
-    }
-    // 🆕 마크다운을 HTML로 변환하는 함수 추가
-    function markdownToHtml(text) {
-        return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **볼드** → <strong>볼드</strong>
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')              // *이탤릭* → <em>이탤릭</em>
-            .replace(/\n/g, '<br>');                           // 줄바꿈 → <br>
-    }
+        // --- Global Variables & DOM Elements ---
+        const appContent = document.getElementById('app-content');
+        const pageTemplates = document.getElementById('page-templates');
+        let db, auth;
+        let currentPage = 'home';
+        let siteContent = {};
+        let activeFirestoreListeners = [];
     
-    // 🆕 HTML을 마크다운으로 변환하는 함수 추가 (편집할 때 사용)
-    function htmlToMarkdown(html) {
-        return html
-            .replace(/<strong>(.*?)<\/strong>/g, '**$1**')     // <strong>볼드</strong> → **볼드**
-            .replace(/<em>(.*?)<\/em>/g, '*$1*')               // <em>이탤릭</em> → *이탤릭*
-            .replace(/<br\s*\/?>/gi, '\n');                    // <br> → 줄바꿈
-    }
-        
-    function initContentManagement() {
-        if (!db) return;
-        onSnapshot(collection(db, 'site_content'), (snapshot) => {
-            snapshot.docs.forEach(doc => {
-                siteContent[doc.id] = doc.data().value;
-                applyContent(doc.id, doc.data().value);
+        // --- Custom Dialog ---
+        const dialogModal = document.getElementById('custom-dialog-modal');
+        const dialogMessage = document.getElementById('dialog-message');
+        const dialogButtons = document.getElementById('dialog-buttons');
+    
+        function showDialog(message, buttons) {
+            dialogMessage.textContent = message;
+            dialogButtons.innerHTML = '';
+            buttons.forEach(btn => {
+                const buttonEl = document.createElement('button');
+                buttonEl.textContent = btn.text;
+                buttonEl.className = btn.class;
+                buttonEl.onclick = () => {
+                    dialogModal.classList.add('hidden');
+                    if (btn.onClick) btn.onClick();
+                };
+                dialogButtons.appendChild(buttonEl);
             });
-            if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
-        });
-    }
-
-    async function saveContent(key, value) {
-        try { 
-            // 🆕 마크다운을 HTML로 변환해서 저장
-            const htmlValue = markdownToHtml(value);
-            await setDoc(doc(db, 'site_content', key), { value: htmlValue }); 
-            customAlert('내용이 저장되었습니다.'); 
-        } 
-        catch (error) { 
-            console.error("Error saving content: ", error); 
-            customAlert('저장 중 오류가 발생했습니다.'); 
+            dialogModal.classList.remove('hidden');
         }
-    }
-
-    // 📄 수정 후 코드
-    function initAdminEditButtons() {
-        if (!document.body.classList.contains('admin-mode')) return;
     
-        // 기존에 남아있을 수 있는 버튼과 클래스를 먼저 정리합니다.
-        document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
-        document.querySelectorAll('.admin-editable-container').forEach(el => el.classList.remove('admin-editable-container'));
+        function customAlert(message) { showDialog(message, [{ text: '확인', class: 'bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded' }]); }
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                showDialog(message, [
+                    { text: '취소', class: 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded', onClick: () => resolve(false) },
+                    { text: '확인', class: 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded', onClick: () => resolve(true) }
+                ]);
+            });
+        }
     
-        document.querySelectorAll('[data-key]').forEach(element => {
-            // 이미 버튼이 있다면 건너뜁니다.
-            if (element.querySelector('.edit-btn-icon')) return;
+        // --- Content Management ---
+        function applyContent(key, value) {
+            document.querySelectorAll(`[data-key="${key}"]`).forEach(el => {
+                if (el.tagName === 'IMG') el.src = value; else el.innerHTML = value;
+            });
+        }
+        function markdownToHtml(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+        function htmlToMarkdown(html) {
+            return html
+                .replace(/<strong>(.*?)<\/strong>/g, '**$1**')
+                .replace(/<em>(.*?)<\/em>/g, '*$1*')
+                .replace(/<br\s*\/?>/gi, '\n');
+        }
+            
+        function initContentManagement() {
+            if (!db) return;
+            onSnapshot(collection(db, 'site_content'), (snapshot) => {
+                snapshot.docs.forEach(doc => {
+                    siteContent[doc.id] = doc.data().value;
+                    applyContent(doc.id, doc.data().value);
+                });
+                if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
+            });
+        }
     
-            // 갤러리 페이지의 이미지는 별도 처리하므로 건너뜁니다.
-            const currentPage = document.getElementById('app-content').dataset.page;
-            if (currentPage === 'community-gallery' && element.classList.contains('gallery-image')) {
-                return;
+        async function saveContent(key, value) {
+            try {
+                const htmlValue = markdownToHtml(value);
+                await setDoc(doc(db, 'site_content', key), { value: htmlValue });
+                customAlert('내용이 저장되었습니다.');
             }
+            catch (error) {
+                console.error("Error saving content: ", error);
+                customAlert('저장 중 오류가 발생했습니다.');
+            }
+        }
     
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-btn-icon';
-            editBtn.innerHTML = '✎';
-            editBtn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const key = element.dataset.key;
-                if (element.tagName === 'IMG') {
-                    const newUrl = prompt(`'${key}' 이미지 URL 수정:`, element.src);
-                    if (newUrl && newUrl !== element.src) saveContent(key, newUrl);
-                } else {
-                    const originalHtml = siteContent[key] || element.innerHTML;
-                    const markdownText = htmlToMarkdown(originalHtml);
-                    const newText = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
-                    if (newText !== null && newText !== markdownText) saveContent(key, newText);
+        function initAdminEditButtons() {
+            if (!document.body.classList.contains('admin-mode')) return;
+            document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+            document.querySelectorAll('.admin-editable-container').forEach(el => el.classList.remove('admin-editable-container'));
+            
+            document.querySelectorAll('[data-key]').forEach(element => {
+                if (element.querySelector('.edit-btn-icon')) return;
+                
+                const currentPage = document.getElementById('app-content').dataset.page;
+                if (currentPage === 'community-gallery' && element.classList.contains('gallery-image')) {
+                    return;
                 }
-            };
-    
-            // ⭐️ 핵심 수정 부분: 이미지 처리 개선
-            let parentContainer;
-            if (element.tagName === 'IMG') {
-                // 이미지의 경우 부모 요소를 컨테이너로 사용
-                parentContainer = element.parentElement;
-                // 부모 요소가 이미 relative position을 가지고 있지 않다면 설정
-                if (getComputedStyle(parentContainer).position === 'static') {
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn-icon';
+                editBtn.innerHTML = '✎';
+                editBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const key = element.dataset.key;
+                    if (element.tagName === 'IMG') {
+                        const newUrl = prompt(`'${key}' 이미지 URL 수정:`, element.src);
+                        if (newUrl && newUrl !== element.src) saveContent(key, newUrl);
+                    } else {
+                        const originalHtml = siteContent[key] || element.innerHTML;
+                        const markdownText = htmlToMarkdown(originalHtml);
+                        const newText = prompt(`'${key}' 내용 수정:\n\n📝 사용법:\n**볼드** = 굵게\n*이탤릭* = 기울임\n줄바꿈 = 엔터`, markdownText);
+                        if (newText !== null && newText !== markdownText) saveContent(key, newText);
+                    }
+                };
+                
+                let parentContainer;
+                if (element.tagName === 'IMG') {
+                    parentContainer = element.parentElement;
+                    if (getComputedStyle(parentContainer).position === 'static') {
+                        parentContainer.classList.add('admin-editable-container');
+                    }
+                } else {
+                    parentContainer = element;
                     parentContainer.classList.add('admin-editable-container');
                 }
-            } else {
-                // 텍스트 요소의 경우 자기 자신을 컨테이너로 사용
-                parentContainer = element;
-                parentContainer.classList.add('admin-editable-container');
-            }
-            
-            parentContainer.appendChild(editBtn);
-        });
-    }
-    
-    function removeAdminEditButtons() {
-        console.log('관리자 편집 버튼 제거 중...'); // 디버깅용
-        
-        // 1. 모든 편집 버튼 제거 (더 강력하게)
-        document.querySelectorAll('.edit-btn-icon').forEach(btn => {
-            console.log('편집 버튼 제거:', btn); // 디버깅용
-            btn.remove();
-        });
-        
-        // 2. 갤러리 관리자 오버레이 제거
-        document.querySelectorAll('.admin-edit-overlay').forEach(overlay => overlay.remove());
-        
-        // 3. 히스토리/About us 관리자 버튼들 제거
-        document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
-            if (btn.closest('.admin-edit-overlay') || 
-                btn.closest('[class*="admin"]') || 
-                btn.classList.contains('bg-blue-500') || 
-                btn.classList.contains('bg-red-500')) {
-                btn.remove();
-            }
-        });
-        
-        // 4. 🔥 모든 data-key 요소의 스타일과 버튼 완전 초기화
-        document.querySelectorAll('[data-key]').forEach(element => {
-            // 스타일 초기화
-            element.style.outline = '';
-            element.style.outlineOffset = '';
-            element.style.backgroundColor = '';
-            element.style.position = '';
-            
-            // 🔥 내부의 편집 버튼들도 강제 제거
-            const editBtns = element.querySelectorAll('.edit-btn-icon');
-            editBtns.forEach(btn => btn.remove());
-            
-            // 부모 요소의 position도 초기화
-            const parent = element.tagName === 'IMG' ? element.parentElement : element;
-            if (parent && parent.style.position === 'relative') {
-                parent.style.position = '';
-                // 🔥 부모 요소의 편집 버튼도 제거
-                const parentEditBtns = parent.querySelectorAll('.edit-btn-icon');
-                parentEditBtns.forEach(btn => btn.remove());
-            }
-        });
-        
-        // 5. 관리자 버튼이 포함된 div들 제거
-        document.querySelectorAll('div').forEach(div => {
-            if (div.innerHTML && 
-                (div.innerHTML.includes('수정</button>') || 
-                 div.innerHTML.includes('삭제</button>')) &&
-                (div.className.includes('admin') || 
-                 div.className.includes('space-x-2') || 
-                 div.className.includes('text-right'))) {
-                div.remove();
-            }
-        });
-        
-        // 6. 🔥 DOM 전체에서 편집 버튼 강제 제거 (마지막 보험)
-        setTimeout(() => {
-            document.querySelectorAll('.edit-btn-icon').forEach(btn => {
-                console.log('지연 제거:', btn); // 디버깅용
-                btn.remove();
+                
+                parentContainer.appendChild(editBtn);
             });
-        }, 100);
-    }
-
-    // --- Router ---
-    function navigateTo(pageId) {
-        currentPage = pageId;
-        window.location.hash = pageId;
-    
-        activeFirestoreListeners.forEach(unsubscribe => unsubscribe());
-        activeFirestoreListeners = [];
-    
-        const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-        if (!targetTemplate) { navigateTo('home'); return; }
-        
-        const newContent = targetTemplate.cloneNode(true);
-        newContent.id = ''; 
-        newContent.className = 'page-content'; 
-        
-        appContent.innerHTML = '';
-        appContent.appendChild(newContent);
-        appContent.dataset.page = pageId;
-        
-        window.scrollTo(0, 0);
-        Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
-        
-        const pageInitFunctions = {
-            'history': initHistoryPage,
-            'community-gallery': initGalleryPage,
-            'about-us': initAboutUsPage,
-            'login': initLoginPage
-        };
-        pageInitFunctions[pageId]?.();
-    
-        setTimeout(() => {
-            newContent.classList.add('visible');
-            handleScrollAnimation();
-        }, 50);
-    
-        bindNavLinks(appContent);
-        
-        // 🔥 관리자 모드일 때 현재 페이지에 맞는 패널 표시
-        if (document.body.classList.contains('admin-mode')) {
-            const adminPanels = {
-                'history': 'history-admin-panel',
-                'community-gallery': 'gallery-admin-panel', 
-                'about-us': 'about-us-admin-panel',
-                'products': 'products-admin-panel'
-            };
+        }
             
-            // 모든 패널 숨기기
-            document.querySelectorAll('.admin-panel').forEach(panel => {
-                panel.classList.add('hidden');
-            });
-            
-            // 현재 페이지 패널만 보이기
-            if (adminPanels[pageId]) {
-                const panel = document.getElementById(adminPanels[pageId]);
-                if (panel) {
-                    panel.classList.remove('hidden');
-                    console.log(`페이지 이동 시 패널 표시: ${adminPanels[pageId]}`); // 디버깅용
+        function removeAdminEditButtons() {
+            document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
+            document.querySelectorAll('.admin-edit-overlay').forEach(overlay => overlay.remove());
+            document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
+                if (btn.closest('.admin-edit-overlay') ||
+                    btn.closest('[class*="admin"]') ||
+                    btn.classList.contains('bg-blue-500') ||
+                    btn.classList.contains('bg-red-500')) {
+                    btn.remove();
                 }
-            }
-            
+            });
+            document.querySelectorAll('[data-key]').forEach(element => {
+                element.style.outline = '';
+                element.style.outlineOffset = '';
+                element.style.backgroundColor = '';
+                element.style.position = '';
+                const editBtns = element.querySelectorAll('.edit-btn-icon');
+                editBtns.forEach(btn => btn.remove());
+                const parent = element.tagName === 'IMG' ? element.parentElement : element;
+                if (parent && parent.style.position === 'relative') {
+                    parent.style.position = '';
+                    const parentEditBtns = parent.querySelectorAll('.edit-btn-icon');
+                    parentEditBtns.forEach(btn => btn.remove());
+                }
+            });
+            document.querySelectorAll('div').forEach(div => {
+                if (div.innerHTML &&
+                    (div.innerHTML.includes('수정</button>') ||
+                    div.innerHTML.includes('삭제</button>')) &&
+                    (div.className.includes('admin') ||
+                    div.className.includes('space-x-2') ||
+                    div.className.includes('text-right'))) {
+                    div.remove();
+                }
+            });
             setTimeout(() => {
-                initAdminEditButtons();
+                document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
             }, 100);
         }
-    }
     
-    function bindNavLinks(container) {
-        container.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetPage = link.dataset.target;
-                if (targetPage && targetPage !== currentPage) {
-                    navigateTo(targetPage);
-                    document.getElementById('mobile-menu').classList.add('hidden');
-                }
-            });
-        });
-    }
-
-    function handleScrollAnimation() {
-        document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
-            if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                el.classList.add('visible');
-            }
-        });
-    }
-
-    function initLoginPage() {
-        const loginForm = document.getElementById('login-form');
-        if (!loginForm) return;
-        
-        loginForm.onsubmit = async (e) => {
-            e.preventDefault();
+        // --- Router ---
+        function navigateTo(pageId) {
+            currentPage = pageId;
+            window.location.hash = pageId;
+            activeFirestoreListeners.forEach(unsubscribe => unsubscribe());
+            activeFirestoreListeners = [];
             
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const submitButton = loginForm.querySelector('button[type="submit"]');
+            const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
+            if (!targetTemplate) { navigateTo('home'); return; }
             
-            // 버튼 비활성화 (중복 클릭 방지)
-            submitButton.disabled = true;
-            submitButton.textContent = '로그인 중...';
+            const newContent = targetTemplate.cloneNode(true);
+            newContent.id = '';
+            newContent.className = 'page-content';
             
-            try {
-                await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-                customAlert('로그인 성공! 관리자 모드로 전환됩니다.');
-                navigateTo('home');
-            } catch (error) {
-                console.error('로그인 오류:', error);
-                let errorMessage = '로그인에 실패했습니다.';
-                
-                // 구체적인 오류 메시지 제공
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                        errorMessage = '등록되지 않은 이메일입니다.';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage = '비밀번호가 올바르지 않습니다.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = '올바른 이메일 형식이 아닙니다.';
-                        break;
-                }
-                
-                customAlert(errorMessage);
-            } finally {
-                // 버튼 다시 활성화
-                submitButton.disabled = false;
-                submitButton.textContent = '로그인';
-            }
-        };
-    }
-    function initHistoryPage() {
-        const timelineContainer = document.getElementById('timeline-container');
-        if (!timelineContainer) return;
-        
-        const q = query(collection(db, 'history'), orderBy("order", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0" style="left: 138px;"></div>';
+            appContent.innerHTML = '';
+            appContent.appendChild(newContent);
+            appContent.dataset.page = pageId;
             
-            if (data.length === 0) {
-                timelineContainer.innerHTML += '<p class="text-center text-gray-500 py-10">등록된 연혁이 없습니다.</p>';
-            } else {
-                data.forEach(item => {
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'mb-16 scroll-reveal';
-                
-                    const imageHtml = item.imageUrl 
-                        ? `<div class="mt-4">
-                               <img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full max-w-md h-auto object-cover" onerror="this.style.display='none'">
-                           </div>` 
-                        : '';
-                    
-                    itemEl.innerHTML = `
-                        <div class="flex items-start">
-                            <!-- 왼쪽: 연도 -->
-                            <div class="flex-shrink-0 text-right mr-8 w-24">
-                                <h3 class="text-2xl font-bold text-gray-800">${item.year}</h3>
-                            </div>
-                            
-                            <!-- 가운데: 파란 원 (빈 원) -->
-                            <div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div>
-                            
-                            <!-- 오른쪽: 월별 내용과 이미지 -->
-                            <div class="flex-1 ml-8">
-                                <div class="space-y-1">
-                                    ${item.events.split('\n').map(e => {
-                                        const trimmed = e.trim();
-                                        if (!trimmed) return '';
-                                        
-                                        // 월.일 형식을 찾아서 스타일 적용
-                                        if (/^\d{1,2}\.\d{1,2}\./.test(trimmed)) {
-                                            // "09.15. 내용" 형식인 경우
-                                            const parts = trimmed.split('.');
-                                            const month = parts[0];
-                                            const day = parts[1];
-                                            const content = trimmed.substring(month.length + day.length + 2).trim();
-                                            
-                                            return `<div class="timeline-item">
-                                                <span class="timeline-date">${item.year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}.</span>
-                                                <span class="timeline-content">${content}</span>
-                                            </div>`;
-                                        } else {
-                                            // 일반 내용인 경우 (월.일 없이)
-                                            return `<div class="timeline-item">
-                                                <span class="timeline-content">${trimmed}</span>
-                                            </div>`;
-                                        }
-                                    }).filter(item => item).join('')}
-                                </div>
-                                ${imageHtml}
-                            </div>
-                        </div>
-                    `;
-    
-                    if (document.body.classList.contains('admin-mode')) {
-                        const adminButtons = document.createElement('div');
-                        adminButtons.className = 'ml-16 pl-6 mt-4 text-left space-x-2';
-                        adminButtons.innerHTML = `
-                            <button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button>
-                            <button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>
-                        `;
-                        itemEl.appendChild(adminButtons); // 🔥 이 부분 수정!
-                    }
-                    timelineContainer.appendChild(itemEl);
-                });
+            window.scrollTo(0, 0);
+            Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
+            
+            const pageInitFunctions = {
+                'history': initHistoryPage,
+                'community-gallery': initGalleryPage,
+                'about-us': initAboutUsPage,
+                'login': initLoginPage
+            };
+            pageInitFunctions[pageId]?.();
+            
+            setTimeout(() => {
+                newContent.classList.add('visible');
                 handleScrollAnimation();
-            }
-        });
-        activeFirestoreListeners.push(unsubscribe);
-    }
-
-    function initGalleryPage() {
-        const galleryGrid = document.getElementById('gallery-grid');
-        if (!galleryGrid) return;
-        
-        // 초기 로딩 상태 표시
-        showLoadingState();
-        
-        const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            galleryGrid.innerHTML = '';
+            }, 50);
             
-            if (photos.length === 0) { 
-                showEmptyState();
-                return; 
-            }
+            bindNavLinks(appContent);
             
-            photos.forEach(photo => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
-                
-                // 카드 전체 클릭 이벤트 추가
-                itemEl.addEventListener('click', (e) => {
-                    // 관리자 버튼 클릭이 아닌 경우에만 라이트박스 열기
-                    if (!e.target.closest('.admin-edit-overlay')) {
-                        const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
-                        const title = photo.title || '';
-                        const description = photo.description || '';
-                        const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                        
-                        openLightbox(images, title, description, 0, createdDate);
-                    }
-                });
-                
-                // 이미지 배열 처리
-                const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
-                const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
-                const imageCount = images.length;
-                
-                // 날짜 포맷팅
-                const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                
-                itemEl.innerHTML = `
-                    <div class="relative aspect-[4/3] overflow-hidden">
-                        <img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" 
-                             data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" 
-                             data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">
-                        ${imageCount > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${imageCount}</div>` : ''}
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>
-                        ${createdDate ? `<div class="flex items-center text-gray-400 text-sm">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span>${createdDate}</span>
-                        </div>` : ''}
-                    </div>`;
-                
             if (document.body.classList.contains('admin-mode')) {
-                const overlay = document.createElement('div');
-                overlay.className = 'admin-edit-overlay';
-                overlay.innerHTML = `
-                    <button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium">
-                        <i class="fas fa-edit mr-1"></i>수정
-                    </button>
-                    <button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium">
-                        <i class="fas fa-trash mr-1"></i>삭제
-                    </button>
-                `;
+                const adminPanels = {
+                    'history': 'history-admin-panel',
+                    'community-gallery': 'gallery-admin-panel',
+                    'about-us': 'about-us-admin-panel',
+                    'products': 'products-admin-panel'
+                };
                 
-                // 🔥 개별 버튼에 직접 이벤트 리스너 추가
-                const editBtn = overlay.querySelector('.edit-btn');
-                const deleteBtn = overlay.querySelector('.delete-btn');
+                document.querySelectorAll('.admin-panel').forEach(panel => {
+                    panel.classList.add('hidden');
+                });
                 
-                editBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('갤러리 수정 버튼 클릭:', photo.id);
-                    
-                    // 함수 존재 여부 확인 및 호출
-                    if (typeof openGalleryModal === 'function') {
-                        await openGalleryModal(photo.id);
-                    } else {
-                        console.error('openGalleryModal 함수를 찾을 수 없습니다.');
-                        customAlert('갤러리 수정 기능을 불러올 수 없습니다.');
+                if (adminPanels[pageId]) {
+                    const panel = document.getElementById(adminPanels[pageId]);
+                    if (panel) {
+                        panel.classList.remove('hidden');
                     }
-                });
+                }
                 
-                deleteBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('갤러리 삭제 버튼 클릭:', photo.id);
-                    if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
-                        try {
-                            await deleteDoc(doc(db, 'gallery', photo.id));
-                            customAlert('사진이 삭제되었습니다.');
-                        } catch (error) {
-                            console.error('삭제 중 오류:', error);
-                            customAlert('삭제 중 오류가 발생했습니다.');
-                        }
-                    }
-                });
-                
-                // 오버레이 자체의 클릭 이벤트 전파 방지
-                overlay.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
-                
-                itemEl.querySelector('.relative').appendChild(overlay);
-            }
-                galleryGrid.appendChild(itemEl);
-            });
-            
-            // 🔥 갤러리 이미지가 추가된 후 편집 버튼 초기화
-            if (document.body.classList.contains('admin-mode')) {
                 setTimeout(() => {
                     initAdminEditButtons();
                 }, 100);
             }
-            
-            handleScrollAnimation();
-        });
-        activeFirestoreListeners.push(unsubscribe);
-    }
-    
-    // 스켈레톤 로딩 함수 추가
-    function createSkeletonCard() {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
-        skeleton.innerHTML = `
-            <div class="aspect-[4/3] skeleton"></div>
-            <div class="p-6">
-                <div class="h-5 skeleton rounded mb-2"></div>
-                <div class="h-4 skeleton rounded w-1/2"></div>
-            </div>
-        `;
-        return skeleton;
-    }
-    
-    // 로딩 상태 표시
-    function showLoadingState() {
-        const galleryGrid = document.getElementById('gallery-grid');
-        galleryGrid.innerHTML = '';
-        for (let i = 0; i < 6; i++) {
-            galleryGrid.appendChild(createSkeletonCard());
         }
-    }
-    
-    // 빈 상태 표시
-    function showEmptyState() {
-        const galleryGrid = document.getElementById('gallery-grid');
-        galleryGrid.innerHTML = `
-            <div class="col-span-full flex flex-col items-center justify-center py-16">
-                <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6">
-                    <i class="fas fa-images text-4xl text-gray-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3>
-                <p class="text-gray-500 text-center">
-                    ${document.body.classList.contains('admin-mode') ? 
-                        '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : 
-                        '곧 멋진 사진들로 채워질 예정입니다.'}
-                </p>
-                ${document.body.classList.contains('admin-mode') ? 
-                    '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : 
-                    ''}
-            </div>
-        `;
-    }
-
-    function initAboutUsPage() {
-        const accordionContainer = document.getElementById('about-us-accordion');
-        if(!accordionContainer) return;
-        const q = query(collection(db, 'about_us'), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            accordionContainer.innerHTML = '';
-            if (items.length === 0) { accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>'; return; }
-            items.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'border-b border-gray-200 scroll-reveal';
-                const date = item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                itemEl.innerHTML = `<button class="accordion-header w-full flex justify-between items-center p-6 text-left hover:bg-gray-50"><span class="text-lg font-medium text-gray-800">${item.title}</span><div class="flex items-center"><span class="text-gray-500 mr-6">${date}</span><i class="fas fa-chevron-down transition-transform duration-300"></i></div></button><div class="accordion-content bg-gray-50"><div class="p-6 whitespace-pre-wrap text-gray-700">${item.content}</div></div>`;
-                if (document.body.classList.contains('admin-mode')) {
-                    itemEl.innerHTML += `<div class="p-4 bg-gray-100 text-right space-x-2"><button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button><button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button></div>`;
-                }
-                accordionContainer.appendChild(itemEl);
+        
+        function bindNavLinks(container) {
+            container.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetPage = link.dataset.target;
+                    if (targetPage && targetPage !== currentPage) {
+                        navigateTo(targetPage);
+                        document.getElementById('mobile-menu').classList.add('hidden');
+                    }
+                });
             });
-            handleScrollAnimation();
-        });
-        activeFirestoreListeners.push(unsubscribe);
-    }
-    // --- Netlify Form Submission Handler ---
-    function handleNetlifyFormSubmit(event) {
-        // 1. 기본 동작 막기
-        //    이게 없으면 폼 제출 시 페이지가 깜빡! 하면서 새로고침됩니다.
-        event.preventDefault();
-
-        // 2. 폼 데이터 준비하기
-        //    사용자가 입력한 모든 정보를 'formData'라는 마법 주머니에 담습니다.
-        const form = event.target;
-        const formData = new FormData(form);
-        const formName = formData.get('form-name');
-
-        // 3. 사용자가 기다리는 동안 버튼 처리
-        //    '전송 중...' 메시지를 보여줘서 여러 번 누르는 것을 방지합니다.
-        const submitButton = form.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.innerHTML;
-        submitButton.disabled = true;
-        submitButton.innerHTML = '전송 중...';
-
-        // 4. Netlify로 데이터 전송! (Fetch API)
-        //    보이지 않는 우편배달부가 formData를 Netlify 서버로 보냅니다.
-        fetch('/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(formData).toString()
-        })
-        .then(() => {
-            // 5-1. 전송 성공!
-            //      성공 메시지를 보여주고, 폼을 깨끗하게 비웁니다.
-            customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`);
-            form.reset();
-        })
-        .catch((error) => {
-            // 5-2. 전송 실패...
-            //      에러가 나면 사용자에게 알려줍니다.
-            customAlert('오류가 발생했습니다. 다시 시도해주세요.');
-            console.error(error);
-        })
-        .finally(() => {
-            // 6. 버튼 원래대로 돌려놓기
-            //    성공하든 실패하든, 버튼을 다시 누를 수 있게 원상 복구합니다.
-            submitButton.disabled = false;
-            submitButton.innerHTML = originalButtonText;
-        });
-    }
-    // --- 전역 갤러리 관리 함수들 ---
-    async function openGalleryModal(docId = null) {
-        const galleryAdminModal = document.getElementById('gallery-admin-modal');
-        const photoForm = document.getElementById('photo-form');
-        const galleryModalTitle = document.getElementById('gallery-modal-title');
-        const photoIdInput = document.getElementById('photo-id');
-        const photoTitleInput = document.getElementById('photo-title');
-        const photoDescriptionInput = document.getElementById('photo-description');
-        
-        if (!galleryAdminModal || !photoForm) {
-            console.error('갤러리 모달 요소를 찾을 수 없습니다.');
-            return;
         }
-        
-        photoForm.reset();
-        initImageUrlInputs();
-        
-        if (docId) {
-            galleryModalTitle.textContent = "사진 수정";
-            photoIdInput.value = docId;
-            try {
-                const docSnap = await getDoc(doc(db, 'gallery', docId));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    photoTitleInput.value = data.title || '';
-                    photoDescriptionInput.value = data.description || '';
-                    
-                    // 기존 이미지들 로드
-                    const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
-                    loadImageUrls(images);
+    
+        function handleScrollAnimation() {
+            document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+                    el.classList.add('visible');
+                }
+            });
+        }
+    
+        function initLoginPage() {
+            const loginForm = document.getElementById('login-form');
+            if (!loginForm) return;
+            loginForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                const submitButton = loginForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = '로그인 중...';
+                
+                try {
+                    await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+                    customAlert('로그인 성공! 관리자 모드로 전환됩니다.');
+                    navigateTo('home');
+                } catch (error) {
+                    console.error('로그인 오류:', error);
+                    let errorMessage = '로그인에 실패했습니다.';
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            errorMessage = '등록되지 않은 이메일입니다.';
+                            break;
+                        case 'auth/wrong-password':
+                            errorMessage = '비밀번호가 올바르지 않습니다.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = '올바른 이메일 형식이 아닙니다.';
+                            break;
+                    }
+                    customAlert(errorMessage);
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = '로그인';
+                }
+            };
+        }
+    
+        function initHistoryPage() {
+            const timelineContainer = document.getElementById('timeline-container');
+            if (!timelineContainer) return;
+            
+            const q = query(collection(db, 'history'), orderBy("order", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0" style="left: 138px;"></div>';
+                
+                if (data.length === 0) {
+                    timelineContainer.innerHTML += '<p class="text-center text-gray-500 py-10">등록된 연혁이 없습니다.</p>';
                 } else {
-                    customAlert('해당 사진을 찾을 수 없습니다.');
+                    data.forEach(item => {
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'mb-16 scroll-reveal';
+                        const imageHtml = item.imageUrl
+                            ? `<div class="mt-4"><img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full max-w-md h-auto object-cover" onerror="this.style.display='none'"></div>`
+                            : '';
+                        
+                        itemEl.innerHTML = `
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 text-right mr-8 w-24">
+                                    <h3 class="text-2xl font-bold text-gray-800">${item.year}</h3>
+                                </div>
+                                <div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div>
+                                <div class="flex-1 ml-8">
+                                    <div class="space-y-1">
+                                        ${item.events.split('\n').map(e => {
+                                            const trimmed = e.trim();
+                                            if (!trimmed) return '';
+                                            if (/^\d{1,2}\.\d{1,2}\./.test(trimmed)) {
+                                                const parts = trimmed.split('.');
+                                                const month = parts[0];
+                                                const day = parts[1];
+                                                const content = trimmed.substring(month.length + day.length + 2).trim();
+                                                return `<div class="timeline-item"><span class="timeline-date">${item.year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}.</span><span class="timeline-content">${content}</span></div>`;
+                                            } else {
+                                                return `<div class="timeline-item"><span class="timeline-content">${trimmed}</span></div>`;
+                                            }
+                                        }).filter(item => item).join('')}
+                                    </div>
+                                    ${imageHtml}
+                                </div>
+                            </div>
+                        `;
+                
+                        if (document.body.classList.contains('admin-mode')) {
+                            const adminButtons = document.createElement('div');
+                            adminButtons.className = 'ml-16 pl-6 mt-4 text-left space-x-2';
+                            adminButtons.innerHTML = `<button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button><button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>`;
+                            itemEl.appendChild(adminButtons);
+                        }
+                        timelineContainer.appendChild(itemEl);
+                    });
+                    handleScrollAnimation();
+                }
+            });
+            activeFirestoreListeners.push(unsubscribe);
+        }
+    
+        function initGalleryPage() {
+            const galleryGrid = document.getElementById('gallery-grid');
+            if (!galleryGrid) return;
+            showLoadingState();
+            
+            const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                galleryGrid.innerHTML = '';
+                
+                if (photos.length === 0) {
+                    showEmptyState();
                     return;
                 }
-            } catch (error) {
-                console.error('문서 로드 오류:', error);
-                customAlert('문서를 불러오는 중 오류가 발생했습니다.');
+                
+                photos.forEach(photo => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
+                    
+                    itemEl.addEventListener('click', (e) => {
+                        if (!e.target.closest('.admin-edit-overlay')) {
+                            const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
+                            const title = photo.title || '';
+                            const description = photo.description || '';
+                            const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                            openLightbox(images, title, description, 0, createdDate);
+                        }
+                    });
+                    
+                    const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
+                    const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
+                    const imageCount = images.length;
+                    const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                    
+                    itemEl.innerHTML = `
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" 
+                                data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" 
+                                data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">
+                            ${imageCount > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${imageCount}</div>` : ''}
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>
+                            ${createdDate ? `<div class="flex items-center text-gray-400 text-sm"><i class="fas fa-calendar-alt mr-2"></i><span>${createdDate}</span></div>` : ''}
+                        </div>`;
+                    
+                    if (document.body.classList.contains('admin-mode')) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'admin-edit-overlay';
+                        overlay.innerHTML = `
+                            <button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium"><i class="fas fa-edit mr-1"></i>수정</button>
+                            <button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium"><i class="fas fa-trash mr-1"></i>삭제</button>
+                        `;
+                        
+                        const editBtn = overlay.querySelector('.edit-btn');
+                        const deleteBtn = overlay.querySelector('.delete-btn');
+                        
+                        editBtn.addEventListener('click', async (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            if (typeof openGalleryModal === 'function') {
+                                await openGalleryModal(photo.id);
+                            } else { customAlert('갤러리 수정 기능을 불러올 수 없습니다.'); }
+                        });
+                        
+                        deleteBtn.addEventListener('click', async (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
+                                try { await deleteDoc(doc(db, 'gallery', photo.id)); customAlert('사진이 삭제되었습니다.'); } 
+                                catch (error) { console.error('삭제 중 오류:', error); customAlert('삭제 중 오류가 발생했습니다.'); }
+                            }
+                        });
+                        
+                        overlay.addEventListener('click', (e) => e.stopPropagation());
+                        itemEl.querySelector('.relative').appendChild(overlay);
+                    }
+                    galleryGrid.appendChild(itemEl);
+                });
+                
+                if (document.body.classList.contains('admin-mode')) {
+                    setTimeout(() => initAdminEditButtons(), 100);
+                }
+                handleScrollAnimation();
+            });
+            activeFirestoreListeners.push(unsubscribe);
+        }
+            
+        function createSkeletonCard() {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
+            skeleton.innerHTML = `
+                <div class="aspect-[4/3] skeleton"></div>
+                <div class="p-6">
+                    <div class="h-5 skeleton rounded mb-2"></div>
+                    <div class="h-4 skeleton rounded w-1/2"></div>
+                </div>`;
+            return skeleton;
+        }
+            
+        function showLoadingState() {
+            const galleryGrid = document.getElementById('gallery-grid');
+            galleryGrid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                galleryGrid.appendChild(createSkeletonCard());
+            }
+        }
+            
+        function showEmptyState() {
+            const galleryGrid = document.getElementById('gallery-grid');
+            galleryGrid.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-16">
+                    <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6"><i class="fas fa-images text-4xl text-gray-400"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3>
+                    <p class="text-gray-500 text-center">
+                        ${document.body.classList.contains('admin-mode') ? '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : '곧 멋진 사진들로 채워질 예정입니다.'}
+                    </p>
+                    ${document.body.classList.contains('admin-mode') ? '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : ''}
+                </div>`;
+        }
+    
+        function initAboutUsPage() {
+            const accordionContainer = document.getElementById('about-us-accordion');
+            if(!accordionContainer) return;
+            const q = query(collection(db, 'about_us'), orderBy("createdAt", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                accordionContainer.innerHTML = '';
+                if (items.length === 0) { accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>'; return; }
+                items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'border-b border-gray-200 scroll-reveal';
+                    const date = item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                    itemEl.innerHTML = `<button class="accordion-header w-full flex justify-between items-center p-6 text-left hover:bg-gray-50"><span class="text-lg font-medium text-gray-800">${item.title}</span><div class="flex items-center"><span class="text-gray-500 mr-6">${date}</span><i class="fas fa-chevron-down transition-transform duration-300"></i></div></button><div class="accordion-content bg-gray-50"><div class="p-6 whitespace-pre-wrap text-gray-700">${item.content}</div></div>`;
+                    if (document.body.classList.contains('admin-mode')) {
+                        itemEl.innerHTML += `<div class="p-4 bg-gray-100 text-right space-x-2"><button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button><button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button></div>`;
+                    }
+                    accordionContainer.appendChild(itemEl);
+                });
+                handleScrollAnimation();
+            });
+            activeFirestoreListeners.push(unsubscribe);
+        }
+        
+        function handleNetlifyFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const formName = formData.get('form-name');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '전송 중...';
+    
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(() => {
+                customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`);
+                form.reset();
+            })
+            .catch((error) => {
+                customAlert('오류가 발생했습니다. 다시 시도해주세요.');
+                console.error(error);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
+            });
+        }
+    
+        async function openGalleryModal(docId = null) {
+            const galleryAdminModal = document.getElementById('gallery-admin-modal');
+            const photoForm = document.getElementById('photo-form');
+            const galleryModalTitle = document.getElementById('gallery-modal-title');
+            const photoIdInput = document.getElementById('photo-id');
+            const photoTitleInput = document.getElementById('photo-title');
+            const photoDescriptionInput = document.getElementById('photo-description');
+            if (!galleryAdminModal || !photoForm) {
+                console.error('갤러리 모달 요소를 찾을 수 없습니다.');
                 return;
             }
-        } else {
-            galleryModalTitle.textContent = "새 사진 추가";
-            photoIdInput.value = '';
-        }
-        galleryAdminModal.classList.remove('hidden');
-    }
-    
-    function initImageUrlInputs() {
-        const container = document.getElementById('image-urls-container');
-        if (!container) return;
-        
-        container.innerHTML = `
-            <div class="image-url-row flex gap-2">
-                <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
-                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
-            </div>
-        `;
-        updateRemoveButtons();
-    }
-    
-    function loadImageUrls(images) {
-        const container = document.getElementById('image-urls-container');
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        if (images.length === 0) {
+            
+            photoForm.reset();
             initImageUrlInputs();
-            return;
-        }
-        
-        images.forEach((imageUrl, index) => {
-            const row = document.createElement('div');
-            row.className = 'image-url-row flex gap-2';
-            row.innerHTML = `
-                <input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
-                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
-            `;
-            container.appendChild(row);
-        });
-        
-        updateRemoveButtons();
-    }
-    
-    function updateRemoveButtons() {
-        const rows = document.querySelectorAll('.image-url-row');
-        rows.forEach((row, index) => {
-            const removeBtn = row.querySelector('.remove-image-btn');
-            if (removeBtn) {
-                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
-            }
-        });
-    }
-    // --- Global Scripts (run once on load) ---
-    document.addEventListener('DOMContentLoaded', function () {
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            initContentManagement();
-        } catch (e) {
-            console.error("Firebase initialization failed:", e);
-            customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
-            return;
-        }
-        
-        // --- Modal Element References ---
-        const historyAdminModal = document.getElementById('admin-modal');
-        const historyForm = document.getElementById('history-form');
-        const historyModalTitle = document.getElementById('modal-title');
-        const historyIdInput = document.getElementById('history-id');
-        const historyYearInput = document.getElementById('history-year');
-        const historyEventsInput = document.getElementById('history-events');
-        const historyImageUrlInput = document.getElementById('history-imageUrl');
-        const historyOrderInput = document.getElementById('history-order');
-
-        const galleryAdminModal = document.getElementById('gallery-admin-modal');
-        const photoForm = document.getElementById('photo-form');
-        const galleryModalTitle = document.getElementById('gallery-modal-title');
-        const photoIdInput = document.getElementById('photo-id');
-        const photoTitleInput = document.getElementById('photo-title');
-        const photoDescriptionInput = document.getElementById('photo-description');
-        const photoImageUrlInput = document.getElementById('photo-imageUrl');
-
-        const aboutUsAdminModal = document.getElementById('about-us-admin-modal');
-        const aboutUsForm = document.getElementById('about-us-form');
-        const aboutUsModalTitle = document.getElementById('about-us-modal-title');
-        const aboutUsIdInput = document.getElementById('about-us-id');
-        const aboutUsTitleInput = document.getElementById('about-us-title');
-        const aboutUsContentInput = document.getElementById('about-us-content');
-
-        const lightboxModal = document.getElementById('lightbox-modal');
-        const lightboxImage = document.getElementById('lightbox-image');
-        const lightboxCaption = document.getElementById('lightbox-caption');
-
-        // --- Modal Logic Functions ---
-        async function openHistoryModal(docId = null) {
-            historyForm.reset();
+            
             if (docId) {
-                historyModalTitle.textContent = "연혁 수정";
-                historyIdInput.value = docId;
-                const docSnap = await getDoc(doc(db, 'history', docId));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    historyYearInput.value = data.year;
-                    historyEventsInput.value = data.events;
-                    historyImageUrlInput.value = data.imageUrl || '';
-                    historyOrderInput.value = data.order;
+                galleryModalTitle.textContent = "사진 수정";
+                photoIdInput.value = docId;
+                try {
+                    const docSnap = await getDoc(doc(db, 'gallery', docId));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        photoTitleInput.value = data.title || '';
+                        photoDescriptionInput.value = data.description || '';
+                        const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
+                        loadImageUrls(images);
+                    } else {
+                        customAlert('해당 사진을 찾을 수 없습니다.');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('문서 로드 오류:', error);
+                    customAlert('문서를 불러오는 중 오류가 발생했습니다.');
+                    return;
                 }
             } else {
-                historyModalTitle.textContent = "새 연혁 추가";
-                historyIdInput.value = '';
+                galleryModalTitle.textContent = "새 사진 추가";
+                photoIdInput.value = '';
             }
-            historyAdminModal.classList.remove('hidden');
+            galleryAdminModal.classList.remove('hidden');
         }
-        
-        // 🆕 삭제 버튼 표시/숨김 업데이트
+            
+        function initImageUrlInputs() {
+            const container = document.getElementById('image-urls-container');
+            if (!container) return;
+            container.innerHTML = `<div class="image-url-row flex gap-2"><input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button></div>`;
+            updateRemoveButtons();
+        }
+            
+        function loadImageUrls(images) {
+            const container = document.getElementById('image-urls-container');
+            if (!container) return;
+            container.innerHTML = '';
+            if (images.length === 0) {
+                initImageUrlInputs();
+                return;
+            }
+            images.forEach((imageUrl, index) => {
+                const row = document.createElement('div');
+                row.className = 'image-url-row flex gap-2';
+                row.innerHTML = `<input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
+                container.appendChild(row);
+            });
+            updateRemoveButtons();
+        }
+            
         function updateRemoveButtons() {
             const rows = document.querySelectorAll('.image-url-row');
-            rows.forEach((row, index) => {
+            rows.forEach((row) => {
                 const removeBtn = row.querySelector('.remove-image-btn');
-                removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
-            });
-        }
-        
-        async function openAboutUsModal(docId = null) {
-            aboutUsForm.reset();
-            if (docId) {
-                aboutUsModalTitle.textContent = "글 수정";
-                aboutUsIdInput.value = docId;
-                const docSnap = await getDoc(doc(db, 'about_us', docId));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    aboutUsTitleInput.value = data.title;
-                    aboutUsContentInput.value = data.content;
-                }
-            } else {
-                aboutUsModalTitle.textContent = "새 글 추가";
-                aboutUsIdInput.value = '';
-            }
-            aboutUsAdminModal.classList.remove('hidden');
-        }
-
-        // --- Form Submit Handlers ---
-        async function handleHistoryFormSubmit(e) {
-            e.preventDefault();
-            const docId = historyIdInput.value;
-            const data = { year: historyYearInput.value, events: historyEventsInput.value, imageUrl: historyImageUrlInput.value, order: Number(historyOrderInput.value) };
-            try {
-                if (docId) await updateDoc(doc(db, 'history', docId), data);
-                else await addDoc(collection(db, 'history'), data);
-                historyAdminModal.classList.add('hidden');
-                customAlert('저장되었습니다.');
-            } catch (error) { console.error("Error saving history:", error); customAlert('저장 중 오류가 발생했습니다.'); }
-        }
-
-        async function handlePhotoFormSubmit(e) {
-            e.preventDefault();
-            const docId = photoIdInput.value;
-            
-            // 🆕 모든 이미지 URL 수집
-            const imageInputs = document.querySelectorAll('.image-url-input');
-            const images = Array.from(imageInputs)
-                .map(input => input.value.trim())
-                .filter(url => url); // 빈 값 제거
-            
-            if (images.length === 0) {
-                customAlert('최소 하나의 이미지 URL을 입력해주세요.');
-                return;
-            }
-            
-            const data = { 
-                title: photoTitleInput.value, 
-                description: photoDescriptionInput.value, 
-                images: images, // 🆕 이미지 배열로 저장
-                createdAt: serverTimestamp() 
-            };
-            
-            try {
-                if (docId) {
-                    await updateDoc(doc(db, 'gallery', docId), { 
-                        title: data.title, 
-                        description: data.description, 
-                        images: data.images 
-                    });
-                } else {
-                    await addDoc(collection(db, 'gallery'), data);
-                }
-                galleryAdminModal.classList.add('hidden');
-                customAlert('저장되었습니다.');
-            } catch (error) { 
-                console.error("Error saving photo:", error); 
-                customAlert('저장 중 오류가 발생했습니다.'); 
-            }
-        }
-
-        async function handleAboutUsFormSubmit(e) {
-            e.preventDefault();
-            const docId = aboutUsIdInput.value;
-            const data = { title: aboutUsTitleInput.value, content: aboutUsContentInput.value, createdAt: serverTimestamp() };
-             try {
-                if (docId) await updateDoc(doc(db, 'about_us', docId), { title: data.title, content: data.content });
-                else await addDoc(collection(db, 'about_us'), data);
-                aboutUsAdminModal.classList.add('hidden');
-                customAlert('저장되었습니다.');
-            } catch (error) { console.error("Error saving about us:", error); customAlert('저장 중 오류가 발생했습니다.'); }
-        }
-        
-        // --- Global Event Listener (Event Delegation) ---
-        document.body.addEventListener('click', async (e) => {
-            const target = e.target;
-            const currentPage = appContent.dataset.page;
-        
-            // --- Admin Actions (Scoped by current page) ---
-            if (document.body.classList.contains('admin-mode')) {
-                if (currentPage === 'history') {
-                    // ... history 관련 코드는 그대로 유지 ...
-                    if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openHistoryModal();
-                    } else if (target.matches('.edit-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openHistoryModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'history', target.dataset.id)).catch(err => console.error(err));
-                        }
-                    }
-                } else if (currentPage === 'community-gallery') {
-                    // 🔥 갤러리는 새 사진 추가 버튼만 남기고 나머지는 제거
-                    if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openGalleryModal();
-                    }
-                    // 🔥 .edit-btn과 .delete-btn 관련 코드는 모두 제거됨
-                    // (개별 버튼에 직접 이벤트가 연결되어 있으므로)
-                } else if (currentPage === 'about-us') {
-                    // ... about-us 관련 코드는 그대로 유지 ...
-                    if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) {
-                        openAboutUsModal();
-                    } else if (target.matches('.edit-btn')) {
-                        openAboutUsModal(target.dataset.id);
-                    } else if (target.matches('.delete-btn')) {
-                        if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, 'about_us', target.dataset.id)).catch(err => console.error(err));
-                        }
-                    }
-                }
-            }
-            
-            // --- General UI Actions (이 부분은 그대로 유지) ---
-            const accordionHeader = target.closest('.accordion-header');
-            if (accordionHeader) {
-                const content = accordionHeader.nextElementSibling;
-                const icon = accordionHeader.querySelector('i');
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                    icon.classList.remove('rotate-180');
-                } else {
-                    content.style.maxHeight = content.scrollHeight + "px";
-                    icon.classList.add('rotate-180');
-                }
-            }
-            
-            if (target.matches('.gallery-image') && !target.closest('.admin-edit-overlay')) {
-                const images = JSON.parse(target.dataset.images || '[]');
-                const title = target.dataset.title || '';
-                const description = target.dataset.description || '';
-                const date = target.dataset.date || '';
-                
-                openLightbox(images, title, description, 0, date);
-            }
-        });
-        // --- Form & Modal Close Button Bindings ---
-        historyForm?.addEventListener('submit', handleHistoryFormSubmit);
-        photoForm?.addEventListener('submit', handlePhotoFormSubmit);
-        aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
-        
-        document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
-        document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
-        document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
-        document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
-        // 견적문의 폼은 나중에 동적으로 생기므로, 부모인 app-content 영역에서
-        // "혹시 내 자식 중에 폼이 제출됐니?" 라고 항상 귀 기울이고 있게 만듭니다. (이벤트 위임)
-        appContent.addEventListener('submit', function(event) {
-            // 제출된 것이 Netlify 폼이 맞는지 확인하고, 맞으면 전용 배달부를 출동시킵니다.
-            if (event.target.getAttribute('data-netlify') === 'true') {
-                handleNetlifyFormSubmit(event);
-            }
-        });
-        // --- Initial Setup ---
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenuContainer = document.getElementById('mobile-menu');
-        const desktopNav = document.getElementById('desktop-nav');
-        const adminLoginBtn = document.getElementById('admin-login-btn');
-        
-        // 🆕 Admin 로그인/로그아웃 버튼 이벤트 연결
-        adminLoginBtn?.addEventListener('click', async () => {
-            if (document.body.classList.contains('admin-mode')) {
-                // 현재 관리자 모드 - 로그아웃 실행
-                try {
-                    await signOut(auth);
-                    customAlert('로그아웃되었습니다.');
-                } catch (error) {
-                    console.error('로그아웃 오류:', error);
-                    customAlert('로그아웃 중 오류가 발생했습니다.');
-                }
-            } else {
-                // 현재 일반 모드 - 로그인 페이지로 이동
-                navigateTo('login');
-            }
-        });
-        
-        // Firebase 초기화 후, 인증 상태 감지 추가
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            
-            // 🆕 인증 상태 변화 감지
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // 로그인됨 - 관리자 모드 진입
-                    enterAdminMode();
-                } else {
-                    // 로그아웃됨 - 일반 모드
-                    exitAdminMode();
+                if (removeBtn) {
+                    removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
                 }
             });
-            
-            initContentManagement();
-        } catch (e) {
-            // ... 에러 처리
         }
-        
-        function enterAdminMode() { 
-            document.body.classList.add('admin-mode'); 
-            adminLoginBtn.textContent = 'Logout'; 
-            
-            console.log('관리자 모드 진입');
-            
-            // 현재 페이지에 맞는 관리자 패널 보이기
+    
+        function enterAdminMode() {
+            document.body.classList.add('admin-mode');
+            document.getElementById('admin-login-btn').textContent = 'Logout';
             const currentPage = appContent.dataset.page || 'home';
-            console.log('현재 페이지:', currentPage);
-            
-            const adminPanels = {
-                'history': 'history-admin-panel',
-                'community-gallery': 'gallery-admin-panel', 
-                'about-us': 'about-us-admin-panel',
-                'products': 'products-admin-panel'
-            };
-            
-            document.querySelectorAll('.admin-panel').forEach(panel => {
-                panel.classList.add('hidden');
-            });
-            
+            const adminPanels = { 'history': 'history-admin-panel', 'community-gallery': 'gallery-admin-panel', 'about-us': 'about-us-admin-panel', 'products': 'products-admin-panel' };
+            document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
             if (adminPanels[currentPage]) {
                 const panel = document.getElementById(adminPanels[currentPage]);
-                if (panel) {
-                    panel.classList.remove('hidden');
-                    console.log(`관리자 패널 표시: ${adminPanels[currentPage]}`);
-                }
+                if (panel) panel.classList.remove('hidden');
             }
-            
-            navigateTo(currentPage); 
+            navigateTo(currentPage);
         }
-        // 📄 수정 후 코드
+        
         function exitAdminMode() {
             document.body.classList.remove('admin-mode');
             const adminBtn = document.getElementById('admin-login-btn');
-            if (adminBtn) {
-                adminBtn.textContent = 'Admin Login';
-            }
-            
-            console.log('관리자 모드 종료');
-        
-            document.querySelectorAll('.admin-panel').forEach(panel => {
-                panel.classList.add('hidden');
-            });
-        
-            // 관리자 모드용으로 추가했던 클래스를 모두 제거
-            document.querySelectorAll('.admin-editable-container').forEach(el => {
-                el.classList.remove('admin-editable-container');
-            });
-        
+            if (adminBtn) adminBtn.textContent = 'Admin Login';
+            document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
+            document.querySelectorAll('.admin-editable-container').forEach(el => el.classList.remove('admin-editable-container'));
             removeAdminEditButtons();
-            
-            // 현재 페이지 새로고침 (관리자 요소들 제거)
             const currentPage = appContent.dataset.page || 'home';
-            setTimeout(() => { 
-                navigateTo(currentPage); 
-            }, 100);
+            setTimeout(() => navigateTo(currentPage), 100);
         }
-
+    
         function buildMobileMenu() {
+            const mobileMenuContainer = document.getElementById('mobile-menu');
+            const desktopNav = document.getElementById('desktop-nav');
             mobileMenuContainer.innerHTML = '';
             desktopNav.querySelectorAll(':scope > a, :scope > .dropdown').forEach(item => {
                 const wrapper = document.createElement('div');
@@ -3393,169 +2922,175 @@
             mobileSearchBtn.className = 'search-btn block w-full px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
             mobileSearchBtn.innerHTML = `<i class="fas fa-search mr-2"></i> 검색`;
             mobileMenuContainer.appendChild(mobileSearchBtn);
-            
             const mobileSocials = document.createElement('div');
             mobileSocials.className = 'flex items-center justify-center space-x-6 px-4 py-4 border-t';
-            mobileSocials.innerHTML = `
-                <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-2x"></i></a>
-                <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-2x"></i></a>
-            `;
+            mobileSocials.innerHTML = `<a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-2x"></i></a><a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-2x"></i></a>`;
             mobileMenuContainer.appendChild(mobileSocials);
-
             document.querySelectorAll('.search-btn').forEach(btn => btn.onclick = openSearch);
             bindNavLinks(mobileMenuContainer);
         }
-        buildMobileMenu();
-        mobileMenuButton.onclick = (e) => { e.stopPropagation(); mobileMenuContainer.classList.toggle('hidden'); };
-
-        const header = document.getElementById('header');
-        window.addEventListener('scroll', () => {
-            const isScrolled = window.scrollY > 50;
-            header.classList.toggle('h-16', isScrolled);
-            header.classList.toggle('h-20', !isScrolled);
-            document.querySelectorAll('.sub-nav').forEach(nav => {
-                nav.style.top = (isScrolled ? 64 : 80) + 'px';
+        
+        // --- MAIN EXECUTION ---
+        document.addEventListener('DOMContentLoaded', function () {
+            // ✅ 1. Firebase 초기화 (단 한번만 실행)
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
+                return;
+            }
+    
+            // ✅ 2. 인증 상태 리스너 설정
+            onAuthStateChanged(auth, (user) => {
+                if (user) enterAdminMode();
+                else exitAdminMode();
             });
-            handleScrollAnimation();
-        }, { passive: true });
-
-        const searchModal = document.getElementById('search-modal');
-        const searchInput = document.getElementById('search-input');
-        function openSearch() { searchModal.classList.remove('hidden'); searchInput.focus(); }
-        function closeSearch() { searchModal.classList.add('hidden'); }
-        document.getElementById('close-search-btn').onclick = closeSearch;
-        searchModal.onclick = (e) => { if (e.target === searchModal) closeSearch(); };
-
-        const termsModal = document.getElementById('terms-modal');
-        const privacyModal = document.getElementById('privacy-modal');
-        document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
-        document.getElementById('privacy-link').onclick = () => privacyModal.classList.remove('hidden');
-        document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
-        termsModal.onclick = (e) => { if (e.target === termsModal) termsModal.classList.add('hidden'); };
-        privacyModal.onclick = (e) => { if (e.target === privacyModal) privacyModal.classList.add('hidden'); };
-
-        bindNavLinks(document.body);
-
-        /* 📂 [추가할 코드] 메인 페이지(index.html)의 검색 기능을 search.html과 연결 */
-        const mainSearchModal = document.getElementById('search-modal');
-        const mainSearchInput = mainSearchModal.querySelector('#search-input');
-        
-        mainSearchInput.addEventListener('keypress', (e) => {
-            // 1. 만약 사용자가 'Enter' 키를 누르면
-            if (e.key === 'Enter') {
-                // 2. 입력된 검색어를 가져온다 (앞뒤 공백은 제거)
-                const searchTerm = mainSearchInput.value.trim();
-        
-                // 3. 검색어가 비어있지 않다면
-                if (searchTerm) {
-                    // 4. search.html 페이지로 검색어와 함께 이동시킨다
-                    window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
+    
+            // ✅ 3. 정적 콘텐츠 로드
+            initContentManagement();
+    
+            // --- Modal & Form Elements ---
+            const historyAdminModal = document.getElementById('admin-modal');
+            const historyForm = document.getElementById('history-form');
+            const galleryAdminModal = document.getElementById('gallery-admin-modal');
+            const photoForm = document.getElementById('photo-form');
+            const aboutUsAdminModal = document.getElementById('about-us-admin-modal');
+            const aboutUsForm = document.getElementById('about-us-form');
+            const lightboxModal = document.getElementById('lightbox-modal');
+            const searchModal = document.getElementById('search-modal');
+            const termsModal = document.getElementById('terms-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+    
+            // ✅ 4. 모든 이벤트 리스너 바인딩
+            historyForm?.addEventListener('submit', handleHistoryFormSubmit);
+            photoForm?.addEventListener('submit', handlePhotoFormSubmit);
+            aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
+            
+            document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
+            document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
+            document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
+            document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
+            document.getElementById('close-search-btn').onclick = closeSearch;
+            document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
+            document.getElementById('privacy-link').onclick = () => privacyModal.classList.remove('hidden');
+            document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
+            document.getElementById('add-image-url-btn')?.addEventListener('click', () => {
+                const container = document.getElementById('image-urls-container');
+                const rowCount = container.children.length;
+                const newRow = document.createElement('div');
+                newRow.className = 'image-url-row flex gap-2';
+                newRow.innerHTML = `<input type="url" placeholder="https://i.imgur.com/image${rowCount + 1}.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
+                container.appendChild(newRow);
+                updateRemoveButtons();
+            });
+            document.getElementById('image-urls-container')?.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-image-btn')) {
+                    e.target.closest('.image-url-row').remove();
+                    updateRemoveButtons();
+                }
+            });
+            document.getElementById('admin-login-btn')?.addEventListener('click', async () => {
+                if (document.body.classList.contains('admin-mode')) {
+                    try { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
+                    catch (error) { customAlert('로그아웃 중 오류가 발생했습니다.'); }
+                } else { navigateTo('login'); }
+            });
+            document.getElementById('mobile-menu-button').onclick = (e) => { e.stopPropagation(); document.getElementById('mobile-menu').classList.toggle('hidden'); };
+            
+            // --- Event Delegation ---
+            appContent.addEventListener('submit', (event) => {
+                if (event.target.getAttribute('data-netlify') === 'true') handleNetlifyFormSubmit(event);
+            });
+            document.body.addEventListener('click', async (e) => {
+                const target = e.target;
+                const currentPage = appContent.dataset.page;
+                
+                if (document.body.classList.contains('admin-mode')) {
+                    if (currentPage === 'history') {
+                        if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(); }
+                        else if (target.matches('.edit-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(target.dataset.id); }
+                        else if (target.matches('.delete-btn')) { e.preventDefault(); e.stopPropagation(); if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'history', target.dataset.id)); }
+                    } else if (currentPage === 'community-gallery') {
+                        if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) { e.preventDefault(); e.stopPropagation(); openGalleryModal(); }
+                    } else if (currentPage === 'about-us') {
+                        if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) openAboutUsModal();
+                        else if (target.matches('.edit-btn')) openAboutUsModal(target.dataset.id);
+                        else if (target.matches('.delete-btn')) { if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'about_us', target.dataset.id)); }
+                    }
+                }
+                
+                const accordionHeader = target.closest('.accordion-header');
+                if (accordionHeader) {
+                    const content = accordionHeader.nextElementSibling;
+                    const icon = accordionHeader.querySelector('i');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.classList.remove('rotate-180');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.add('rotate-180');
+                    }
+                }
+            });
+            
+            // --- Lightbox & Search ---
+            let currentImages = [], currentImageIndex = 0, currentTitle = '', currentDescription = '', currentDate = '';
+            
+            function openLightbox(images, title, description, startIndex = 0, date = '') {
+                currentImages = images; currentTitle = title; currentDescription = description; currentImageIndex = startIndex; currentDate = date;
+                updateLightboxContent();
+                lightboxModal.classList.remove('hidden');
+            }
+            function updateLightboxContent() {
+                document.getElementById('lightbox-title').textContent = currentTitle;
+                document.getElementById('lightbox-counter').textContent = currentImages.length > 1 ? `${currentImageIndex + 1} / ${currentImages.length}` : '';
+                document.getElementById('lightbox-image').src = currentImages[currentImageIndex];
+                document.getElementById('lightbox-description').textContent = currentDescription;
+                document.getElementById('lightbox-date').querySelector('span').textContent = currentDate;
+                document.getElementById('prev-image-btn').style.display = currentImages.length > 1 ? 'block' : 'none';
+                document.getElementById('next-image-btn').style.display = currentImages.length > 1 ? 'block' : 'none';
+                const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
+                lightboxThumbnails.innerHTML = '';
+                if (currentImages.length > 1) {
+                    currentImages.forEach((imageUrl, index) => {
+                        const thumbnail = document.createElement('img');
+                        thumbnail.src = imageUrl;
+                        thumbnail.className = `w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-gray-200'} hover:border-blue-300 transition-colors`;
+                        thumbnail.onclick = () => { currentImageIndex = index; updateLightboxContent(); };
+                        lightboxThumbnails.appendChild(thumbnail);
+                    });
                 }
             }
+            function showPrevImage() { if (currentImages.length > 1) { currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length; updateLightboxContent(); } }
+            function showNextImage() { if (currentImages.length > 1) { currentImageIndex = (currentImageIndex + 1) % currentImages.length; updateLightboxContent(); } }
+            document.getElementById('prev-image-btn')?.addEventListener('click', showPrevImage);
+            document.getElementById('next-image-btn')?.addEventListener('click', showNextImage);
+            
+            function openSearch() { searchModal.classList.remove('hidden'); document.getElementById('search-input').focus(); }
+            function closeSearch() { searchModal.classList.add('hidden'); }
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.trim();
+                    if (searchTerm) window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
+                }
+            });
+            
+            // --- Final UI Setup & Initial Navigation ---
+            window.addEventListener('scroll', () => {
+                const isScrolled = window.scrollY > 50;
+                document.getElementById('header').classList.toggle('h-16', isScrolled);
+                document.getElementById('header').classList.toggle('h-20', !isScrolled);
+                document.querySelectorAll('.sub-nav').forEach(nav => nav.style.top = (isScrolled ? 64 : 80) + 'px');
+                handleScrollAnimation();
+            }, { passive: true });
+            
+            bindNavLinks(document.body);
+            buildMobileMenu();
+            navigateTo(window.location.hash.substring(1) || 'home');
         });
-
-        // 🆕 === 4-3단계: 이미지 URL 관리 기능 ===
-        document.getElementById('add-image-url-btn')?.addEventListener('click', () => {
-            const container = document.getElementById('image-urls-container');
-            const rowCount = container.children.length;
-            
-            const newRow = document.createElement('div');
-            newRow.className = 'image-url-row flex gap-2';
-            newRow.innerHTML = `
-                <input type="url" placeholder="https://i.imgur.com/image${rowCount + 1}.png" class="flex-1 p-2 border rounded image-url-input" required>
-                <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>
-            `;
-            container.appendChild(newRow);
-            updateRemoveButtons();
-        });
-
-        document.getElementById('image-urls-container')?.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-image-btn')) {
-                e.target.closest('.image-url-row').remove();
-                updateRemoveButtons();
-            }
-        });
-        
-        // 🆕 === 4-6단계: 라이트박스 기능 ===
-        let currentImages = [];
-        let currentImageIndex = 0;
-        let currentTitle = '';
-        let currentDescription = '';
-        let currentDate = ''; // 이 줄 추가
-
-        function openLightbox(images, title, description, startIndex = 0, date = '') {
-            currentImages = images;
-            currentTitle = title;
-            currentDescription = description;
-            currentImageIndex = startIndex;
-            currentDate = date;
-            
-            updateLightboxContent();
-            lightboxModal.classList.remove('hidden');
-        }
-        
-        function updateLightboxContent() {
-            const lightboxTitle = document.getElementById('lightbox-title');
-            const lightboxCounter = document.getElementById('lightbox-counter');
-            const lightboxImage = document.getElementById('lightbox-image');
-            const lightboxDescription = document.getElementById('lightbox-description');
-            const lightboxDate = document.getElementById('lightbox-date');
-            const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
-            const prevBtn = document.getElementById('prev-image-btn');
-            const nextBtn = document.getElementById('next-image-btn');
-            
-            lightboxTitle.textContent = currentTitle;
-            lightboxCounter.textContent = currentImages.length > 1 ? `${currentImageIndex + 1} / ${currentImages.length}` : '';
-            
-            lightboxImage.src = currentImages[currentImageIndex];
-            lightboxDescription.textContent = currentDescription;
-            lightboxDate.querySelector('span').textContent = currentDate;
-            
-            prevBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
-            nextBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
-            
-            lightboxThumbnails.innerHTML = '';
-            if (currentImages.length > 1) {
-                currentImages.forEach((imageUrl, index) => {
-                    const thumbnail = document.createElement('img');
-                    thumbnail.src = imageUrl;
-                    thumbnail.className = `w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-gray-200'} hover:border-blue-300 transition-colors`;
-                    thumbnail.onclick = () => {
-                        currentImageIndex = index;
-                        updateLightboxContent();
-                    };
-                    lightboxThumbnails.appendChild(thumbnail);
-                });
-            }
-        }
-
-        function showPrevImage() {
-            if (currentImages.length > 1) {
-                currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
-                updateLightboxContent();
-            }
-        }
-
-        function showNextImage() {
-            if (currentImages.length > 1) {
-                currentImageIndex = (currentImageIndex + 1) % currentImages.length;
-                updateLightboxContent();
-            }
-        }
-
-        document.getElementById('prev-image-btn')?.addEventListener('click', showPrevImage);
-        document.getElementById('next-image-btn')?.addEventListener('click', showNextImage);
-
-        document.addEventListener('keydown', (e) => {
-            if (!lightboxModal.classList.contains('hidden')) {
-                if (e.key === 'ArrowLeft') showPrevImage();
-                if (e.key === 'ArrowRight') showNextImage();
-                if (e.key === 'Escape') lightboxModal.classList.add('hidden');
-            }
-        });
-        
-        navigateTo(window.location.hash.substring(1) || 'home');
-    });
     </script>
 
 </body>
