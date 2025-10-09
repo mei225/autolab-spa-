@@ -2315,12 +2315,14 @@
             });
         }
         function markdownToHtml(text) {
+            if (!text) return '';
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/\n/g, '<br>');
         }
         function htmlToMarkdown(html) {
+            if (!html) return '';
             return html
                 .replace(/<strong>(.*?)<\/strong>/g, '**$1**')
                 .replace(/<em>(.*?)<\/em>/g, '*$1*')
@@ -2400,10 +2402,7 @@
             document.querySelectorAll('.edit-btn-icon').forEach(btn => btn.remove());
             document.querySelectorAll('.admin-edit-overlay').forEach(overlay => overlay.remove());
             document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
-                if (btn.closest('.admin-edit-overlay') ||
-                    btn.closest('[class*="admin"]') ||
-                    btn.classList.contains('bg-blue-500') ||
-                    btn.classList.contains('bg-red-500')) {
+                if (btn.closest('.admin-edit-overlay') || btn.closest('[class*="admin"]') || btn.classList.contains('bg-blue-500') || btn.classList.contains('bg-red-500')) {
                     btn.remove();
                 }
             });
@@ -2422,12 +2421,7 @@
                 }
             });
             document.querySelectorAll('div').forEach(div => {
-                if (div.innerHTML &&
-                    (div.innerHTML.includes('수정</button>') ||
-                    div.innerHTML.includes('삭제</button>')) &&
-                    (div.className.includes('admin') ||
-                    div.className.includes('space-x-2') ||
-                    div.className.includes('text-right'))) {
+                if (div.innerHTML && (div.innerHTML.includes('수정</button>') || div.innerHTML.includes('삭제</button>')) && (div.className.includes('admin') || div.className.includes('space-x-2') || div.className.includes('text-right'))) {
                     div.remove();
                 }
             });
@@ -2436,7 +2430,6 @@
             }, 100);
         }
     
-        // --- Router ---
         function navigateTo(pageId) {
             currentPage = pageId;
             window.location.hash = pageId;
@@ -2479,21 +2472,12 @@
                     'about-us': 'about-us-admin-panel',
                     'products': 'products-admin-panel'
                 };
-                
-                document.querySelectorAll('.admin-panel').forEach(panel => {
-                    panel.classList.add('hidden');
-                });
-                
+                document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
                 if (adminPanels[pageId]) {
                     const panel = document.getElementById(adminPanels[pageId]);
-                    if (panel) {
-                        panel.classList.remove('hidden');
-                    }
+                    if (panel) panel.classList.remove('hidden');
                 }
-                
-                setTimeout(() => {
-                    initAdminEditButtons();
-                }, 100);
+                setTimeout(() => initAdminEditButtons(), 100);
             }
         }
         
@@ -2528,7 +2512,6 @@
                 const submitButton = loginForm.querySelector('button[type="submit"]');
                 submitButton.disabled = true;
                 submitButton.textContent = '로그인 중...';
-                
                 try {
                     await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
                     customAlert('로그인 성공! 관리자 모드로 전환됩니다.');
@@ -2536,17 +2519,9 @@
                 } catch (error) {
                     console.error('로그인 오류:', error);
                     let errorMessage = '로그인에 실패했습니다.';
-                    switch (error.code) {
-                        case 'auth/user-not-found':
-                            errorMessage = '등록되지 않은 이메일입니다.';
-                            break;
-                        case 'auth/wrong-password':
-                            errorMessage = '비밀번호가 올바르지 않습니다.';
-                            break;
-                        case 'auth/invalid-email':
-                            errorMessage = '올바른 이메일 형식이 아닙니다.';
-                            break;
-                    }
+                    if (error.code === 'auth/user-not-found') errorMessage = '등록되지 않은 이메일입니다.';
+                    else if (error.code === 'auth/wrong-password') errorMessage = '비밀번호가 올바르지 않습니다.';
+                    else if (error.code === 'auth/invalid-email') errorMessage = '올바른 이메일 형식이 아닙니다.';
                     customAlert(errorMessage);
                 } finally {
                     submitButton.disabled = false;
@@ -2558,49 +2533,18 @@
         function initHistoryPage() {
             const timelineContainer = document.getElementById('timeline-container');
             if (!timelineContainer) return;
-            
             const q = query(collection(db, 'history'), orderBy("order", "desc"));
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 timelineContainer.innerHTML = '<div class="border-l-2 border-blue-200 absolute h-full top-0" style="left: 138px;"></div>';
-                
                 if (data.length === 0) {
                     timelineContainer.innerHTML += '<p class="text-center text-gray-500 py-10">등록된 연혁이 없습니다.</p>';
                 } else {
                     data.forEach(item => {
                         const itemEl = document.createElement('div');
                         itemEl.className = 'mb-16 scroll-reveal';
-                        const imageHtml = item.imageUrl
-                            ? `<div class="mt-4"><img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full max-w-md h-auto object-cover" onerror="this.style.display='none'"></div>`
-                            : '';
-                        
-                        itemEl.innerHTML = `
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 text-right mr-8 w-24">
-                                    <h3 class="text-2xl font-bold text-gray-800">${item.year}</h3>
-                                </div>
-                                <div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div>
-                                <div class="flex-1 ml-8">
-                                    <div class="space-y-1">
-                                        ${item.events.split('\n').map(e => {
-                                            const trimmed = e.trim();
-                                            if (!trimmed) return '';
-                                            if (/^\d{1,2}\.\d{1,2}\./.test(trimmed)) {
-                                                const parts = trimmed.split('.');
-                                                const month = parts[0];
-                                                const day = parts[1];
-                                                const content = trimmed.substring(month.length + day.length + 2).trim();
-                                                return `<div class="timeline-item"><span class="timeline-date">${item.year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}.</span><span class="timeline-content">${content}</span></div>`;
-                                            } else {
-                                                return `<div class="timeline-item"><span class="timeline-content">${trimmed}</span></div>`;
-                                            }
-                                        }).filter(item => item).join('')}
-                                    </div>
-                                    ${imageHtml}
-                                </div>
-                            </div>
-                        `;
-                
+                        const imageHtml = item.imageUrl ? `<div class="mt-4"><img src="${item.imageUrl}" alt="${item.year} 연혁 이미지" class="rounded-lg shadow-md w-full max-w-md h-auto object-cover" onerror="this.style.display='none'"></div>` : '';
+                        itemEl.innerHTML = `<div class="flex items-start"><div class="flex-shrink-0 text-right mr-8 w-24"><h3 class="text-2xl font-bold text-gray-800">${item.year}</h3></div><div class="w-6 h-6 bg-blue-800 rounded-full flex-shrink-0 z-10 shadow-md mt-1"></div><div class="flex-1 ml-8"><div class="space-y-1">${item.events.split('\n').map(e => { const trimmed = e.trim(); if (!trimmed) return ''; if (/^\d{1,2}\.\d{1,2}\./.test(trimmed)) { const parts = trimmed.split('.'); const month = parts[0]; const day = parts[1]; const content = trimmed.substring(month.length + day.length + 2).trim(); return `<div class="timeline-item"><span class="timeline-date">${item.year}.${month.padStart(2, '0')}.${day.padStart(2, '0')}.</span><span class="timeline-content">${content}</span></div>`; } else { return `<div class="timeline-item"><span class="timeline-content">${trimmed}</span></div>`; } }).filter(i => i).join('')}</div>${imageHtml}</div></div>`;
                         if (document.body.classList.contains('admin-mode')) {
                             const adminButtons = document.createElement('div');
                             adminButtons.className = 'ml-16 pl-6 mt-4 text-left space-x-2';
@@ -2619,83 +2563,37 @@
             const galleryGrid = document.getElementById('gallery-grid');
             if (!galleryGrid) return;
             showLoadingState();
-            
             const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 galleryGrid.innerHTML = '';
-                
-                if (photos.length === 0) {
-                    showEmptyState();
-                    return;
-                }
-                
+                if (photos.length === 0) { showEmptyState(); return; }
                 photos.forEach(photo => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
-                    
                     itemEl.addEventListener('click', (e) => {
                         if (!e.target.closest('.admin-edit-overlay')) {
                             const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
-                            const title = photo.title || '';
-                            const description = photo.description || '';
                             const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                            openLightbox(images, title, description, 0, createdDate);
+                            openLightbox(images, photo.title || '', photo.description || '', 0, createdDate);
                         }
                     });
-                    
                     const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
                     const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
-                    const imageCount = images.length;
                     const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    
-                    itemEl.innerHTML = `
-                        <div class="relative aspect-[4/3] overflow-hidden">
-                            <img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" 
-                                data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" 
-                                data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">
-                            ${imageCount > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${imageCount}</div>` : ''}
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>
-                            ${createdDate ? `<div class="flex items-center text-gray-400 text-sm"><i class="fas fa-calendar-alt mr-2"></i><span>${createdDate}</span></div>` : ''}
-                        </div>`;
-                    
+                    itemEl.innerHTML = `<div class="relative aspect-[4/3] overflow-hidden"><img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">${images.length > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${images.length}</div>` : ''}</div><div class="p-6"><h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>${createdDate ? `<div class="flex items-center text-gray-400 text-sm"><i class="fas fa-calendar-alt mr-2"></i><span>${createdDate}</span></div>` : ''}</div>`;
                     if (document.body.classList.contains('admin-mode')) {
                         const overlay = document.createElement('div');
                         overlay.className = 'admin-edit-overlay';
-                        overlay.innerHTML = `
-                            <button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium"><i class="fas fa-edit mr-1"></i>수정</button>
-                            <button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium"><i class="fas fa-trash mr-1"></i>삭제</button>
-                        `;
-                        
-                        const editBtn = overlay.querySelector('.edit-btn');
-                        const deleteBtn = overlay.querySelector('.delete-btn');
-                        
-                        editBtn.addEventListener('click', async (e) => {
-                            e.preventDefault(); e.stopPropagation();
-                            if (typeof openGalleryModal === 'function') {
-                                await openGalleryModal(photo.id);
-                            } else { customAlert('갤러리 수정 기능을 불러올 수 없습니다.'); }
-                        });
-                        
-                        deleteBtn.addEventListener('click', async (e) => {
-                            e.preventDefault(); e.stopPropagation();
-                            if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) {
-                                try { await deleteDoc(doc(db, 'gallery', photo.id)); customAlert('사진이 삭제되었습니다.'); } 
-                                catch (error) { console.error('삭제 중 오류:', error); customAlert('삭제 중 오류가 발생했습니다.'); }
-                            }
-                        });
-                        
+                        overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium"><i class="fas fa-edit mr-1"></i>수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium"><i class="fas fa-trash mr-1"></i>삭제</button>`;
+                        overlay.querySelector('.edit-btn').addEventListener('click', async (e) => { e.preventDefault(); e.stopPropagation(); if (typeof openGalleryModal === 'function') await openGalleryModal(photo.id); });
+                        overlay.querySelector('.delete-btn').addEventListener('click', async (e) => { e.preventDefault(); e.stopPropagation(); if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) try { await deleteDoc(doc(db, 'gallery', photo.id)); customAlert('사진이 삭제되었습니다.'); } catch (error) { console.error('삭제 오류:', error); customAlert('삭제 중 오류가 발생했습니다.'); } });
                         overlay.addEventListener('click', (e) => e.stopPropagation());
                         itemEl.querySelector('.relative').appendChild(overlay);
                     }
                     galleryGrid.appendChild(itemEl);
                 });
-                
-                if (document.body.classList.contains('admin-mode')) {
-                    setTimeout(() => initAdminEditButtons(), 100);
-                }
+                if (document.body.classList.contains('admin-mode')) setTimeout(() => initAdminEditButtons(), 100);
                 handleScrollAnimation();
             });
             activeFirestoreListeners.push(unsubscribe);
@@ -2704,34 +2602,18 @@
         function createSkeletonCard() {
             const skeleton = document.createElement('div');
             skeleton.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
-            skeleton.innerHTML = `
-                <div class="aspect-[4/3] skeleton"></div>
-                <div class="p-6">
-                    <div class="h-5 skeleton rounded mb-2"></div>
-                    <div class="h-4 skeleton rounded w-1/2"></div>
-                </div>`;
+            skeleton.innerHTML = `<div class="aspect-[4/3] skeleton"></div><div class="p-6"><div class="h-5 skeleton rounded mb-2"></div><div class="h-4 skeleton rounded w-1/2"></div></div>`;
             return skeleton;
         }
             
         function showLoadingState() {
             const galleryGrid = document.getElementById('gallery-grid');
             galleryGrid.innerHTML = '';
-            for (let i = 0; i < 6; i++) {
-                galleryGrid.appendChild(createSkeletonCard());
-            }
+            for (let i = 0; i < 6; i++) galleryGrid.appendChild(createSkeletonCard());
         }
             
         function showEmptyState() {
-            const galleryGrid = document.getElementById('gallery-grid');
-            galleryGrid.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-16">
-                    <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6"><i class="fas fa-images text-4xl text-gray-400"></i></div>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3>
-                    <p class="text-gray-500 text-center">
-                        ${document.body.classList.contains('admin-mode') ? '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : '곧 멋진 사진들로 채워질 예정입니다.'}
-                    </p>
-                    ${document.body.classList.contains('admin-mode') ? '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : ''}
-                </div>`;
+            document.getElementById('gallery-grid').innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-16"><div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6"><i class="fas fa-images text-4xl text-gray-400"></i></div><h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3><p class="text-gray-500 text-center">${document.body.classList.contains('admin-mode') ? '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : '곧 멋진 사진들로 채워질 예정입니다.'}</p>${document.body.classList.contains('admin-mode') ? '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : ''}</div>`;
         }
     
         function initAboutUsPage() {
@@ -2766,24 +2648,10 @@
             const originalButtonText = submitButton.innerHTML;
             submitButton.disabled = true;
             submitButton.innerHTML = '전송 중...';
-    
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(() => {
-                customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`);
-                form.reset();
-            })
-            .catch((error) => {
-                customAlert('오류가 발생했습니다. 다시 시도해주세요.');
-                console.error(error);
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonText;
-            });
+            fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(formData).toString() })
+            .then(() => { customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`); form.reset(); })
+            .catch((error) => { customAlert('오류가 발생했습니다. 다시 시도해주세요.'); console.error(error); })
+            .finally(() => { submitButton.disabled = false; submitButton.innerHTML = originalButtonText; });
         }
     
         async function openGalleryModal(docId = null) {
@@ -2793,14 +2661,9 @@
             const photoIdInput = document.getElementById('photo-id');
             const photoTitleInput = document.getElementById('photo-title');
             const photoDescriptionInput = document.getElementById('photo-description');
-            if (!galleryAdminModal || !photoForm) {
-                console.error('갤러리 모달 요소를 찾을 수 없습니다.');
-                return;
-            }
-            
+            if (!galleryAdminModal || !photoForm) { console.error('갤러리 모달 요소를 찾을 수 없습니다.'); return; }
             photoForm.reset();
             initImageUrlInputs();
-            
             if (docId) {
                 galleryModalTitle.textContent = "사진 수정";
                 photoIdInput.value = docId;
@@ -2812,15 +2675,8 @@
                         photoDescriptionInput.value = data.description || '';
                         const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
                         loadImageUrls(images);
-                    } else {
-                        customAlert('해당 사진을 찾을 수 없습니다.');
-                        return;
-                    }
-                } catch (error) {
-                    console.error('문서 로드 오류:', error);
-                    customAlert('문서를 불러오는 중 오류가 발생했습니다.');
-                    return;
-                }
+                    } else { customAlert('해당 사진을 찾을 수 없습니다.'); return; }
+                } catch (error) { console.error('문서 로드 오류:', error); customAlert('문서를 불러오는 중 오류가 발생했습니다.'); return; }
             } else {
                 galleryModalTitle.textContent = "새 사진 추가";
                 photoIdInput.value = '';
@@ -2839,10 +2695,7 @@
             const container = document.getElementById('image-urls-container');
             if (!container) return;
             container.innerHTML = '';
-            if (images.length === 0) {
-                initImageUrlInputs();
-                return;
-            }
+            if (images.length === 0) { initImageUrlInputs(); return; }
             images.forEach((imageUrl, index) => {
                 const row = document.createElement('div');
                 row.className = 'image-url-row flex gap-2';
@@ -2853,26 +2706,16 @@
         }
             
         function updateRemoveButtons() {
-            const rows = document.querySelectorAll('.image-url-row');
-            rows.forEach((row) => {
+            document.querySelectorAll('.image-url-row').forEach((row) => {
                 const removeBtn = row.querySelector('.remove-image-btn');
-                if (removeBtn) {
-                    removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
-                }
+                if(removeBtn) removeBtn.style.display = document.querySelectorAll('.image-url-row').length > 1 ? 'block' : 'none';
             });
         }
     
         function enterAdminMode() {
             document.body.classList.add('admin-mode');
             document.getElementById('admin-login-btn').textContent = 'Logout';
-            const currentPage = appContent.dataset.page || 'home';
-            const adminPanels = { 'history': 'history-admin-panel', 'community-gallery': 'gallery-admin-panel', 'about-us': 'about-us-admin-panel', 'products': 'products-admin-panel' };
-            document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
-            if (adminPanels[currentPage]) {
-                const panel = document.getElementById(adminPanels[currentPage]);
-                if (panel) panel.classList.remove('hidden');
-            }
-            navigateTo(currentPage);
+            navigateTo(appContent.dataset.page || 'home');
         }
         
         function exitAdminMode() {
@@ -2882,8 +2725,7 @@
             document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
             document.querySelectorAll('.admin-editable-container').forEach(el => el.classList.remove('admin-editable-container'));
             removeAdminEditButtons();
-            const currentPage = appContent.dataset.page || 'home';
-            setTimeout(() => navigateTo(currentPage), 100);
+            setTimeout(() => navigateTo(appContent.dataset.page || 'home'), 100);
         }
     
         function buildMobileMenu() {
@@ -2900,15 +2742,8 @@
                     toggleButton.innerHTML = `<span>${parentLink.textContent}</span><i class="fas fa-chevron-down transition-transform duration-200"></i>`;
                     const mobileSubMenu = document.createElement('div');
                     mobileSubMenu.className = 'hidden pl-4 bg-gray-50';
-                    subMenu.querySelectorAll('a').forEach(link => {
-                        const clonedLink = link.cloneNode(true);
-                        clonedLink.className = 'nav-link block w-full px-4 py-3 text-gray-700 hover:bg-blue-100';
-                        mobileSubMenu.appendChild(clonedLink);
-                    });
-                    toggleButton.onclick = () => {
-                        mobileSubMenu.classList.toggle('hidden');
-                        toggleButton.querySelector('i').classList.toggle('rotate-180');
-                    };
+                    subMenu.querySelectorAll('a').forEach(link => { const clonedLink = link.cloneNode(true); clonedLink.className = 'nav-link block w-full px-4 py-3 text-gray-700 hover:bg-blue-100'; mobileSubMenu.appendChild(clonedLink); });
+                    toggleButton.onclick = () => { mobileSubMenu.classList.toggle('hidden'); toggleButton.querySelector('i').classList.toggle('rotate-180'); };
                     wrapper.appendChild(toggleButton);
                     wrapper.appendChild(mobileSubMenu);
                 } else {
@@ -2965,10 +2800,78 @@
             const privacyModal = document.getElementById('privacy-modal');
     
             // ✅ 4. 모든 이벤트 리스너 바인딩
+            async function handleHistoryFormSubmit(e) {
+                e.preventDefault();
+                const docId = document.getElementById('history-id').value;
+                const data = { year: document.getElementById('history-year').value, events: document.getElementById('history-events').value, imageUrl: document.getElementById('history-imageUrl').value, order: Number(document.getElementById('history-order').value) };
+                try {
+                    if (docId) await updateDoc(doc(db, 'history', docId), data);
+                    else await addDoc(collection(db, 'history'), data);
+                    historyAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
+                } catch (error) { console.error("Error saving history:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+            }
+            async function handlePhotoFormSubmit(e) {
+                e.preventDefault();
+                const docId = document.getElementById('photo-id').value;
+                const images = Array.from(document.querySelectorAll('.image-url-input')).map(input => input.value.trim()).filter(url => url);
+                if (images.length === 0) { customAlert('최소 하나의 이미지 URL을 입력해주세요.'); return; }
+                const data = { title: document.getElementById('photo-title').value, description: document.getElementById('photo-description').value, images: images, createdAt: serverTimestamp() };
+                try {
+                    if (docId) await updateDoc(doc(db, 'gallery', docId), { title: data.title, description: data.description, images: data.images });
+                    else await addDoc(collection(db, 'gallery'), data);
+                    galleryAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
+                } catch (error) { console.error("Error saving photo:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+            }
+            async function handleAboutUsFormSubmit(e) {
+                e.preventDefault();
+                const docId = document.getElementById('about-us-id').value;
+                const data = { title: document.getElementById('about-us-title').value, content: document.getElementById('about-us-content').value, createdAt: serverTimestamp() };
+                try {
+                    if (docId) await updateDoc(doc(db, 'about_us', docId), { title: data.title, content: data.content });
+                    else await addDoc(collection(db, 'about_us'), data);
+                    aboutUsAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
+                } catch (error) { console.error("Error saving about us:", error); customAlert('저장 중 오류가 발생했습니다.'); }
+            }
+            async function openHistoryModal(docId = null) {
+                historyForm.reset();
+                if (docId) {
+                    document.getElementById('modal-title').textContent = "연혁 수정";
+                    document.getElementById('history-id').value = docId;
+                    const docSnap = await getDoc(doc(db, 'history', docId));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('history-year').value = data.year;
+                        document.getElementById('history-events').value = data.events;
+                        document.getElementById('history-imageUrl').value = data.imageUrl || '';
+                        document.getElementById('history-order').value = data.order;
+                    }
+                } else {
+                    document.getElementById('modal-title').textContent = "새 연혁 추가";
+                    document.getElementById('history-id').value = '';
+                }
+                historyAdminModal.classList.remove('hidden');
+            }
+            async function openAboutUsModal(docId = null) {
+                aboutUsForm.reset();
+                if (docId) {
+                    document.getElementById('about-us-modal-title').textContent = "글 수정";
+                    document.getElementById('about-us-id').value = docId;
+                    const docSnap = await getDoc(doc(db, 'about_us', docId));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('about-us-title').value = data.title;
+                        document.getElementById('about-us-content').value = data.content;
+                    }
+                } else {
+                    document.getElementById('about-us-modal-title').textContent = "새 글 추가";
+                    document.getElementById('about-us-id').value = '';
+                }
+                aboutUsAdminModal.classList.remove('hidden');
+            }
+    
             historyForm?.addEventListener('submit', handleHistoryFormSubmit);
             photoForm?.addEventListener('submit', handlePhotoFormSubmit);
             aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
-            
             document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
             document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
             document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
@@ -2979,71 +2882,43 @@
             document.querySelectorAll('.close-modal-btn').forEach(btn => btn.onclick = (e) => e.target.closest('.fixed').classList.add('hidden'));
             document.getElementById('add-image-url-btn')?.addEventListener('click', () => {
                 const container = document.getElementById('image-urls-container');
-                const rowCount = container.children.length;
                 const newRow = document.createElement('div');
                 newRow.className = 'image-url-row flex gap-2';
-                newRow.innerHTML = `<input type="url" placeholder="https://i.imgur.com/image${rowCount + 1}.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
+                newRow.innerHTML = `<input type="url" placeholder="https://..." class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
                 container.appendChild(newRow);
                 updateRemoveButtons();
             });
-            document.getElementById('image-urls-container')?.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-image-btn')) {
-                    e.target.closest('.image-url-row').remove();
-                    updateRemoveButtons();
-                }
-            });
-            document.getElementById('admin-login-btn')?.addEventListener('click', async () => {
-                if (document.body.classList.contains('admin-mode')) {
-                    try { await signOut(auth); customAlert('로그아웃되었습니다.'); } 
-                    catch (error) { customAlert('로그아웃 중 오류가 발생했습니다.'); }
-                } else { navigateTo('login'); }
-            });
+            document.getElementById('image-urls-container')?.addEventListener('click', (e) => { if (e.target.classList.contains('remove-image-btn')) { e.target.closest('.image-url-row').remove(); updateRemoveButtons(); } });
+            document.getElementById('admin-login-btn')?.addEventListener('click', async () => { if (document.body.classList.contains('admin-mode')) { try { await signOut(auth); customAlert('로그아웃되었습니다.'); } catch (error) { customAlert('로그아웃 중 오류가 발생했습니다.'); } } else { navigateTo('login'); } });
             document.getElementById('mobile-menu-button').onclick = (e) => { e.stopPropagation(); document.getElementById('mobile-menu').classList.toggle('hidden'); };
             
-            // --- Event Delegation ---
-            appContent.addEventListener('submit', (event) => {
-                if (event.target.getAttribute('data-netlify') === 'true') handleNetlifyFormSubmit(event);
-            });
+            appContent.addEventListener('submit', (event) => { if (event.target.getAttribute('data-netlify') === 'true') handleNetlifyFormSubmit(event); });
             document.body.addEventListener('click', async (e) => {
                 const target = e.target;
-                const currentPage = appContent.dataset.page;
-                
                 if (document.body.classList.contains('admin-mode')) {
                     if (currentPage === 'history') {
                         if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(); }
                         else if (target.matches('.edit-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(target.dataset.id); }
-                        else if (target.matches('.delete-btn')) { e.preventDefault(); e.stopPropagation(); if (await customConfirm("정말로 이 연혁을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'history', target.dataset.id)); }
+                        else if (target.matches('.delete-btn')) { e.preventDefault(); e.stopPropagation(); if (await customConfirm("연혁을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'history', target.dataset.id)); }
                     } else if (currentPage === 'community-gallery') {
                         if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) { e.preventDefault(); e.stopPropagation(); openGalleryModal(); }
                     } else if (currentPage === 'about-us') {
                         if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) openAboutUsModal();
                         else if (target.matches('.edit-btn')) openAboutUsModal(target.dataset.id);
-                        else if (target.matches('.delete-btn')) { if (await customConfirm("정말로 이 글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'about_us', target.dataset.id)); }
+                        else if (target.matches('.delete-btn')) { if (await customConfirm("글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'about_us', target.dataset.id)); }
                     }
                 }
-                
                 const accordionHeader = target.closest('.accordion-header');
                 if (accordionHeader) {
                     const content = accordionHeader.nextElementSibling;
                     const icon = accordionHeader.querySelector('i');
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
-                        icon.classList.remove('rotate-180');
-                    } else {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        icon.classList.add('rotate-180');
-                    }
+                    if (content.style.maxHeight) { content.style.maxHeight = null; icon.classList.remove('rotate-180'); }
+                    else { content.style.maxHeight = content.scrollHeight + "px"; icon.classList.add('rotate-180'); }
                 }
             });
             
-            // --- Lightbox & Search ---
             let currentImages = [], currentImageIndex = 0, currentTitle = '', currentDescription = '', currentDate = '';
-            
-            function openLightbox(images, title, description, startIndex = 0, date = '') {
-                currentImages = images; currentTitle = title; currentDescription = description; currentImageIndex = startIndex; currentDate = date;
-                updateLightboxContent();
-                lightboxModal.classList.remove('hidden');
-            }
+            function openLightbox(images, title, description, startIndex = 0, date = '') { currentImages = images; currentTitle = title; currentDescription = description; currentImageIndex = startIndex; currentDate = date; updateLightboxContent(); lightboxModal.classList.remove('hidden'); }
             function updateLightboxContent() {
                 document.getElementById('lightbox-title').textContent = currentTitle;
                 document.getElementById('lightbox-counter').textContent = currentImages.length > 1 ? `${currentImageIndex + 1} / ${currentImages.length}` : '';
@@ -3052,17 +2927,9 @@
                 document.getElementById('lightbox-date').querySelector('span').textContent = currentDate;
                 document.getElementById('prev-image-btn').style.display = currentImages.length > 1 ? 'block' : 'none';
                 document.getElementById('next-image-btn').style.display = currentImages.length > 1 ? 'block' : 'none';
-                const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
-                lightboxThumbnails.innerHTML = '';
-                if (currentImages.length > 1) {
-                    currentImages.forEach((imageUrl, index) => {
-                        const thumbnail = document.createElement('img');
-                        thumbnail.src = imageUrl;
-                        thumbnail.className = `w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${index === currentImageIndex ? 'border-blue-500' : 'border-gray-200'} hover:border-blue-300 transition-colors`;
-                        thumbnail.onclick = () => { currentImageIndex = index; updateLightboxContent(); };
-                        lightboxThumbnails.appendChild(thumbnail);
-                    });
-                }
+                const thumbs = document.getElementById('lightbox-thumbnails');
+                thumbs.innerHTML = '';
+                if (currentImages.length > 1) { currentImages.forEach((img, i) => { const thumb = document.createElement('img'); thumb.src = img; thumb.className = `w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${i === currentImageIndex ? 'border-blue-500' : 'border-gray-200'}`; thumb.onclick = () => { currentImageIndex = i; updateLightboxContent(); }; thumbs.appendChild(thumb); }); }
             }
             function showPrevImage() { if (currentImages.length > 1) { currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length; updateLightboxContent(); } }
             function showNextImage() { if (currentImages.length > 1) { currentImageIndex = (currentImageIndex + 1) % currentImages.length; updateLightboxContent(); } }
@@ -3071,14 +2938,8 @@
             
             function openSearch() { searchModal.classList.remove('hidden'); document.getElementById('search-input').focus(); }
             function closeSearch() { searchModal.classList.add('hidden'); }
-            document.getElementById('search-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const searchTerm = e.target.value.trim();
-                    if (searchTerm) window.location.href = `./search.html?q=${encodeURIComponent(searchTerm)}`;
-                }
-            });
+            document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') { const term = e.target.value.trim(); if (term) window.location.href = `./search.html?q=${encodeURIComponent(term)}`; } });
             
-            // --- Final UI Setup & Initial Navigation ---
             window.addEventListener('scroll', () => {
                 const isScrolled = window.scrollY > 50;
                 document.getElementById('header').classList.toggle('h-16', isScrolled);
