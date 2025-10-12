@@ -2198,20 +2198,20 @@
             <i class="fas fa-comment-dots fa-2x"></i>
         </a>
         <div id="modal-container">
-        
-            <div id="brochure-download-modal" class="hidden ...">
-                <div class="bg-white rounded-lg ...">
-                    <h2 class="text-xl ...">회사 소개서 다운로드</h2>
-                    <p class="text-gray-600 mb-6">원활한 자료 제공을 위해 소속 기관 또는 회사명을 입력해주세요.</p>
-                    <form id="brochure-download-form">
-                        <input id="organization-name-input" type="text" placeholder="기관/회사명" class="w-full ..." required>
-                        <div class="mt-6 flex justify-end space-x-3">
-                            <button type="button" id="brochure-cancel-btn" class="bg-gray-200 ...">취소</button>
-                            <button type="submit" class="bg-blue-800 ...">확인 및 다운로드</button>
-                        </div>
-                    </form>
-                </div>
+                
+        <div id="brochure-download-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">회사 소개서 다운로드</h2>
+                <p class="text-gray-600 mb-6">원활한 자료 제공을 위해 소속 기관 또는 회사명을 입력해주세요.</p>
+                <form id="brochure-download-form">
+                    <input id="organization-name-input" type="text" placeholder="기관/회사명" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <button type="button" id="brochure-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors">취소</button>
+                        <button type="submit" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded-lg transition-colors">확인 및 다운로드</button>
+                    </div>
+                </form>
             </div>
+        </div>
         <div id="post-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[80] flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[90vh] flex flex-col">
                 <div class="flex-shrink-0 flex justify-between items-start p-6 border-b">
