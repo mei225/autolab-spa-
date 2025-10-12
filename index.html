@@ -2580,7 +2580,10 @@
             activeFirestoreListeners = [];
             
             const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
-            if (!targetTemplate) { navigateTo('home'); return; }
+            if (!targetTemplate) { 
+                navigateTo('home'); 
+                return; 
+            }
             
             const newContent = targetTemplate.cloneNode(true);
             newContent.id = '';
@@ -2593,50 +2596,25 @@
             window.scrollTo(0, 0);
             Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
             
-            // ✅ 페이지별 초기화 함수 실행
+            // 페이지별 초기화 함수 실행
             const pageInitFunctions = {
-                'about-intro': initAboutIntroPage,  // ⭐ 이 줄 추가!
+                'about-intro': initAboutIntroPage,
                 'history': initHistoryPage,
                 'community': initCommunityPage,
                 'login': initLoginPage,
                 'quote': initQuotePage,
                 'products': initProductsPage
             };
-            pageInitFunctions[pageId]?.();
             
-            // ✅ 제품소개 페이지 탭 활성화
+            if (pageInitFunctions[pageId]) {
+                pageInitFunctions[pageId]();
+            }
+            
+            // 제품소개 페이지 탭 활성화
             if (pageId === 'products') {
                 setTimeout(() => activateProductTab(tabId || 'rd'), 0);
-            }            
-            
-            setTimeout(() => {
-                newContent.classList.add('visible');
-                handleScrollAnimation();
-            }, 50);
-            
-            bindNavLinks(appContent);
-            
-            if (document.body.classList.contains('admin-mode')) {
-                const adminPanels = {
-                    'history': 'history-admin-panel',
-                    'community': 'community',
-                    'about-intro': 'about-intro',  // ⭐ 이 줄도 추가
-                    'products': 'products-admin-panel'
-                };
-                document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
-                if (adminPanels[pageId]) {
-                    const panel = document.getElementById(adminPanels[pageId]);
-                    if (panel) panel.classList.remove('hidden');
-                }
-                setTimeout(() => initAdminEditButtons(), 100);
             }
-        }
             
-            // ✅ 5-B: '제품소개' 페이지일 경우 탭 활성화 로직 추가
-            if (pageId === 'products') {
-                // 페이지가 완전히 그려진 후 탭을 활성화하기 위해 setTimeout 사용
-                setTimeout(() => activateProductTab(tabId || 'rd'), 0); // tabId가 없으면 'rd'를 기본값으로
-            }            
             setTimeout(() => {
                 newContent.classList.add('visible');
                 handleScrollAnimation();
@@ -2647,15 +2625,20 @@
             if (document.body.classList.contains('admin-mode')) {
                 const adminPanels = {
                     'history': 'history-admin-panel',
-                    'community-gallery': 'gallery-admin-panel',
-                    'about-us': 'about-us-admin-panel',
+                    'community': 'community-admin-panel',
+                    'about-intro': 'about-intro-admin-panel',
                     'products': 'products-admin-panel'
                 };
+                
                 document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
+                
                 if (adminPanels[pageId]) {
                     const panel = document.getElementById(adminPanels[pageId]);
-                    if (panel) panel.classList.remove('hidden');
+                    if (panel) {
+                        panel.classList.remove('hidden');
+                    }
                 }
+                
                 setTimeout(() => initAdminEditButtons(), 100);
             }
         }
@@ -2746,15 +2729,15 @@
         
         // ✅ 2-B: 이 함수를 아래 코드로 교체하세요.
         function initAboutIntroPage() {
-            // '회사소개' 페이지가 로드될 때마다 다운로드 버튼에 클릭 이벤트를 직접 연결
             const downloadBtn = document.getElementById('download-brochure-btn');
             const brochureModal = document.getElementById('brochure-download-modal');
         
-            downloadBtn?.addEventListener('click', () => {
-                brochureModal.classList.remove('hidden');
-            });
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', () => {
+                    brochureModal.classList.remove('hidden');
+                });
+            }
         
-            // 만약 현재 관리자 모드라면, 기록 조회 함수를 실행
             if (document.body.classList.contains('admin-mode')) {
                 initDownloadLogViewer();
             }
