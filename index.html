@@ -409,6 +409,35 @@
             color: #1e40af; /* Tailwind blue-800 */
             border-bottom-color: #1e40af; /* Tailwind blue-800 */
         }
+        /* ✅ 4단계: 공지사항 목록 스타일 추가 */
+        .community-post-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .community-post-item:hover {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        .community-post-item .post-title {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* gray-700 */
+            flex-grow: 1;
+            margin-right: 1rem;
+        }
+        .community-post-item .post-date {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* gray-500 */
+            flex-shrink: 0;
+        }
+        .community-post-item .post-image-icon {
+            color: #9ca3af; /* gray-400 */
+            margin-left: 1rem;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -1498,7 +1527,14 @@
             </section>
             <section class="py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-                    <div id="community-posts-container" class="space-y-8">
+                    <div class="mb-12">
+                        <div class="relative">
+                            <input type="text" id="community-search-input" placeholder="검색어를 입력하세요..." class="w-full p-4 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="community-posts-container" class="border-t border-gray-200">
                         <p id="community-loading" class="text-center text-gray-500 py-10">게시물을 불러오는 중...</p>
                         </div>
                 </div>
@@ -2107,15 +2143,47 @@
             <i class="fas fa-comment-dots fa-2x"></i>
         </a>
         <div id="modal-container">
+        <div id="post-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[80] flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[90vh] flex flex-col">
+                <div class="flex-shrink-0 flex justify-between items-start p-6 border-b">
+                    <div>
+                        <h2 id="post-detail-title" class="text-2xl font-bold text-gray-800 mb-2"></h2>
+                        <p id="post-detail-date" class="text-sm text-gray-500"></p>
+                    </div>
+                    <button id="close-post-detail-btn" class="text-gray-500 text-3xl hover:text-gray-700 transition-colors">×</button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div id="post-image-slider" class="hidden relative mb-6">
+                        <img id="post-detail-image" src="" alt="Post image" class="w-full h-auto rounded-lg">
+                        <button id="post-prev-image-btn" class="absolute left-4 top-1/2 transform -translate-y-1/2 lightbox-nav-btn text-white text-2xl w-10 h-10 rounded-full"><i class="fas fa-chevron-left"></i></button>
+                        <button id="post-next-image-btn" class="absolute right-4 top-1/2 transform -translate-y-1/2 lightbox-nav-btn text-white text-2xl w-10 h-10 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                        <div id="post-image-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full"></div>
+                    </div>
+                    <p id="post-detail-content" class="text-gray-700 whitespace-pre-wrap leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
         <div id="community-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
                 <h2 id="community-modal-title" class="text-2xl font-bold mb-6">새 글 작성</h2>
                 <form id="community-form">
                     <input type="hidden" id="post-id">
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <input id="post-title" type="text" placeholder="제목" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800" required>
                         <textarea id="post-content" placeholder="내용" rows="10" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800" required></textarea>
-                        <input id="post-imageUrl" type="url" placeholder="이미지 URL (선택 사항)" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">이미지 URL (선택 사항)</label>
+                            <div id="post-image-urls-container" class="space-y-2">
+                                <div class="image-url-row flex gap-2">
+                                    <input type="url" placeholder="https://example.com/image1.png" class="flex-1 p-2 border rounded image-url-input">
+                                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-post-image-url-btn" class="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm">
+                                <i class="fas fa-plus mr-1"></i>이미지 URL 추가
+                            </button>
+                        </div>
                     </div>
                     <div class="mt-8 flex justify-end space-x-3">
                         <button type="button" id="community-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
@@ -2564,59 +2632,66 @@
                 });
             });
         }
-        // ✅ 6-C: '공지사항' 페이지를 위한 새 함수들 추가
+        // ✅ 5-A: initCommunityPage 함수 전체 교체 (검색, 리스트, 팝업 기능 포함)
         function initCommunityPage() {
             const container = document.getElementById('community-posts-container');
-            if (!container) return;
-            
-            container.innerHTML = '<p id="community-loading" class="text-center text-gray-500 py-10">게시물을 불러오는 중...</p>';
-            
-            const q = query(collection(db, 'community'), orderBy("createdAt", "desc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                container.innerHTML = ''; // 기존 내용 초기화
-                if (posts.length === 0) {
-                    container.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 게시물이 없습니다.</p>';
+            const searchInput = document.getElementById('community-search-input');
+            if (!container || !searchInput) return;
+        
+            let allPosts = []; // 모든 게시물을 저장할 배열
+        
+            const renderPosts = (postsToRender) => {
+                container.innerHTML = '';
+                if (postsToRender.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-10">일치하는 게시물이 없습니다.</p>';
                     return;
                 }
-                posts.forEach(post => {
+                postsToRender.forEach(post => {
                     const postEl = document.createElement('div');
-                    postEl.className = 'bg-white rounded-lg shadow-md overflow-hidden scroll-reveal';
+                    postEl.className = 'community-post-item';
+                    postEl.addEventListener('click', () => openPostDetailModal(post));
+        
                     const date = post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    const imageHtml = post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}" class="w-full h-64 object-cover">` : '';
-
+                    const imageIcon = (post.images && post.images.length > 0) ? '<i class="fas fa-image post-image-icon"></i>' : '';
+                    
                     postEl.innerHTML = `
-                        ${imageHtml}
-                        <div class="p-6">
-                            <p class="text-sm text-gray-500 mb-2">${date}</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-4">${post.title}</h3>
-                            <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">${post.content}</p>
-                        </div>
+                        <span class="post-title">${post.title}</span>
+                        <span class="post-date">${date}</span>
+                        ${imageIcon}
                     `;
-
-                    if (document.body.classList.contains('admin-mode')) {
-                        const adminButtons = document.createElement('div');
-                        adminButtons.className = 'p-4 bg-gray-50 border-t text-right space-x-2';
-                        adminButtons.innerHTML = `
-                            <button data-id="${post.id}" class="edit-post-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button>
-                            <button data-id="${post.id}" class="delete-post-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>
-                        `;
-                        postEl.appendChild(adminButtons);
-                    }
                     container.appendChild(postEl);
                 });
-                handleScrollAnimation();
+            };
+        
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredPosts = allPosts.filter(post => 
+                    post.title.toLowerCase().includes(searchTerm) || 
+                    post.content.toLowerCase().includes(searchTerm)
+                );
+                renderPosts(filteredPosts);
+            });
+        
+            const q = query(collection(db, 'community'), orderBy("createdAt", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPosts(allPosts); // 초기 렌더링
             });
             activeFirestoreListeners.push(unsubscribe);
         }
-
+        // ✅ 5-B: openCommunityModal 함수 전체 교체 (여러 이미지 지원)
         async function openCommunityModal(docId = null) {
             const modal = document.getElementById('community-admin-modal');
             const form = document.getElementById('community-form');
             const modalTitle = document.getElementById('community-modal-title');
+            const imagesContainer = document.getElementById('post-image-urls-container');
+            
             form.reset();
             document.getElementById('post-id').value = docId || '';
-
+        
+            // 이미지 입력 필드 초기화
+            imagesContainer.innerHTML = `<div class="image-url-row flex gap-2"><input type="url" placeholder="https://example.com/image1.png" class="flex-1 p-2 border rounded image-url-input"><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button></div>`;
+        
             if (docId) {
                 modalTitle.textContent = "글 수정";
                 const docSnap = await getDoc(doc(db, 'community', docId));
@@ -2624,21 +2699,35 @@
                     const data = docSnap.data();
                     document.getElementById('post-title').value = data.title;
                     document.getElementById('post-content').value = data.content;
-                    document.getElementById('post-imageUrl').value = data.imageUrl || '';
+                    if (data.images && data.images.length > 0) {
+                        imagesContainer.innerHTML = ''; // 기존 필드 제거
+                        data.images.forEach(url => {
+                            const newRow = document.createElement('div');
+                            newRow.className = 'image-url-row flex gap-2';
+                            newRow.innerHTML = `<input type="url" value="${url}" class="flex-1 p-2 border rounded image-url-input"><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
+                            imagesContainer.appendChild(newRow);
+                        });
+                    }
                 }
             } else {
                 modalTitle.textContent = "새 글 작성";
             }
+            updatePostImageRemoveButtons();
             modal.classList.remove('hidden');
         }
 
+        // ✅ 5-C: handleCommunityFormSubmit 함수 전체 교체 (여러 이미지 저장)
         async function handleCommunityFormSubmit(e) {
             e.preventDefault();
             const docId = document.getElementById('post-id').value;
+            const images = Array.from(document.querySelectorAll('#post-image-urls-container .image-url-input'))
+                .map(input => input.value.trim())
+                .filter(url => url); // 빈 URL은 제외
+        
             const data = {
                 title: document.getElementById('post-title').value,
                 content: document.getElementById('post-content').value,
-                imageUrl: document.getElementById('post-imageUrl').value.trim() || null, // 이미지가 없으면 null로 저장
+                images: images,
                 createdAt: serverTimestamp()
             };
             try {
@@ -2646,7 +2735,7 @@
                     await updateDoc(doc(db, 'community', docId), {
                         title: data.title,
                         content: data.content,
-                        imageUrl: data.imageUrl
+                        images: data.images
                     });
                 } else {
                     await addDoc(collection(db, 'community'), data);
@@ -2657,7 +2746,86 @@
                 console.error("Error saving post:", error);
                 customAlert('저장 중 오류가 발생했습니다.');
             }
-        } 
+        }
+        // ✅ 5-D: 새로운 함수들 추가 (상세 모달, 이미지 관리)
+        function updatePostImageRemoveButtons() {
+            const rows = document.querySelectorAll('#post-image-urls-container .image-url-row');
+            rows.forEach(row => {
+                const removeBtn = row.querySelector('.remove-image-btn');
+                if(removeBtn) removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
+            });
+        }
+        
+        let currentPostImages = [], currentPostImageIndex = 0;
+        
+        function openPostDetailModal(post) {
+            const modal = document.getElementById('post-detail-modal');
+            if (!modal) return;
+            
+            document.getElementById('post-detail-title').textContent = post.title;
+            document.getElementById('post-detail-date').textContent = post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+            document.getElementById('post-detail-content').textContent = post.content;
+        
+            const slider = document.getElementById('post-image-slider');
+            currentPostImages = post.images || [];
+            currentPostImageIndex = 0;
+            
+            if (currentPostImages.length > 0) {
+                slider.classList.remove('hidden');
+                updatePostDetailImage();
+            } else {
+                slider.classList.add('hidden');
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function updatePostDetailImage() {
+            document.getElementById('post-detail-image').src = currentPostImages[currentPostImageIndex];
+            const prevBtn = document.getElementById('post-prev-image-btn');
+            const nextBtn = document.getElementById('post-next-image-btn');
+            const counter = document.getElementById('post-image-counter');
+        
+            const showControls = currentPostImages.length > 1;
+            prevBtn.style.display = showControls ? 'block' : 'none';
+            nextBtn.style.display = showControls ? 'block' : 'none';
+            counter.style.display = showControls ? 'block' : 'none';
+        
+            if (showControls) {
+                counter.textContent = `${currentPostImageIndex + 1} / ${currentPostImages.length}`;
+            }
+        }
+        
+        document.getElementById('post-prev-image-btn')?.addEventListener('click', () => {
+            currentPostImageIndex = (currentPostImageIndex - 1 + currentPostImages.length) % currentPostImages.length;
+            updatePostDetailImage();
+        });
+        
+        document.getElementById('post-next-image-btn')?.addEventListener('click', () => {
+            currentPostImageIndex = (currentPostImageIndex + 1) % currentPostImages.length;
+            updatePostDetailImage();
+        });
+        
+        document.getElementById('close-post-detail-btn')?.addEventListener('click', () => {
+            document.getElementById('post-detail-modal').classList.add('hidden');
+        });
+        
+        // 관리자 모달 내 이미지 URL 추가/삭제 이벤트 리스너
+        document.getElementById('add-post-image-url-btn')?.addEventListener('click', () => {
+            const container = document.getElementById('post-image-urls-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'image-url-row flex gap-2';
+            newRow.innerHTML = `<input type="url" placeholder="https://..." class="flex-1 p-2 border rounded image-url-input"><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
+            container.appendChild(newRow);
+            updatePostImageRemoveButtons();
+        });
+        
+        document.getElementById('post-image-urls-container')?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-image-btn')) {
+                e.target.closest('.image-url-row').remove();
+                updatePostImageRemoveButtons();
+            }
+        });
         function initHistoryPage() {
             const timelineContainer = document.getElementById('timeline-container');
             if (!timelineContainer) return;
