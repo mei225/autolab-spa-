@@ -686,7 +686,39 @@
                     <h1 data-key="about.hero.title" class="text-4xl md:text-5xl font-extrabold">AUTOLAB 소개</h1>
                     <p data-key="about.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">기술 혁신을 통해 더 나은 미래를 만들어갑니다.</p>
                 </div>
+                <div class="scroll-reveal">
+                    <h3 data-key="about.vision.title" ...>우리의 비전</h3>
+                    <p data-key="about.vision.description" ...>...</p>
+                    
+                    <div class="mt-10">
+                        <button id="download-brochure-btn" class="inline-block bg-blue-800 text-white ...">
+                            <i class="fas fa-download mr-2"></i> 회사 소개서 다운로드
+                        </button>
+                    </div>
+                </div>
             </section>
+        
+            <section class="admin-panel py-20 lg:py-32 bg-slate-100">
+                <div class="container mx-auto ... max-w-4xl">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl ...">⚙️ 회사 소개서 다운로드 기록</h2>
+                        <p class="mt-2 text-gray-600">관리자에게만 보이는 정보입니다.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-4 ...">기관/회사명</th>
+                                    <th class="px-6 py-4 ...">다운로드 일시</th>
+                                </tr>
+                            </thead>
+                            <tbody id="download-log-body"></tbody>
+                        </table>
+                        <p id="download-log-status" class="text-center text-gray-500 p-6"></p>
+                    </div>
+                </div>
+            </section>
+            
             <div class="sub-nav border-b border-gray-200 sticky bg-white z-40">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <nav class="flex -mb-px">
@@ -719,6 +751,7 @@
                     </div>
                 </div>
             </section>
+            
             <!-- CI Section -->
             <section class="py-20 lg:py-32 bg-gray-50">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -2166,6 +2199,20 @@
             <i class="fas fa-comment-dots fa-2x"></i>
         </a>
         <div id="modal-container">
+        
+            <div id="brochure-download-modal" class="hidden ...">
+                <div class="bg-white rounded-lg ...">
+                    <h2 class="text-xl ...">회사 소개서 다운로드</h2>
+                    <p class="text-gray-600 mb-6">원활한 자료 제공을 위해 소속 기관 또는 회사명을 입력해주세요.</p>
+                    <form id="brochure-download-form">
+                        <input id="organization-name-input" type="text" placeholder="기관/회사명" class="w-full ..." required>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" id="brochure-cancel-btn" class="bg-gray-200 ...">취소</button>
+                            <button type="submit" class="bg-blue-800 ...">확인 및 다운로드</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         <div id="post-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[80] flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[90vh] flex flex-col">
                 <div class="flex-shrink-0 flex justify-between items-start p-6 border-b">
@@ -2634,6 +2681,58 @@
             };
         }
         
+        // ✅ 관리자용 기록 조회 함수
+        function initDownloadLogViewer() {
+            const logBody = document.getElementById('download-log-body'); // 기록이 들어갈 테이블 본문
+            const logStatus = document.getElementById('download-log-status'); // "불러오는 중..." 메시지
+            if (!logBody || !logStatus) return;
+        
+            logStatus.textContent = '기록을 불러오는 중...';
+        
+            // 'brochure_downloads' 컬렉션에서 다운로드 시간(downloadedAt)을 기준으로 최신순 정렬
+            const q = query(collection(db, 'brochure_downloads'), orderBy("downloadedAt", "desc"));
+            
+            // 데이터 변경을 실시간으로 감지
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                logBody.innerHTML = ''; // 기존 목록을 비움
+                
+                if (snapshot.empty) { // 데이터가 하나도 없으면
+                    logStatus.textContent = '아직 다운로드 기록이 없습니다.';
+                    return;
+                }
+                
+                logStatus.textContent = ''; // 데이터가 있으면 "불러오는 중" 메시지 숨김
+                
+                // 가져온 데이터를 하나씩 테이블 행(row)으로 만들어 추가
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const row = logBody.insertRow();
+                    row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                    const formattedDate = log.downloadedAt ? log.downloadedAt.toDate().toLocaleString('ko-KR') : '날짜 정보 없음';
+                    row.innerHTML = `<td class="px-6 py-4">${log.organizationName}</td><td class="px-6 py-4 text-sm text-gray-600">${formattedDate}</td>`;
+                });
+            });
+            activeFirestoreListeners.push(unsubscribe); // 페이지 이동 시 실시간 감지를 중지할 수 있도록 등록
+        }
+        
+        // '회사소개' 페이지가 열릴 때 실행될 함수
+        function initAboutIntroPage() {
+            // 만약 현재 관리자 모드라면, 기록 조회 함수를 실행
+            if (document.body.classList.contains('admin-mode')) {
+                initDownloadLogViewer();
+            }
+        }
+        
+        // ✅ 페이지 초기화 함수 목록에 'about-intro' 페이지 등록
+        const pageInitFunctions = {
+            'about-intro': initAboutIntroPage, // 이 줄을 추가
+            'history': initHistoryPage,
+            'community': initCommunityPage,
+            'login': initLoginPage,
+            'quote': initQuotePage,
+            'products': initProductsPage
+        };        
+        
         function initQuotePage() {
             const tabButtons = document.querySelectorAll('.quote-tab-btn');
             const tabContents = document.querySelectorAll('.quote-tab-content');
@@ -3014,7 +3113,62 @@
                     navigateTo(pageId);
                 }
             });
-            // ✅ 여기까지
+            // ✅ 다운로드 모달 관련 변수 선언
+            const brochureModal = document.getElementById('brochure-download-modal');
+            const brochureForm = document.getElementById('brochure-download-form');
+            
+            // '회사 소개서 다운로드' 버튼 클릭 감지
+            document.body.addEventListener('click', (e) => {
+                // 만약 클릭된 요소의 id가 'download-brochure-btn'이라면
+                if (e.target.id === 'download-brochure-btn') {
+                    // 숨겨져 있던 팝업창을 보여줍니다.
+                    brochureModal.classList.remove('hidden');
+                }
+            });
+            
+            // 팝업창의 '취소' 버튼 클릭 감지
+            document.getElementById('brochure-cancel-btn')?.addEventListener('click', () => {
+                // 팝업창을 다시 숨깁니다.
+                brochureModal.classList.add('hidden');
+            });
+            // 팝업창의 폼(form)이 제출되었을 때의 동작
+            brochureForm?.addEventListener('submit', async (e) => {
+                e.preventDefault(); // 폼 제출 시 페이지가 새로고침되는 기본 동작을 막습니다.
+                
+                const organizationInput = document.getElementById('organization-name-input');
+                const organizationName = organizationInput.value.trim(); // 입력값의 양쪽 공백 제거
+                
+                // 입력값이 없으면 경고창을 띄우고 여기서 멈춥니다.
+                if (!organizationName) {
+                    return customAlert('기관/회사명을 입력해주세요.');
+                }
+            
+                // ⭐ 1단계에서 만든 최종 Google Drive 링크를 여기에 붙여넣으세요!
+                const brochureFileUrl = "https://drive.google.com/uc?export=download&id=1Ni6BQNkPF0Ybu-B0DzA4zuPz7fucvB1Q"; 
+                
+                try {
+                    // 1. Firestore에 기록 저장 (비동기 작업)
+                    await addDoc(collection(db, 'brochure_downloads'), {
+                        organizationName: organizationName,       // 입력받은 기관명
+                        downloadedAt: serverTimestamp()           // 현재 서버 시간
+                    });
+            
+                    // 2. 파일 다운로드 실행
+                    const link = document.createElement('a');    // 눈에 보이지 않는 링크(<a> 태그) 생성
+                    link.href = brochureFileUrl;                 // 링크 주소 설정
+                    link.download = 'AUTOLAB_회사소개서.pdf';  // 다운로드될 때의 파일 이름 지정
+                    link.target = '_blank';                      // 새 탭에서 열리도록 하여 안정성 확보
+                    link.click();                                // 생성된 링크를 자동으로 클릭하여 다운로드 실행
+                    
+                    // 3. 마무리 작업
+                    brochureModal.classList.add('hidden');       // 팝업창 닫기
+                    brochureForm.reset();                        // 폼 입력 내용 지우기
+            
+                } catch (error) {
+                    // Firestore 저장이나 다운로드 중 오류가 발생하면 사용자에게 알림
+                    customAlert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
             async function handleHistoryFormSubmit(e) {
                 e.preventDefault();
                 const docId = document.getElementById('history-id').value;
