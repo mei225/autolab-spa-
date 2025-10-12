@@ -3189,11 +3189,22 @@
     
             // ✅ 4. 모든 이벤트 리스너 바인딩
             // ✅ 여기에 뒤로가기 문제 해결 코드 추가
+            // ⭐ 수정된 코드
             window.addEventListener('hashchange', () => {
                 const pageId = window.location.hash.substring(1) || 'home';
-                // 현재 페이지와 URL 해시가 다를 경우에만 navigateTo 함수를 호출하여
-                // 불필요한 재렌더링을 방지합니다.
+                // 현재 페이지와 URL 해시가 다를 경우에만 navigateTo 함수를 호출
                 if (pageId !== currentPage) {
+                    navigateTo(pageId);
+                } else {
+                    // 같은 페이지인 경우에도 스크롤 처리
+                    window.scrollTo(0, 0);
+                }
+            });
+            
+            // ⭐ 페이지 로드 시 해시 확인 추가
+            window.addEventListener('load', () => {
+                const pageId = window.location.hash.substring(1) || 'home';
+                if (pageId && pageId !== 'home') {
                     navigateTo(pageId);
                 }
             });
