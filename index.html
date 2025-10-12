@@ -2802,6 +2802,16 @@
             const privacyModal = document.getElementById('privacy-modal');
     
             // ✅ 4. 모든 이벤트 리스너 바인딩
+            // ✅ 여기에 뒤로가기 문제 해결 코드 추가
+            window.addEventListener('hashchange', () => {
+                const pageId = window.location.hash.substring(1) || 'home';
+                // 현재 페이지와 URL 해시가 다를 경우에만 navigateTo 함수를 호출하여
+                // 불필요한 재렌더링을 방지합니다.
+                if (pageId !== currentPage) {
+                    navigateTo(pageId);
+                }
+            });
+            // ✅ 여기까지
             async function handleHistoryFormSubmit(e) {
                 e.preventDefault();
                 const docId = document.getElementById('history-id').value;
