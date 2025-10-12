@@ -438,6 +438,22 @@
             color: #9ca3af; /* gray-400 */
             margin-left: 1rem;
         }
+/* ✅ 4단계: 제품소개 탭 버튼 스타일 추가 */
+        .product-tab-btn {
+            color: #6b7280; /* gray-500 */
+            border-color: transparent;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500; /* medium */
+        }
+        .product-tab-btn:hover {
+            color: #374151; /* gray-700 */
+            border-bottom-color: #d1d5db; /* gray-300 */
+        }
+        .product-tab-btn.active-tab {
+            color: #1e40af; /* blue-800 */
+            border-bottom-color: #1e40af; /* blue-800 */
+            font-weight: 600; /* semibold */
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -494,7 +510,13 @@
                             </div>
                         </div>
                         <a href="#" data-target="quote" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">견적문의</a>
-                        <a href="#" data-target="products" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">제품소개</a>
+                        <div class="dropdown relative">
+                            <a href="#" data-target="products" data-tab="rd" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800 rounded-md">제품소개</a>
+                            <div class="dropdown-menu absolute hidden bg-white shadow-lg rounded-md mt-2 py-2 w-56 border border-gray-100">
+                                <a href="#" data-target="products" data-tab="rd" class="nav-link block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">R&D 연구개발 결과물</a>
+                                <a href="#" data-target="products" data-tab="ict" class="nav-link block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">ICT 교육 콘텐츠</a>
+                            </div>
+                        </div>
                         <a href="#" data-target="community" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">공지사항</a>
                     </nav>
                     <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hidden lg:block ml-4 p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-lg"></i></a>
@@ -1667,94 +1689,48 @@
                     <p data-key="products.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요.</p>
                 </div>
             </section>
-            <section id="rd-products" class="py-20 lg:py-32">
+        
+            <div class="sub-nav border-b border-gray-200 sticky bg-white z-40">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16 scroll-reveal">
-                        <h2 data-key="products.rd.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">R&D 연구개발 결과물</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB에서 수년간 축적한 연구 경험과 기술 노하우가 집약된 분야입니다.</p>
-                    </div>
-                    <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- R&D Product 1 -->
-                        <a href="#" data-target="product-rd-1" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal">
-                            <img data-key="products.rd1.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=Saliva+Sensor" alt="타액 기반 혈당 센서" class="w-full h-56 object-cover">
-                            <div class="p-6">
-                                <h3 data-key="products.rd1.title" class="text-xl font-bold text-gray-800 mb-2">타액 기반 혈당 센서</h3>
-                                <p data-key="products.rd1.description" class="text-gray-700 mb-4">침을 통해 간편하게 혈당을 측정하는 비침습적 센서 기술입니다.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
-                        <!-- R&D Product 2 -->
-                        <a href="#" data-target="product-rd-2" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal" style="transition-delay: 150ms;">
-                            <img data-key="products.rd2.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=Paper+Sensor" alt="종이 기반 포름알데히드 센서" class="w-full h-56 object-cover">
-                            <div class="p-6">
-                                <h3 data-key="products.rd2.title" class="text-xl font-bold text-gray-800 mb-2">종이 기반 포름알데히드 센서</h3>
-                                <p data-key="products.rd2.description" class="text-gray-700 mb-4">실내 공기질을 간편하게 측정할 수 있는 저비용 고효율의 종이 센서입니다.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
-                        <!-- R&D Product 3 -->
-                        <a href="#" data-target="product-rd-3" class="nav-link group block bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300 scroll-reveal" style="transition-delay: 300ms;">
-                            <img data-key="products.rd3.image" src="https://placehold.co/600x400/e0f2fe/1e3a8a?text=Smart+Band" alt="밴드형 스마트 체온계" class="w-full h-56 object-cover">
-                            <div class="p-6">
-                                <h3 data-key="products.rd3.title" class="text-xl font-bold text-gray-800 mb-2">밴드형 스마트 체온계</h3>
-                                <p data-key="products.rd3.description" class="text-gray-700 mb-4">피부에 부착하여 실시간으로 체온을 모니터링하는 웨어러블 디바이스입니다.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
-                    </div>
+                    <nav class="flex -mb-px">
+                        <button data-tab="rd" class="product-tab-btn border-b-2 py-4 px-4 text-center">R&D 연구개발 결과물</button>
+                        <button data-tab="ict" class="product-tab-btn border-b-2 py-4 px-4 text-center">ICT 교육 콘텐츠</button>
+                    </nav>
                 </div>
-            </section>
-            <!-- ★★★ [수정됨] ICT 교육 콘텐츠 섹션 ★★★ -->
-            <section id="ict-content-products" class="py-20 lg:py-32 bg-gray-50">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16 scroll-reveal">
-                        <h2 data-key="products.ict.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">ICT 교육 콘텐츠</h2>
-                        <p class="mt-4 text-base md:text-lg text-gray-600">실습 위주의 프로젝트를 통해 배우는 즐거움을 느껴보세요.</p>
+            </div>
+        
+            <div id="rd-tab-panel">
+                <section id="rd-products" class="py-20 lg:py-32">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center mb-16 scroll-reveal">
+                            <h2 data-key="products.rd.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">R&D 연구개발 결과물</h2>
+                            <p class="mt-4 text-base md:text-lg text-gray-600">AUTOLAB에서 수년간 축적한 연구 경험과 기술 노하우가 집약된 분야입니다.</p>
+                        </div>
+                        <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
+                            </div>
                     </div>
-                    <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- ICT Content 1 -->
-                        <a href="#" data-target="product-ict-1" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal">
-                            <div class="relative">
-                                <img data-key="ict.content1.image" src="https://placehold.co/600x400/dbeafe/1e3a8a?text=Arduino+Kit" alt="아두이노 키트" class="w-full h-56 object-cover">
+                </section>
+            </div>
+            
+            <div id="ict-tab-panel" class="hidden">
+                <section id="ict-content-products" class="py-20 lg:py-32 bg-gray-50">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                         <div class="text-center mb-16 scroll-reveal">
+                            <h2 data-key="products.ict.title" class="text-3xl md:text-4xl font-extrabold text-gray-800">ICT 교육 콘텐츠</h2>
+                            <p class="mt-4 text-base md:text-lg text-gray-600">실습 위주의 프로젝트를 통해 배우는 즐거움을 느껴보세요.</p>
+                        </div>
+                        <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
                             </div>
-                            <div class="p-6">
-                                <h3 data-key="ict.content1.title" class="text-xl font-bold text-gray-800 mb-2">아두이노 키트</h3>
-                                <p data-key="ict.content1.description" class="text-gray-700 mb-4">전자공학의 기초부터 IoT 프로젝트까지, 아두이노로 만드는 무한한 가능성.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
-                        <!-- ICT Content 2 -->
-                        <a href="#" data-target="product-ict-2" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal" style="transition-delay: 150ms;">
-                            <div class="relative">
-                                <img data-key="ict.content2.image" src="https://placehold.co/600x400/dbeafe/1e3a8a?text=RC+Car" alt="미로탈출 RC카" class="w-full h-56 object-cover">
-                            </div>
-                            <div class="p-6">
-                                <h3 data-key="ict.content2.title" class="text-xl font-bold text-gray-800 mb-2">미로탈출 RC카</h3>
-                                <p data-key="ict.content2.description" class="text-gray-700 mb-4">초음파 센서와 코딩으로 스스로 길을 찾는 자율주행 RC카를 만들어보세요.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
-                        <!-- ICT Content 3 -->
-                        <a href="#" data-target="product-ict-3" class="nav-link group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 scroll-reveal" style="transition-delay: 300ms;">
-                            <div class="relative">
-                                <img data-key="ict.content3.image" src="https://placehold.co/600x400/dbeafe/1e3a8a?text=Smart+Farm" alt="스마트팜 키트" class="w-full h-56 object-cover">
-                            </div>
-                            <div class="p-6">
-                                <h3 data-key="ict.content3.title" class="text-xl font-bold text-gray-800 mb-2">스마트팜 키트</h3>
-                                <p data-key="ict.content3.description" class="text-gray-700 mb-4">토양 습도, 조도 센서를 이용해 식물이 자라는 최적의 환경을 자동으로 제어합니다.</p>
-                                <span class="font-semibold text-blue-800 group-hover:underline">자세히 보기 &rarr;</span>
-                            </div>
-                        </a>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
         
         <!-- R&D Product Detail Pages -->
         <div id="product-rd-1">
             <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="rd">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-rd-1.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=Saliva+Sensor" alt="타액 기반 혈당 센서" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -1795,7 +1771,7 @@
         <div id="product-rd-2">
              <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="rd">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-rd-2.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=Paper+Sensor" alt="종이 기반 포름알데히드 센서" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -1836,7 +1812,7 @@
         <div id="product-rd-3">
             <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="rd">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-rd-3.image" src="https://placehold.co/800x600/e0f2fe/1e3a8a?text=Smart+Band" alt="밴드형 스마트 체온계" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -1878,7 +1854,7 @@
         <div id="product-ict-1">
             <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="ict">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-ict-1.image" src="https://placehold.co/800x600/dbeafe/1e3a8a?text=Arduino" alt="아두이노 키트" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -1924,7 +1900,7 @@
         <div id="product-ict-2">
             <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="ict">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-ict-2.image" src="https://placehold.co/800x600/dbeafe/1e3a8a?text=RC+Car" alt="미로탈출 RC카" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -1970,7 +1946,7 @@
         <div id="product-ict-3">
             <section class="bg-gray-100 py-20 lg:py-32">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products">&larr; 제품 목록으로 돌아가기</button>
+                    <button class="nav-link mb-8 text-blue-800 font-semibold" data-target="products" data-tab="ict">← 제품 목록으로 돌아가기</button>
                     <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <img data-key="product-ict-3.image" src="https://placehold.co/800x600/dbeafe/1e3a8a?text=Smart+Farm" alt="스마트팜 키트" class="rounded-lg shadow-xl w-full">
                         <div>
@@ -2504,7 +2480,7 @@
             }, 100);
         }
     
-        function navigateTo(pageId) {
+        function navigateTo(pageId, tabId) {
             currentPage = pageId;
             window.location.hash = pageId;
             activeFirestoreListeners.forEach(unsubscribe => unsubscribe());
@@ -2529,9 +2505,15 @@
                 'community': initCommunityPage,
                 'login': initLoginPage,
                 'quote': initQuotePage
+                'products': initProductsPage // 이 줄을 추가
             };
             pageInitFunctions[pageId]?.();
             
+            // ✅ 5-B: '제품소개' 페이지일 경우 탭 활성화 로직 추가
+            if (pageId === 'products') {
+                // 페이지가 완전히 그려진 후 탭을 활성화하기 위해 setTimeout 사용
+                setTimeout(() => activateProductTab(tabId || 'rd'), 0); // tabId가 없으면 'rd'를 기본값으로
+            }            
             setTimeout(() => {
                 newContent.classList.add('visible');
                 handleScrollAnimation();
@@ -2560,8 +2542,9 @@
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetPage = link.dataset.target;
-                    if (targetPage && targetPage !== currentPage) {
-                        navigateTo(targetPage);
+                    const targetTab = link.dataset.tab; // 어떤 탭으로 갈지 정보를 가져옴
+                    if (targetPage && (targetPage !== currentPage || targetTab)) { // 현재 페이지와 다르거나, 탭 정보가 있으면 이동
+                        navigateTo(targetPage, targetTab); // 페이지 이동 함수에 탭 정보 전달
                         document.getElementById('mobile-menu').classList.add('hidden');
                     }
                 });
@@ -2746,6 +2729,23 @@
                 console.error("Error saving post:", error);
                 customAlert('저장 중 오류가 발생했습니다.');
             }
+        }
+        // ✅ 5-C-1: 새로운 함수 2개 추가
+        function activateProductTab(tabId) {
+            document.querySelectorAll('.product-tab-btn').forEach(btn => {
+                const isActive = btn.dataset.tab === tabId;
+                btn.classList.toggle('active-tab', isActive);
+            });
+            document.getElementById('rd-tab-panel')?.classList.toggle('hidden', tabId !== 'rd');
+            document.getElementById('ict-tab-panel')?.classList.toggle('hidden', tabId !== 'ict');
+        }
+        
+        function initProductsPage() {
+            document.querySelectorAll('.product-tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    activateProductTab(button.dataset.tab);
+                });
+            });
         }
         // ✅ 5-D: 새로운 함수들 추가 (상세 모달, 이미지 관리)
         function updatePostImageRemoveButtons() {
