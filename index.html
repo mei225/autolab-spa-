@@ -466,15 +466,12 @@
                         </div>
                         <a href="#" data-target="quote" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">견적문의</a>
                         <a href="#" data-target="products" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">제품소개</a>
-                        <a href="#" data-target="about-us" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">About us</a>
-                        <a href="#" data-target="community-gallery" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">포토갤러리</a>
+                        <a href="#" data-target="community" class="nav-link px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">공지사항</a>
                     </nav>
-                    <!-- Social Icons -->
                     <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hidden lg:block ml-4 p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-lg"></i></a>
                     <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="hidden lg:block p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-lg"></i></a>
-                    <!-- Search Button -->
                     <button class="search-btn hidden lg:block p-3 text-gray-500 hover:text-blue-800"><i class="fas fa-search"></i></button>
-                </div>
+                </div>        
 
                 <!-- Mobile Menu Button -->
                 <div class="lg:hidden">
@@ -1483,61 +1480,31 @@
                          </div>
                     </section>
                 </div>
-
-        <!-- Community Gallery Page Content -->
-        <div id="community-gallery">
-             <div id="gallery-admin-panel" class="admin-panel sub-nav sticky z-40 bg-blue-800 text-white shadow-lg">
+        
+        <div id="community">
+            <div id="community-admin-panel" class="admin-panel sub-nav sticky z-40 bg-blue-800 text-white shadow-lg">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
                     <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
                     <div>
-                        <button id="add-photo-btn" class="bg-white text-blue-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors mr-2"><i class="fas fa-plus mr-2"></i>새 사진 추가</button>
+                        <button id="add-post-btn" class="bg-white text-blue-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors mr-2"><i class="fas fa-plus mr-2"></i>새 글 작성</button>
                     </div>
                 </div>
             </div>
-            <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Photo+Gallery');">
+            <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Community');">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
-                    <h1 data-key="gallery.hero.title" class="text-4xl md:text-5xl font-extrabold">포토갤러리</h1>
-                    <p data-key="gallery.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">AUTOLAB의 활동 모습을 사진으로 만나보세요.</p>
-                            </div>
-                        </section>
-                        <section class="py-20 lg:py-32 bg-gray-50">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">포토갤러리</h2>
-                        <p class="text-lg text-gray-600">AUTOLAB의 활동 모습을 사진으로 만나보세요</p>
-                    </div>
-                    <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <p id="gallery-loading" class="col-span-full text-center text-gray-500">사진을 불러오는 중...</p>
-                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold">공지사항</h1>
+                    <p class="mt-4 text-lg md:text-xl text-gray-300">AUTOLAB의 새로운 소식과 활동을 전해드립니다.</p>
+                </div>
+            </section>
+            <section class="py-20 lg:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+                    <div id="community-posts-container" class="space-y-8">
+                        <p id="community-loading" class="text-center text-gray-500 py-10">게시물을 불러오는 중...</p>
+                        </div>
                 </div>
             </section>
         </div>
         
-        <!-- About Us Page Content -->
-        <div id="about-us">
-            <div id="about-us-admin-panel" class="admin-panel sub-nav sticky z-40 bg-blue-800 text-white shadow-lg">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-                    <span class="font-bold"><i class="fas fa-user-shield mr-2"></i>관리자 모드</span>
-                    <div>
-                        <button id="add-about-us-btn" class="bg-white text-blue-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors mr-2"><i class="fas fa-plus mr-2"></i>새 글 추가</button>
-                    </div>
-                </div>
-            </div>
-            <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=About+Us');">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-40 text-center text-white">
-                    <h1 data-key="aboutus.hero.title" class="text-4xl md:text-5xl font-extrabold">About us</h1>
-                    <p data-key="aboutus.hero.subtitle" class="mt-4 text-lg md:text-xl text-gray-300">AUTOLAB의 새로운 소식을 전해드립니다.</p>
-                </div>
-            </section>
-            <section id="about-us-list" class="py-20 lg:py-32">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-                    <div id="about-us-accordion" class="border-t border-gray-200">
-                        <p id="about-us-loading" class="text-center text-gray-500 py-10">내용을 불러오는 중...</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-
         <!-- Quote Page Content -->
         <div id="quote">
             <section class="bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(29, 36, 48, 0.8), rgba(29, 36, 48, 0.8)), url('https://placehold.co/1920x600/1e293b/ffffff?text=Contact+Us');">
@@ -2140,6 +2107,23 @@
             <i class="fas fa-comment-dots fa-2x"></i>
         </a>
         <div id="modal-container">
+        <div id="community-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+                <h2 id="community-modal-title" class="text-2xl font-bold mb-6">새 글 작성</h2>
+                <form id="community-form">
+                    <input type="hidden" id="post-id">
+                    <div class="space-y-4">
+                        <input id="post-title" type="text" placeholder="제목" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800" required>
+                        <textarea id="post-content" placeholder="내용" rows="10" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800" required></textarea>
+                        <input id="post-imageUrl" type="url" placeholder="이미지 URL (선택 사항)" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-800">
+                    </div>
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <button type="button" id="community-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
+                        <button type="submit" id="community-save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <!-- Search Modal -->
         <div id="search-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-start justify-center p-4 pt-24">
             <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl">
@@ -2165,54 +2149,6 @@
                     <div class="mt-6 flex justify-end space-x-3">
                         <button type="button" id="cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
                         <button type="submit" id="save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Gallery Admin Modal -->
-        <div id="gallery-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-                <h2 id="gallery-modal-title" class="text-2xl font-bold mb-4">사진 추가/수정</h2>
-                <form id="photo-form">
-                    <input type="hidden" id="photo-id">
-                    <div class="space-y-4">
-                        <input id="photo-title" type="text" placeholder="제목" class="w-full p-2 border rounded" required>
-                        <textarea id="photo-description" placeholder="설명" rows="3" class="w-full p-2 border rounded"></textarea>
-                        
-                        <!-- 이미지 URL 입력 섹션 -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">이미지 URL들</label>
-                            <div id="image-urls-container" class="space-y-2">
-                                <div class="image-url-row flex gap-2">
-                                    <input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required>
-                                    <button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button>
-                                </div>
-                            </div>
-                            <button type="button" id="add-image-url-btn" class="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                                <i class="fas fa-plus mr-1"></i>이미지 추가
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" id="gallery-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
-                        <button type="submit" id="gallery-save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- About Us Admin Modal -->
-        <div id="about-us-admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6">
-                <h2 id="about-us-modal-title" class="text-2xl font-bold mb-4">About us 작성</h2>
-                <form id="about-us-form">
-                    <input type="hidden" id="about-us-id">
-                    <div class="space-y-4">
-                        <input id="about-us-title" type="text" placeholder="제목" class="w-full p-2 border rounded" required>
-                        <textarea id="about-us-content" placeholder="내용" rows="10" class="w-full p-2 border rounded" required></textarea>
-                    </div>
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" id="about-us-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
-                        <button type="submit" id="about-us-save-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">저장</button>
                     </div>
                 </form>
             </div>
@@ -2522,8 +2458,7 @@
             
             const pageInitFunctions = {
                 'history': initHistoryPage,
-                'community-gallery': initGalleryPage,
-                'about-us': initAboutUsPage,
+                'community': initCommunityPage,
                 'login': initLoginPage,
                 'quote': initQuotePage
             };
@@ -2629,7 +2564,100 @@
                 });
             });
         }
- 
+        // ✅ 6-C: '공지사항' 페이지를 위한 새 함수들 추가
+        function initCommunityPage() {
+            const container = document.getElementById('community-posts-container');
+            if (!container) return;
+            
+            container.innerHTML = '<p id="community-loading" class="text-center text-gray-500 py-10">게시물을 불러오는 중...</p>';
+            
+            const q = query(collection(db, 'community'), orderBy("createdAt", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                container.innerHTML = ''; // 기존 내용 초기화
+                if (posts.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 게시물이 없습니다.</p>';
+                    return;
+                }
+                posts.forEach(post => {
+                    const postEl = document.createElement('div');
+                    postEl.className = 'bg-white rounded-lg shadow-md overflow-hidden scroll-reveal';
+                    const date = post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                    const imageHtml = post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}" class="w-full h-64 object-cover">` : '';
+
+                    postEl.innerHTML = `
+                        ${imageHtml}
+                        <div class="p-6">
+                            <p class="text-sm text-gray-500 mb-2">${date}</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">${post.title}</h3>
+                            <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">${post.content}</p>
+                        </div>
+                    `;
+
+                    if (document.body.classList.contains('admin-mode')) {
+                        const adminButtons = document.createElement('div');
+                        adminButtons.className = 'p-4 bg-gray-50 border-t text-right space-x-2';
+                        adminButtons.innerHTML = `
+                            <button data-id="${post.id}" class="edit-post-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button>
+                            <button data-id="${post.id}" class="delete-post-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button>
+                        `;
+                        postEl.appendChild(adminButtons);
+                    }
+                    container.appendChild(postEl);
+                });
+                handleScrollAnimation();
+            });
+            activeFirestoreListeners.push(unsubscribe);
+        }
+
+        async function openCommunityModal(docId = null) {
+            const modal = document.getElementById('community-admin-modal');
+            const form = document.getElementById('community-form');
+            const modalTitle = document.getElementById('community-modal-title');
+            form.reset();
+            document.getElementById('post-id').value = docId || '';
+
+            if (docId) {
+                modalTitle.textContent = "글 수정";
+                const docSnap = await getDoc(doc(db, 'community', docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('post-title').value = data.title;
+                    document.getElementById('post-content').value = data.content;
+                    document.getElementById('post-imageUrl').value = data.imageUrl || '';
+                }
+            } else {
+                modalTitle.textContent = "새 글 작성";
+            }
+            modal.classList.remove('hidden');
+        }
+
+        async function handleCommunityFormSubmit(e) {
+            e.preventDefault();
+            const docId = document.getElementById('post-id').value;
+            const data = {
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                imageUrl: document.getElementById('post-imageUrl').value.trim() || null, // 이미지가 없으면 null로 저장
+                createdAt: serverTimestamp()
+            };
+            try {
+                if (docId) {
+                    await updateDoc(doc(db, 'community', docId), {
+                        title: data.title,
+                        content: data.content,
+                        imageUrl: data.imageUrl
+                    });
+                } else {
+                    await addDoc(collection(db, 'community'), data);
+                }
+                document.getElementById('community-admin-modal').classList.add('hidden');
+                customAlert('저장되었습니다.');
+            } catch (error) {
+                console.error("Error saving post:", error);
+                customAlert('저장 중 오류가 발생했습니다.');
+            }
+        } 
         function initHistoryPage() {
             const timelineContainer = document.getElementById('timeline-container');
             if (!timelineContainer) return;
@@ -2658,86 +2686,6 @@
             });
             activeFirestoreListeners.push(unsubscribe);
         }
-    
-        function initGalleryPage() {
-            const galleryGrid = document.getElementById('gallery-grid');
-            if (!galleryGrid) return;
-            showLoadingState();
-            const q = query(collection(db, 'gallery'), orderBy("createdAt", "desc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                galleryGrid.innerHTML = '';
-                if (photos.length === 0) { showEmptyState(); return; }
-                photos.forEach(photo => {
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'group scroll-reveal bg-white rounded-xl shadow-lg hover:shadow-xl gallery-card overflow-hidden cursor-pointer';
-                    itemEl.addEventListener('click', (e) => {
-                        if (!e.target.closest('.admin-edit-overlay')) {
-                            const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
-                            const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                            openLightbox(images, photo.title || '', photo.description || '', 0, createdDate);
-                        }
-                    });
-                    const images = photo.images || (photo.imageUrl ? [photo.imageUrl] : []);
-                    const firstImage = images[0] || 'https://placehold.co/400x400/ef4444/ffffff?text=No+Image';
-                    const createdDate = photo.createdAt ? photo.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    itemEl.innerHTML = `<div class="relative aspect-[4/3] overflow-hidden"><img src="${firstImage}" alt="${photo.title}" class="w-full h-full object-cover gallery-image transform group-hover:scale-105 transition-transform duration-300" data-photo-id="${photo.id}" data-title="${photo.title}" data-description="${photo.description}" data-images='${JSON.stringify(images)}' data-date="${createdDate}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/ef4444/ffffff?text=Error';">${images.length > 1 ? `<div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-images mr-1"></i>${images.length}</div>` : ''}</div><div class="p-6"><h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${photo.title}</h3>${createdDate ? `<div class="flex items-center text-gray-400 text-sm"><i class="fas fa-calendar-alt mr-2"></i><span>${createdDate}</span></div>` : ''}</div>`;
-                    if (document.body.classList.contains('admin-mode')) {
-                        const overlay = document.createElement('div');
-                        overlay.className = 'admin-edit-overlay';
-                        overlay.innerHTML = `<button data-id="${photo.id}" class="edit-btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm font-medium"><i class="fas fa-edit mr-1"></i>수정</button><button data-id="${photo.id}" class="delete-btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm font-medium"><i class="fas fa-trash mr-1"></i>삭제</button>`;
-                        overlay.querySelector('.edit-btn').addEventListener('click', async (e) => { e.preventDefault(); e.stopPropagation(); if (typeof openGalleryModal === 'function') await openGalleryModal(photo.id); });
-                        overlay.querySelector('.delete-btn').addEventListener('click', async (e) => { e.preventDefault(); e.stopPropagation(); if (await customConfirm("정말로 이 사진을 삭제하시겠습니까?")) try { await deleteDoc(doc(db, 'gallery', photo.id)); customAlert('사진이 삭제되었습니다.'); } catch (error) { console.error('삭제 오류:', error); customAlert('삭제 중 오류가 발생했습니다.'); } });
-                        overlay.addEventListener('click', (e) => e.stopPropagation());
-                        itemEl.querySelector('.relative').appendChild(overlay);
-                    }
-                    galleryGrid.appendChild(itemEl);
-                });
-                if (document.body.classList.contains('admin-mode')) setTimeout(() => initAdminEditButtons(), 100);
-                handleScrollAnimation();
-            });
-            activeFirestoreListeners.push(unsubscribe);
-        }
-            
-        function createSkeletonCard() {
-            const skeleton = document.createElement('div');
-            skeleton.className = 'bg-white rounded-xl shadow-lg overflow-hidden';
-            skeleton.innerHTML = `<div class="aspect-[4/3] skeleton"></div><div class="p-6"><div class="h-5 skeleton rounded mb-2"></div><div class="h-4 skeleton rounded w-1/2"></div></div>`;
-            return skeleton;
-        }
-            
-        function showLoadingState() {
-            const galleryGrid = document.getElementById('gallery-grid');
-            galleryGrid.innerHTML = '';
-            for (let i = 0; i < 6; i++) galleryGrid.appendChild(createSkeletonCard());
-        }
-            
-        function showEmptyState() {
-            document.getElementById('gallery-grid').innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-16"><div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6"><i class="fas fa-images text-4xl text-gray-400"></i></div><h3 class="text-xl font-semibold text-gray-700 mb-2">아직 등록된 사진이 없습니다</h3><p class="text-gray-500 text-center">${document.body.classList.contains('admin-mode') ? '새 사진 추가 버튼을 눌러 첫 번째 사진을 업로드해보세요.' : '곧 멋진 사진들로 채워질 예정입니다.'}</p>${document.body.classList.contains('admin-mode') ? '<button class="mt-4 bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors" onclick="document.getElementById(\'add-photo-btn\').click()">첫 사진 추가하기</button>' : ''}</div>`;
-        }
-    
-        function initAboutUsPage() {
-            const accordionContainer = document.getElementById('about-us-accordion');
-            if(!accordionContainer) return;
-            const q = query(collection(db, 'about_us'), orderBy("createdAt", "desc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                accordionContainer.innerHTML = '';
-                if (items.length === 0) { accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-10">등록된 내용이 없습니다.</p>'; return; }
-                items.forEach(item => {
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'border-b border-gray-200 scroll-reveal';
-                    const date = item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    itemEl.innerHTML = `<button class="accordion-header w-full flex justify-between items-center p-6 text-left hover:bg-gray-50"><span class="text-lg font-medium text-gray-800">${item.title}</span><div class="flex items-center"><span class="text-gray-500 mr-6">${date}</span><i class="fas fa-chevron-down transition-transform duration-300"></i></div></button><div class="accordion-content bg-gray-50"><div class="p-6 whitespace-pre-wrap text-gray-700">${item.content}</div></div>`;
-                    if (document.body.classList.contains('admin-mode')) {
-                        itemEl.innerHTML += `<div class="p-4 bg-gray-100 text-right space-x-2"><button data-id="${item.id}" class="edit-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm">수정</button><button data-id="${item.id}" class="delete-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm">삭제</button></div>`;
-                    }
-                    accordionContainer.appendChild(itemEl);
-                });
-                handleScrollAnimation();
-            });
-            activeFirestoreListeners.push(unsubscribe);
-        }
         
         function handleNetlifyFormSubmit(event) {
             event.preventDefault();
@@ -2752,64 +2700,6 @@
             .then(() => { customAlert(`'${formName}' 문의가 성공적으로 접수되었습니다. 감사합니다.`); form.reset(); })
             .catch((error) => { customAlert('오류가 발생했습니다. 다시 시도해주세요.'); console.error(error); })
             .finally(() => { submitButton.disabled = false; submitButton.innerHTML = originalButtonText; });
-        }
-    
-        async function openGalleryModal(docId = null) {
-            const galleryAdminModal = document.getElementById('gallery-admin-modal');
-            const photoForm = document.getElementById('photo-form');
-            const galleryModalTitle = document.getElementById('gallery-modal-title');
-            const photoIdInput = document.getElementById('photo-id');
-            const photoTitleInput = document.getElementById('photo-title');
-            const photoDescriptionInput = document.getElementById('photo-description');
-            if (!galleryAdminModal || !photoForm) { console.error('갤러리 모달 요소를 찾을 수 없습니다.'); return; }
-            photoForm.reset();
-            initImageUrlInputs();
-            if (docId) {
-                galleryModalTitle.textContent = "사진 수정";
-                photoIdInput.value = docId;
-                try {
-                    const docSnap = await getDoc(doc(db, 'gallery', docId));
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        photoTitleInput.value = data.title || '';
-                        photoDescriptionInput.value = data.description || '';
-                        const images = data.images || (data.imageUrl ? [data.imageUrl] : []);
-                        loadImageUrls(images);
-                    } else { customAlert('해당 사진을 찾을 수 없습니다.'); return; }
-                } catch (error) { console.error('문서 로드 오류:', error); customAlert('문서를 불러오는 중 오류가 발생했습니다.'); return; }
-            } else {
-                galleryModalTitle.textContent = "새 사진 추가";
-                photoIdInput.value = '';
-            }
-            galleryAdminModal.classList.remove('hidden');
-        }
-            
-        function initImageUrlInputs() {
-            const container = document.getElementById('image-urls-container');
-            if (!container) return;
-            container.innerHTML = `<div class="image-url-row flex gap-2"><input type="url" placeholder="https://i.imgur.com/image1.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600" style="display: none;">삭제</button></div>`;
-            updateRemoveButtons();
-        }
-            
-        function loadImageUrls(images) {
-            const container = document.getElementById('image-urls-container');
-            if (!container) return;
-            container.innerHTML = '';
-            if (images.length === 0) { initImageUrlInputs(); return; }
-            images.forEach((imageUrl, index) => {
-                const row = document.createElement('div');
-                row.className = 'image-url-row flex gap-2';
-                row.innerHTML = `<input type="url" value="${imageUrl}" placeholder="https://i.imgur.com/image${index + 1}.png" class="flex-1 p-2 border rounded image-url-input" required><button type="button" class="remove-image-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">삭제</button>`;
-                container.appendChild(row);
-            });
-            updateRemoveButtons();
-        }
-            
-        function updateRemoveButtons() {
-            document.querySelectorAll('.image-url-row').forEach((row) => {
-                const removeBtn = row.querySelector('.remove-image-btn');
-                if(removeBtn) removeBtn.style.display = document.querySelectorAll('.image-url-row').length > 1 ? 'block' : 'none';
-            });
         }
     
         function enterAdminMode() {
@@ -2920,28 +2810,6 @@
                     historyAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
                 } catch (error) { console.error("Error saving history:", error); customAlert('저장 중 오류가 발생했습니다.'); }
             }
-            async function handlePhotoFormSubmit(e) {
-                e.preventDefault();
-                const docId = document.getElementById('photo-id').value;
-                const images = Array.from(document.querySelectorAll('.image-url-input')).map(input => input.value.trim()).filter(url => url);
-                if (images.length === 0) { customAlert('최소 하나의 이미지 URL을 입력해주세요.'); return; }
-                const data = { title: document.getElementById('photo-title').value, description: document.getElementById('photo-description').value, images: images, createdAt: serverTimestamp() };
-                try {
-                    if (docId) await updateDoc(doc(db, 'gallery', docId), { title: data.title, description: data.description, images: data.images });
-                    else await addDoc(collection(db, 'gallery'), data);
-                    galleryAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
-                } catch (error) { console.error("Error saving photo:", error); customAlert('저장 중 오류가 발생했습니다.'); }
-            }
-            async function handleAboutUsFormSubmit(e) {
-                e.preventDefault();
-                const docId = document.getElementById('about-us-id').value;
-                const data = { title: document.getElementById('about-us-title').value, content: document.getElementById('about-us-content').value, createdAt: serverTimestamp() };
-                try {
-                    if (docId) await updateDoc(doc(db, 'about_us', docId), { title: data.title, content: data.content });
-                    else await addDoc(collection(db, 'about_us'), data);
-                    aboutUsAdminModal.classList.add('hidden'); customAlert('저장되었습니다.');
-                } catch (error) { console.error("Error saving about us:", error); customAlert('저장 중 오류가 발생했습니다.'); }
-            }
             async function openHistoryModal(docId = null) {
                 historyForm.reset();
                 if (docId) {
@@ -2961,30 +2829,11 @@
                 }
                 historyAdminModal.classList.remove('hidden');
             }
-            async function openAboutUsModal(docId = null) {
-                aboutUsForm.reset();
-                if (docId) {
-                    document.getElementById('about-us-modal-title').textContent = "글 수정";
-                    document.getElementById('about-us-id').value = docId;
-                    const docSnap = await getDoc(doc(db, 'about_us', docId));
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById('about-us-title').value = data.title;
-                        document.getElementById('about-us-content').value = data.content;
-                    }
-                } else {
-                    document.getElementById('about-us-modal-title').textContent = "새 글 추가";
-                    document.getElementById('about-us-id').value = '';
-                }
-                aboutUsAdminModal.classList.remove('hidden');
-            }
-    
+// ✅ 6-D-1: 이벤트 리스너 교체
             historyForm?.addEventListener('submit', handleHistoryFormSubmit);
-            photoForm?.addEventListener('submit', handlePhotoFormSubmit);
-            aboutUsForm?.addEventListener('submit', handleAboutUsFormSubmit);
+            document.getElementById('community-form')?.addEventListener('submit', handleCommunityFormSubmit);
             document.getElementById('cancel-btn')?.addEventListener('click', () => historyAdminModal.classList.add('hidden'));
-            document.getElementById('gallery-cancel-btn')?.addEventListener('click', () => galleryAdminModal.classList.add('hidden'));
-            document.getElementById('about-us-cancel-btn')?.addEventListener('click', () => aboutUsAdminModal.classList.add('hidden'));
+            document.getElementById('community-cancel-btn')?.addEventListener('click', () => document.getElementById('community-admin-modal').classList.add('hidden'));    
             document.getElementById('close-lightbox-btn')?.addEventListener('click', () => lightboxModal.classList.add('hidden'));
             document.getElementById('close-search-btn').onclick = closeSearch;
             document.getElementById('terms-link').onclick = () => termsModal.classList.remove('hidden');
@@ -3010,12 +2859,16 @@
                         if (target.matches('#add-history-btn') || target.closest('#add-history-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(); }
                         else if (target.matches('.edit-btn')) { e.preventDefault(); e.stopPropagation(); openHistoryModal(target.dataset.id); }
                         else if (target.matches('.delete-btn')) { e.preventDefault(); e.stopPropagation(); if (await customConfirm("연혁을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'history', target.dataset.id)); }
-                    } else if (currentPage === 'community-gallery') {
-                        if (target.matches('#add-photo-btn') || target.closest('#add-photo-btn')) { e.preventDefault(); e.stopPropagation(); openGalleryModal(); }
-                    } else if (currentPage === 'about-us') {
-                        if (target.matches('#add-about-us-btn') || target.closest('#add-about-us-btn')) openAboutUsModal();
-                        else if (target.matches('.edit-btn')) openAboutUsModal(target.dataset.id);
-                        else if (target.matches('.delete-btn')) { if (await customConfirm("글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'about_us', target.dataset.id)); }
+                    } else if (currentPage === 'community') { // ✅ 'community'로 변경
+                        if (target.matches('#add-post-btn') || target.closest('#add-post-btn')) {
+                            openCommunityModal();
+                        } else if (target.matches('.edit-post-btn')) {
+                            openCommunityModal(target.dataset.id);
+                        } else if (target.matches('.delete-post-btn')) {
+                            if (await customConfirm("정말로 이 게시물을 삭제하시겠습니까?")) {
+                                await deleteDoc(doc(db, 'community', target.dataset.id));
+                            }
+                        }
                     }
                 }
                 const accordionHeader = target.closest('.accordion-header');
