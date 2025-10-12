@@ -2593,14 +2593,44 @@
             window.scrollTo(0, 0);
             Object.keys(siteContent).forEach(key => applyContent(key, siteContent[key]));
             
+            // ✅ 페이지별 초기화 함수 실행
             const pageInitFunctions = {
+                'about-intro': initAboutIntroPage,  // ⭐ 이 줄 추가!
                 'history': initHistoryPage,
                 'community': initCommunityPage,
                 'login': initLoginPage,
                 'quote': initQuotePage,
-                'products': initProductsPage // 이 줄을 추가
+                'products': initProductsPage
             };
             pageInitFunctions[pageId]?.();
+            
+            // ✅ 제품소개 페이지 탭 활성화
+            if (pageId === 'products') {
+                setTimeout(() => activateProductTab(tabId || 'rd'), 0);
+            }            
+            
+            setTimeout(() => {
+                newContent.classList.add('visible');
+                handleScrollAnimation();
+            }, 50);
+            
+            bindNavLinks(appContent);
+            
+            if (document.body.classList.contains('admin-mode')) {
+                const adminPanels = {
+                    'history': 'history-admin-panel',
+                    'community': 'community',
+                    'about-intro': 'about-intro',  // ⭐ 이 줄도 추가
+                    'products': 'products-admin-panel'
+                };
+                document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.add('hidden'));
+                if (adminPanels[pageId]) {
+                    const panel = document.getElementById(adminPanels[pageId]);
+                    if (panel) panel.classList.remove('hidden');
+                }
+                setTimeout(() => initAdminEditButtons(), 100);
+            }
+        }
             
             // ✅ 5-B: '제품소개' 페이지일 경우 탭 활성화 로직 추가
             if (pageId === 'products') {
