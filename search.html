@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>검색 결과 - AUTOLAB</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Noto Sans KR -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- Favicon -->
-    <link rel="icon" href="./favicon2.png" type="image/png">
+    <link rel="icon" href="./favicon.png" type="image/png">
 
     <style>
         /* Custom Styles */
@@ -45,126 +41,135 @@
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
         }
+        .highlight {
+            background-color: #bfdbfe; /* Tailwind's blue-200 */
+            font-weight: 600;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
     </style>
 </head>
-<body class="bg-white text-gray-700">
+<body class="bg-gray-50 text-gray-700">
 
-    <!-- Header -->
-    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 left-0 right-0 z-50 border-b border-gray-200/80 transition-all duration-300">
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 left-0 right-0 z-50 border-b border-gray-200/80">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
                 <a href="./index.html" class="flex items-center space-x-2 shrink-0">
-                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-8 md:h-10">
+                    <img src="./logo.png" alt="AUTOLAB Logo" class="h-10 md:h-12" onerror="this.onerror=null; this.src='https://placehold.co/200x40/1e3a8a/ffffff?text=AUTOLAB';">
                 </a>
 
-                <!-- Desktop Navigation -->
                 <div class="flex items-center">
                     <nav id="desktop-nav" class="hidden lg:flex items-center space-x-2">
-                         <div class="dropdown relative">
-                            <a href="./index.html" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-sky-600 rounded-md">회사소개</a>
+                        <div class="dropdown relative">
+                            <a href="./index.html#about-intro" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800 rounded-md">회사소개</a>
                             <div class="dropdown-menu absolute hidden bg-white shadow-lg rounded-md mt-2 py-2 w-40 border border-gray-100">
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">AUTOLAB 소개</a>
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">사업연혁</a>
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">오시는길</a>
+                                <a href="./index.html#about-intro" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">AUTOLAB 소개</a>
+                                <a href="./index.html#history" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">사업연혁</a>
+                                <a href="./index.html#about-location" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">오시는길</a>
                             </div>
                         </div>
                         <div class="dropdown relative">
-                            <a href="./index.html" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-sky-600 rounded-md">사업분야</a>
+                            <a href="./index.html#business-sensor" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800 rounded-md">사업분야</a>
                             <div class="dropdown-menu absolute hidden bg-white shadow-lg rounded-md mt-2 py-2 w-48 border border-gray-100">
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">센서 개발 R&D</a>
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">ICT 교육</a>
+                                <a href="./index.html#business-sensor" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">센서 개발 R&D</a>
+                                <a href="./index.html#business-ict" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">ICT 교육</a>
                             </div>
                         </div>
-                        <a href="./index.html" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-sky-600">제품소개</a>
-                        <a href="./index.html" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-sky-600">견적문의</a>
-                        <div class="dropdown relative">
-                            <a href="./index.html" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-sky-600 rounded-md">커뮤니티</a>
-                            <div class="dropdown-menu absolute hidden bg-white shadow-lg rounded-md mt-2 py-2 w-40 border border-gray-100">
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">About us</a>
-                                <a href="./index.html" class="block px-4 py-2 text-gray-700 hover:bg-sky-50 hover:text-sky-600">포토갤러리</a>
-                            </div>
-                        </div>
+                        <a href="./index.html#quote" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">견적문의</a>
+                        <a href="./index.html#products" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">제품소개</a>
+                        <a href="./index.html#community" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">공지사항</a>
                     </nav>
-                    <button class="search-btn hidden lg:block ml-4 p-3 text-gray-500 hover:text-sky-600"><i class="fas fa-search"></i></button>
+                    <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hidden lg:block ml-4 p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="hidden lg:block p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-lg"></i></a>
+                    <button class="search-btn hidden lg:block p-3 text-gray-500 hover:text-blue-800"><i class="fas fa-search"></i></button>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="lg:hidden">
-                    <button id="mobile-menu-button" class="text-gray-700 hover:text-sky-500 focus:outline-none p-2"><i class="fas fa-bars fa-lg"></i></button>
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-700 focus:outline-none p-2"><i class="fas fa-bars fa-lg"></i></button>
                 </div>
             </div>
         </div>
-        <!-- Mobile Navigation -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-200"></div>
     </header>
 
-    <!-- Main Content -->
-    <main>
+    <main class="min-h-screen">
         <section class="py-20 lg:py-32">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                 <div id="search-info" class="text-center mb-12">
                     <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">검색 결과</h1>
                     <p id="search-query-display" class="mt-4 text-lg text-gray-600"></p>
                 </div>
 
-                <!-- Results sections -->
-                <div id="results-container" class="space-y-16">
-                    <!-- Products Results -->
-                    <section id="products-results-section" class="hidden">
-                        <h2 class="text-2xl font-bold border-b-2 border-sky-500 pb-2 mb-6">제품소개</h2>
-                        <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-                    </section>
-
-                    <!-- About Us Results -->
-                    <section id="about-us-results-section" class="hidden">
-                        <h2 class="text-2xl font-bold border-b-2 border-sky-500 pb-2 mb-6">About us</h2>
-                        <div id="about-us-list" class="border-t border-gray-200"></div>
-                    </section>
-
-                    <!-- Gallery Results -->
-                    <section id="gallery-results-section" class="hidden">
-                        <h2 class="text-2xl font-bold border-b-2 border-sky-500 pb-2 mb-6">포토갤러리</h2>
-                        <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"></div>
-                    </section>
-
-                    <!-- No Results Message -->
+                <div id="results-container" class="space-y-4">
                     <div id="no-results" class="hidden text-center py-20">
+                        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
                         <p class="text-xl text-gray-500">검색 결과가 없습니다.</p>
+                        <p class="text-gray-400 mt-2">다른 검색어로 다시 시도해보세요.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
     
-    <!-- Search Modal -->
+    <footer class="bg-gray-800 text-gray-400 text-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="lg:col-span-2">
+                    <a href="./index.html"><img src="./logo.png" alt="AUTOLAB Logo" class="h-10 mb-4 opacity-80" onerror="this.onerror=null; this.src='https://placehold.co/200x40/9ca3af/ffffff?text=AUTOLAB';"></a>
+                    <p class="text-xs leading-relaxed">
+                        <span class="mr-2">주소 : 경상남도 창원시 마산합포구 경남대학로 7, 1공학관 4층</span><br>
+                        <span class="mr-2">대표 : 신정활</span> |
+                        <span class="mx-2">사업자등록번호 : 310-17-61940</span><br>
+                        <span class="mr-2">연락처 : 010-0000-0000</span> |
+                        <span class="ml-2">이메일 : contact@autolab.co.kr</span>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white mb-4">바로가기</h3>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="./index.html#about-intro" class="hover:text-white">회사소개</a></li>
+                        <li><a href="./index.html#business-sensor" class="hover:text-white">사업분야</a></li>
+                        <li><a href="./index.html#products" class="hover:text-white">제품소개</a></li>
+                        <li><a href="./index.html#community" class="hover:text-white">공지사항</a></li>
+                        <li><a href="./index.html#quote" class="hover:text-white">견적문의</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white mb-4">소셜 미디어</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hover:text-white"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="hover:text-white"><i class="fab fa-facebook fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-500 text-xs">
+                <p>© 2025 AUTOLAB. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
     <div id="search-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-start justify-center p-4 pt-24">
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl">
             <div class="flex items-center p-2 border-b">
                 <i class="fas fa-search text-gray-400 mx-3"></i>
                 <input type="text" id="search-input" placeholder="검색어를 입력하세요..." class="w-full p-3 border-0 focus:ring-0">
-                <button id="close-search-btn" class="p-3 text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <!-- 🆕 검색 결과 영역 추가 -->
-            <div id="search-results" class="hidden border-t border-gray-200">
-                <div id="search-results-content" class="p-4 max-h-96 overflow-y-auto"></div>
+                <button id="close-search-btn" class="p-3 text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
         
         const firebaseConfig = {
-            apiKey: "AIzaSyAN0bbCZg8K2V12a-zpbf23_Z4U8CYmBms",
-            authDomain: "autolab-1cd53.firebaseapp.com",
-            projectId: "autolab-1cd53",
-            storageBucket: "autolab-1cd53.appspot.com",
-            messagingSenderId: "734510998647",
-            appId: "1:734510998647:web:f5547055d5ab933d279272",
-            measurementId: "G-CD93HMRDM5"
+            apiKey: "AIzaSyAr1yhQMfO0Xww2GAEKu_WJWIQ3Rvzly1g",
+            authDomain: "autolab-d06cf.firebaseapp.com",
+            projectId: "autolab-d06cf",
+            storageBucket: "autolab-d06cf.appspot.com",
+            messagingSenderId: "377868298631",
+            appId: "1:377868298631:web:c204e4bffdfc2d9a4c4b22",
+            measurementId: "G-QPM7KR2MM6"
         };
         
         const app = initializeApp(firebaseConfig);
@@ -177,110 +182,122 @@
             const urlParams = new URLSearchParams(window.location.search);
             const searchTerm = urlParams.get('q');
             const resultsContainer = document.getElementById('results-container');
-        
-            if (!searchTerm) {
+            
+            if (!searchTerm || searchTerm.trim() === '') {
                 searchQueryDisplay.textContent = "검색어를 입력해주세요.";
                 noResults.classList.remove('hidden');
                 return;
             }
-        
-            searchQueryDisplay.innerHTML = `'<span class="text-sky-600">${searchTerm}</span>'에 대한 검색 결과입니다.`;
+
+            searchQueryDisplay.innerHTML = `'<span class="text-blue-800 font-bold">${searchTerm}</span>'에 대한 검색 결과입니다.`;
+            resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">결과를 불러오는 중...</p>';
+            
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            let totalResults = 0;
-        
-            // 💡 1. 모든 데이터를 가져옵니다. (site_content 추가)
-            const siteContentPromise = getDocs(collection(db, 'site_content'));
-            const aboutUsPromise = getDocs(query(collection(db, 'about_us'), orderBy("createdAt", "desc")));
-            const galleryPromise = getDocs(query(collection(db, 'gallery'), orderBy("createdAt", "desc")));
-        
-            const [siteContentSnapshot, aboutUsSnapshot, gallerySnapshot] = await Promise.all([
-                siteContentPromise,
-                aboutUsPromise,
-                galleryPromise,
-            ]);
-        
-            // site_content 데이터를 검색하기 쉬운 형태로 가공
-            const siteContent = {};
-            siteContentSnapshot.forEach(doc => {
-                siteContent[doc.id] = doc.data().value;
-            });
-        
-            const allData = { ...siteContent };
-        
-            const foundItems = {};
-        
-            // 💡 2. 통합 검색: site_content를 포함한 모든 데이터를 검색합니다.
-            for (const key in allData) {
-                const value = allData[key];
-                if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
-                    // 예: 'product-ict-1.title' -> 'product-ict-1'
-                    const pageKey = key.split('.')[0]; 
-        
-                    if (!foundItems[pageKey]) {
-                        foundItems[pageKey] = {
-                            title: allData[`${pageKey}.title`] || '제목 없음',
-                            subtitle: allData[`${pageKey}.subtitle`] || allData[`${pageKey}.description`] || '',
-                            image: allData[`${pageKey}.image`] || 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=Image',
-                            type: '페이지'
-                        };
+            let foundItems = [];
+
+            // 검색어 하이라이트 함수
+            const highlightText = (text, term) => {
+                if (!text) return '';
+                // HTML 태그를 임시로 치환
+                const tags = [];
+                let tempText = text.replace(/<[^>]*>/g, (tag) => {
+                    tags.push(tag);
+                    return `__TAG_${tags.length - 1}__`;
+                });
+
+                const regex = new RegExp(`(${term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+                tempText = tempText.replace(regex, '<span class="highlight">$1</span>');
+
+                // 치환했던 HTML 태그 복원
+                return tempText.replace(/__TAG_(\d+)__/g, (match, index) => {
+                    return tags[parseInt(index, 10)];
+                });
+            };
+
+            try {
+                // 1. 검색할 모든 데이터를 병렬로 가져오기
+                const siteContentPromise = getDocs(collection(db, 'site_content'));
+                const communityPromise = getDocs(query(collection(db, 'community'), orderBy("createdAt", "desc")));
+                const [siteContentSnapshot, communitySnapshot] = await Promise.all([siteContentPromise, communityPromise]);
+
+                // 2. 'site_content' (웹페이지 텍스트) 검색
+                const siteContent = {};
+                siteContentSnapshot.forEach(doc => { siteContent[doc.id] = doc.data().value; });
+
+                let processedPages = new Set();
+                for (const key in siteContent) {
+                    const value = siteContent[key];
+                    if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
+                        const pageKey = key.split('.')[0];
+                        if (processedPages.has(pageKey) || !key.includes('.')) continue; // 중복 및 단일 키 방지
+
+                        // 대표 제목/설명/이미지를 찾아서 결과 구성
+                        const title = siteContent[`${pageKey}.title`] || siteContent[`${pageKey}.hero.title`] || pageKey;
+                        const description = siteContent[`${pageKey}.description`] || siteContent[`${pageKey}.subtitle`] || siteContent[`${pageKey}.hero.subtitle`] || value;
+                        const image = siteContent[`${pageKey}.image`] || siteContent[`${pageKey}.hero.image`] || 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=AUTOLAB';
+                        
+                        foundItems.push({
+                            id: pageKey,
+                            title: title,
+                            content: description,
+                            image: image,
+                            type: '웹페이지',
+                            link: `index.html#${pageKey}`
+                        });
+                        processedPages.add(pageKey);
                     }
                 }
-            }
-        
-            // About Us 검색
-            aboutUsSnapshot.docs.forEach(doc => {
-                const item = doc.data();
-                if (item.title.toLowerCase().includes(lowerCaseSearchTerm) || item.content.toLowerCase().includes(lowerCaseSearchTerm)) {
-                    foundItems[`about-us-item-${doc.id}`] = {
-                        title: item.title,
-                        subtitle: item.content,
-                        date: item.createdAt ? item.createdAt.toDate().toLocaleDateString('ko-KR') : '',
-                        type: 'About us'
-                    };
-                }
-            });
-        
-            // 갤러리 검색
-            gallerySnapshot.docs.forEach(doc => {
-                const item = doc.data();
-                if (item.title.toLowerCase().includes(lowerCaseSearchTerm) || (item.description && item.description.toLowerCase().includes(lowerCaseSearchTerm))) {
-                     foundItems[`gallery-item-${doc.id}`] = {
-                        title: item.title,
-                        subtitle: item.description,
-                        image: item.imageUrl,
-                        type: '포토갤러리'
-                    };
-                }
-            });
-        
-            // 💡 3. 검색 결과를 화면에 동적으로 생성합니다.
-            resultsContainer.innerHTML = ''; // 기존 결과 초기화
-            totalResults = Object.keys(foundItems).length;
-        
-            if (totalResults > 0) {
-                for (const key in foundItems) {
-                    const item = foundItems[key];
-                    const link = `index.html#${key.split('-item-')[0]}`; // 올바른 페이지로 링크
-                    const itemEl = document.createElement('a');
-                    itemEl.href = link;
-                    itemEl.className = 'block p-6 border rounded-lg hover:bg-gray-50 hover:shadow-md transition-all';
-                    itemEl.innerHTML = `
-                        <div class="flex flex-col sm:flex-row gap-6">
-                            ${item.image ? `<img src="${item.image}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0">` : ''}
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-start">
-                                    <span class="text-sm font-semibold text-sky-600">${item.type}</span>
-                                    ${item.date ? `<span class="text-sm text-gray-500">${item.date}</span>` : ''}
+
+                // 3. 'community' (공지사항) 검색
+                communitySnapshot.forEach(doc => {
+                    const post = { id: doc.id, ...doc.data() };
+                    if (post.title.toLowerCase().includes(lowerCaseSearchTerm) || post.content.toLowerCase().includes(lowerCaseSearchTerm)) {
+                        foundItems.push({
+                            id: post.id,
+                            title: post.title,
+                            content: post.content,
+                            image: (post.images && post.images.length > 0) ? post.images[0] : null,
+                            date: post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '',
+                            type: '공지사항',
+                            link: `index.html#community` // 공지사항은 목록 페이지로 이동
+                        });
+                    }
+                });
+                
+                // 4. 결과 표시
+                resultsContainer.innerHTML = '';
+                if (foundItems.length > 0) {
+                    foundItems.forEach(item => {
+                        const itemEl = document.createElement('a');
+                        itemEl.href = item.link;
+                        itemEl.className = 'block p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all';
+                        
+                        // 검색어 하이라이트 적용
+                        const highlightedTitle = highlightText(item.title, searchTerm);
+                        const highlightedContent = highlightText(item.content, searchTerm);
+
+                        itemEl.innerHTML = `
+                            <div class="flex flex-col sm:flex-row gap-6 items-center">
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0 bg-gray-100">` : ''}
+                                <div class="flex-grow w-full">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-sm font-semibold text-blue-800">${item.type}</span>
+                                        ${item.date ? `<span class="text-sm text-gray-500">${item.date}</span>` : ''}
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-800 mt-1">${highlightedTitle}</h3>
+                                    <p class="text-gray-600 mt-2 line-clamp-2">${highlightedContent}</p>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mt-1">${item.title}</h3>
-                                <p class="text-gray-600 mt-2 line-clamp-2">${item.subtitle}</p>
                             </div>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(itemEl);
+                        `;
+                        resultsContainer.appendChild(itemEl);
+                    });
+                } else {
+                    noResults.classList.remove('hidden');
                 }
-            } else {
-                resultsContainer.innerHTML = '<div id="no-results" class="text-center py-20"><p class="text-xl text-gray-500">검색 결과가 없습니다.</p></div>';
+
+            } catch (error) {
+                console.error("검색 중 오류 발생:", error);
+                resultsContainer.innerHTML = '<p class="text-center text-red-500 py-10">검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
             }
         }
 
@@ -320,20 +337,25 @@
         const desktopNav = document.getElementById('desktop-nav');
 
         function buildMobileMenu() {
-            mobileMenuContainer.innerHTML = ''; 
-            const navItems = desktopNav.children;
-            for (const item of navItems) {
-                const clonedItem = item.cloneNode(true);
-                // Convert all links to simple hrefs for the separate search page
-                clonedItem.querySelectorAll('a').forEach(link => {
-                    link.href = './index.html'; 
-                });
-                mobileMenuContainer.appendChild(clonedItem);
-            }
+            const mobileMenuHTML = desktopNav.innerHTML;
+            mobileMenuContainer.innerHTML = mobileMenuHTML;
+            // Additional mobile-specific items can be added here
         }
         buildMobileMenu();
-        mobileMenuButton.addEventListener('click', () => {
+        mobileMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
             mobileMenuContainer.classList.toggle('hidden');
+        });
+        
+        // Accordion functionality for mobile dropdowns
+        mobileMenuContainer.querySelectorAll('.dropdown').forEach(dropdown => {
+            const link = dropdown.querySelector('a');
+            const subMenu = dropdown.querySelector('.dropdown-menu');
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                subMenu.classList.toggle('hidden');
+                link.querySelector('i')?.classList.toggle('rotate-180');
+            });
         });
 
     </script>
