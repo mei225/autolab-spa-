@@ -2674,6 +2674,16 @@
                 pageInitFunctions[pageId]();
             }
             
+            // ⭐ 공지사항 페이지에서 특정 게시물 열기
+            if (pageId === 'community') {
+                const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+                const postId = urlParams.get('post');
+                if (postId) {
+                    // 페이지 초기화 후 게시물 모달 열기
+                    setTimeout(() => openPostDetailById(postId), 500);
+                }
+            }
+            
             // 제품소개 페이지 탭 활성화
             if (pageId === 'products') {
                 setTimeout(() => activateProductTab(tabId || 'rd'), 0);
@@ -2891,6 +2901,22 @@
                 renderPosts(allPosts); // 초기 렌더링
             });
             activeFirestoreListeners.push(unsubscribe);
+        }
+        // ⭐ index.html에 새로운 함수 추가:
+        
+        // 특정 ID로 게시물 모달 열기
+        async function openPostDetailById(postId) {
+            try {
+                const docSnap = await getDoc(doc(db, 'community', postId));
+                if (docSnap.exists()) {
+                    const post = { id: docSnap.id, ...docSnap.data() };
+                    openPostDetailModal(post);
+                } else {
+                    console.error('게시물을 찾을 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('게시물 로드 중 오류:', error);
+            }
         }
         // ✅ 5-B: openCommunityModal 함수 전체 교체 (여러 이미지 지원)
         async function openCommunityModal(docId = null) {
@@ -3187,11 +3213,10 @@
             const termsModal = document.getElementById('terms-modal');
             const privacyModal = document.getElementById('privacy-modal');
     
-            // ✅ 4. 모든 이벤트 리스너 바인딩
-            // ✅ 여기에 뒤로가기 문제 해결 코드 추가
-            // ⭐ 수정된 코드
             window.addEventListener('hashchange', () => {
-                const pageId = window.location.hash.substring(1) || 'home';
+                const hash = window.location.hash.substring(1);
+                const pageId = hash.split('?')[0] || 'home'; // '?' 앞부분만 페이지 ID로 사용
+                
                 // 현재 페이지와 URL 해시가 다를 경우에만 navigateTo 함수를 호출
                 if (pageId !== currentPage) {
                     navigateTo(pageId);
