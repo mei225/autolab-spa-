@@ -3213,24 +3213,46 @@
             const termsModal = document.getElementById('terms-modal');
             const privacyModal = document.getElementById('privacy-modal');
     
+            // DOMContentLoaded 이벤트 리스너 내부에서 이 부분을 찾아 수정하세요
+            
             window.addEventListener('hashchange', () => {
                 const hash = window.location.hash.substring(1);
-                const pageId = hash.split('?')[0] || 'home'; // '?' 앞부분만 페이지 ID로 사용
+                const pageId = hash.split('?')[0] || 'home';
                 
-                // 현재 페이지와 URL 해시가 다를 경우에만 navigateTo 함수를 호출
-                if (pageId !== currentPage) {
+                // ⭐ 해시가 변경되면 항상 해당 페이지로 이동
+                if (pageId && pageId !== currentPage) {
                     navigateTo(pageId);
-                } else {
-                    // 같은 페이지인 경우에도 스크롤 처리
-                    window.scrollTo(0, 0);
+                }
+                
+                // 공지사항 페이지에서 특정 게시물 열기
+                if (pageId === 'community') {
+                    const urlParams = new URLSearchParams(hash.split('?')[1]);
+                    const postId = urlParams.get('post');
+                    if (postId) {
+                        setTimeout(() => openPostDetailById(postId), 500);
+                    }
                 }
             });
             
-            // ⭐ 페이지 로드 시 해시 확인 추가
+            // ⭐ 페이지 로드 시 해시 확인 개선
             window.addEventListener('load', () => {
-                const pageId = window.location.hash.substring(1) || 'home';
+                const hash = window.location.hash.substring(1);
+                const pageId = hash.split('?')[0] || 'home';
+                
                 if (pageId && pageId !== 'home') {
-                    navigateTo(pageId);
+                    // 약간의 지연을 주어 DOM이 완전히 로드되도록 함
+                    setTimeout(() => {
+                        navigateTo(pageId);
+                        
+                        // 공지사항 게시물 열기
+                        if (pageId === 'community') {
+                            const urlParams = new URLSearchParams(hash.split('?')[1]);
+                            const postId = urlParams.get('post');
+                            if (postId) {
+                                setTimeout(() => openPostDetailById(postId), 800);
+                            }
+                        }
+                    }, 100);
                 }
             });
             // ✅ 다운로드 모달 관련 변수 선언
