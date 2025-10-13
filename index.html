@@ -2639,12 +2639,18 @@
     
         function navigateTo(pageId, tabId) {
             currentPage = pageId;
-            window.location.hash = pageId;
+            
+            // ⭐ URL 해시 업데이트 (무한 루프 방지)
+            if (window.location.hash.substring(1).split('?')[0] !== pageId) {
+                window.history.pushState(null, '', `#${pageId}`);
+            }
+            
             activeFirestoreListeners.forEach(unsubscribe => unsubscribe());
             activeFirestoreListeners = [];
             
             const targetTemplate = pageTemplates.querySelector(`#${pageId}`);
             if (!targetTemplate) { 
+                console.warn(`페이지를 찾을 수 없음: ${pageId}`);
                 navigateTo('home'); 
                 return; 
             }
