@@ -2538,13 +2538,24 @@
         }
             
         function initContentManagement() {
-            if (!db) return;
+            if (!db) {
+                console.error("❌ Firestore가 초기화되지 않았습니다!");
+                return;
+            }
+            
+            console.log("✅ 콘텐츠 로딩 시작...");
+            
             onSnapshot(collection(db, 'site_content'), (snapshot) => {
+                console.log(`📦 ${snapshot.docs.length}개의 콘텐츠 항목 로드됨`);
+                
                 snapshot.docs.forEach(doc => {
                     siteContent[doc.id] = doc.data().value;
                     applyContent(doc.id, doc.data().value);
                 });
-                if (document.body.classList.contains('admin-mode')) initAdminEditButtons();
+                
+                if (document.body.classList.contains('admin-mode')) {
+                    initAdminEditButtons();
+                }
             });
         }
     
@@ -3199,7 +3210,7 @@
         
         // --- MAIN EXECUTION ---
         document.addEventListener('DOMContentLoaded', function () {
-            // ✅ 1. Firebase 초기화 (단 한번만 실행)
+            // Firebase 초기화
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -3209,15 +3220,25 @@
                 customAlert("데이터베이스 연결에 실패했습니다. 새로고침 해주세요.");
                 return;
             }
-    
-            // ✅ 2. 인증 상태 리스너 설정
+        
+            // ✅ 1. 먼저 콘텐츠 로드
+            initContentManagement();
+            
+            // ✅ 2. 인증 상태 체크
             onAuthStateChanged(auth, (user) => {
                 if (user) enterAdminMode();
                 else exitAdminMode();
             });
-    
-            // ✅ 3. 정적 콘텐츠 로드
-            initContentManagement();
+        
+            // ✅ 3. 약간의 딜레이 후 페이지 렌더링
+            setTimeout(() => {
+                bindNavLinks(document.body);
+                buildMobileMenu();
+                
+                // URL 해시 확인 후 페이지 이동
+                const hash = window.location.hash.substring(1).split('?')[0];
+                navigateTo(hash || 'home');
+            }, 300); // 300ms 대기
     
             // --- Modal & Form Elements ---
             const historyAdminModal = document.getElementById('admin-modal');
