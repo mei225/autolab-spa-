@@ -392,7 +392,8 @@
                 resultsContainer.innerHTML = '';
                 if (foundItems.length > 0) {
                     foundItems.forEach(item => {
-                        const itemEl = document.createElement('div');
+                        const itemEl = document.createElement('a'); // ⭐ div → a 태그로 변경
+                        itemEl.href = item.link; // ⭐ href 속성 추가
                         itemEl.className = 'block p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all cursor-pointer';
                         
                         const highlightedTitle = highlightText(item.title, searchTerm);
@@ -412,9 +413,7 @@
                             </div>
                         `;
                         
-                        itemEl.addEventListener('click', () => {
-                            window.location.href = item.link;
-                        });
+                        // ⭐ 이벤트 리스너 제거 (a 태그가 자동으로 처리)
                         
                         resultsContainer.appendChild(itemEl);
                     });
