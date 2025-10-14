@@ -3204,7 +3204,16 @@
             mobileSocials.className = 'flex items-center justify-center space-x-6 px-4 py-4 border-t';
             mobileSocials.innerHTML = `<a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-2x"></i></a><a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-2x"></i></a>`;
             mobileMenuContainer.appendChild(mobileSocials);
-            document.querySelectorAll('.search-btn').forEach(btn => btn.onclick = openSearch);
+            
+            // ✅ 검색 버튼 이벤트 바인딩
+            document.querySelectorAll('.search-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const searchModal = document.getElementById('search-modal');
+                    searchModal.classList.remove('hidden'); 
+                    document.getElementById('search-input').focus();
+                };
+            });
+            
             bindNavLinks(mobileMenuContainer);
         }
         
