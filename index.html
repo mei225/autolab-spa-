@@ -2650,10 +2650,11 @@
         }
     
         function navigateTo(pageId, tabId) {
-            console.log('Navigating to:', pageId, 'Current page:', currentPage); // 디버깅용
+            console.log('Navigating to:', pageId, 'Current page:', currentPage);
             
-            // ⭐ 같은 페이지면 스킵 (단, 탭 정보가 있으면 진행)
-            if (pageId === currentPage && !tabId) {
+            // ⭐ 같은 페이지면 스킵 (단, 탭 정보가 있거나 아직 렌더링 안 된 경우는 진행)
+            const isAlreadyRendered = appContent.querySelector('.page-content') !== null;
+            if (pageId === currentPage && !tabId && isAlreadyRendered) {
                 console.log('Already on this page, skipping navigation');
                 return;
             }
