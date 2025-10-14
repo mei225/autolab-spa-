@@ -174,10 +174,52 @@
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+    
         const searchQueryDisplay = document.getElementById('search-query-display');
         const noResults = document.getElementById('no-results');
-
+    
+        // ⭐ 페이지별 한글 제목 매핑 (확장된 버전)
+        const pageTitles = {
+            'home': '홈',
+            'about-intro': 'AUTOLAB 소개',
+            'about': 'AUTOLAB 소개',
+            'history': '사업연혁',
+            'about-location': '오시는길',
+            'location': '오시는길',
+            'business-sensor': '센서 개발 R&D',
+            'sensor': '센서 개발 R&D',
+            'business-ict': 'ICT 교육',
+            'ict': 'ICT 교육',
+            'quote': '견적문의',
+            'products': '제품소개',
+            'community': '공지사항',
+            'equipment-manufacturing': '제조 장비',
+            'equipment-measuring': '측정 장비',
+            'equipment-miniaturization': '소형화 장비',
+            'equipment': '보유 장비',
+            'product-rd-1': '타액 기반 혈당 센서',
+            'product-rd-2': '종이 기반 포름알데히드 센서',
+            'product-rd-3': '밴드형 스마트 체온계',
+            'product-ict-1': '아두이노 키트',
+            'product-ict-2': '미로탈출 RC카',
+            'product-ict-3': '스마트팜 키트'
+        };
+    
+        // ⭐ 페이지별 대표 키워드 매핑 (검색 정확도 향상)
+        const pageKeywords = {
+            'about-intro': ['autolab', '회사', '소개', '비전', '핵심가치', '조직도', 'ci', '로고', '대표'],
+            'history': ['연혁', '사업', '역사', '성장'],
+            'about-location': ['오시는길', '위치', '주소', '연락처', '찾아오기'],
+            'business-sensor': ['센서', 'r&d', '연구', '개발', '기술이전', '프로세스'],
+            'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습'],
+            'quote': ['견적', '문의', '상담', '의뢰'],
+            'products': ['제품', '결과물', '키트', '콘텐츠'],
+            'community': ['공지', '소식', '뉴스', '알림'],
+            'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb'],
+            'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트'],
+            'equipment-miniaturization': ['소형화', '마이크로', '나노']
+        };
+    
         async function fetchAndSearch() {
             const urlParams = new URLSearchParams(window.location.search);
             const searchTerm = urlParams.get('q');
@@ -188,112 +230,148 @@
                 noResults.classList.remove('hidden');
                 return;
             }
-
+    
             searchQueryDisplay.innerHTML = `'<span class="text-blue-800 font-bold">${searchTerm}</span>'에 대한 검색 결과입니다.`;
             resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">결과를 불러오는 중...</p>';
             
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             let foundItems = [];
-
+    
             // 검색어 하이라이트 함수
             const highlightText = (text, term) => {
                 if (!text) return '';
-                // HTML 태그를 임시로 치환
                 const tags = [];
                 let tempText = text.replace(/<[^>]*>/g, (tag) => {
                     tags.push(tag);
                     return `__TAG_${tags.length - 1}__`;
                 });
-
+    
                 const regex = new RegExp(`(${term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
                 tempText = tempText.replace(regex, '<span class="highlight">$1</span>');
-
-                // 치환했던 HTML 태그 복원
+    
                 return tempText.replace(/__TAG_(\d+)__/g, (match, index) => {
                     return tags[parseInt(index, 10)];
                 });
             };
-
+    
+            // ⭐ 페이지 관련성 점수 계산 함수
+            const calculateRelevance = (pageKey, content, searchTerm) => {
+                let score = 0;
+                const keywords = pageKeywords[pageKey] || [];
+                
+                // 키워드 매칭 점수
+                keywords.forEach(keyword => {
+                    if (keyword.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        searchTerm.toLowerCase().includes(keyword.toLowerCase())) {
+                        score += 10;
+                    }
+                });
+                
+                // 콘텐츠 내 검색어 빈도
+                const matches = (content.toLowerCase().match(new RegExp(searchTerm.toLowerCase(), 'g')) || []).length;
+                score += matches;
+                
+                return score;
+            };
+    
             try {
-                // 1. 검색할 모든 데이터를 병렬로 가져오기
                 const siteContentPromise = getDocs(collection(db, 'site_content'));
                 const communityPromise = getDocs(query(collection(db, 'community'), orderBy("createdAt", "desc")));
                 const [siteContentSnapshot, communitySnapshot] = await Promise.all([siteContentPromise, communityPromise]);
-
-                // 2. 'site_content' (웹페이지 텍스트) 검색
+    
                 const siteContent = {};
                 siteContentSnapshot.forEach(doc => { siteContent[doc.id] = doc.data().value; });
                 
-                // ⭐ 페이지별 한글 제목 매핑 추가
-                const pageTitles = {
-                    'home': '홈',
-                    'about-intro': 'AUTOLAB 소개',
-                    'history': '사업연혁',
-                    'about-location': '오시는길',
-                    'business-sensor': '센서 개발 R&D',
-                    'business-ict': 'ICT 교육',
-                    'quote': '견적문의',
-                    'products': '제품소개',
-                    'community': '공지사항',
-                    'equipment-manufacturing': '제조 장비',
-                    'equipment-measuring': '측정 장비',
-                    'equipment-miniaturization': '소형화 장비',
-                    'product-rd-1': '타액 기반 혈당 센서',
-                    'product-rd-2': '종이 기반 포름알데히드 센서',
-                    'product-rd-3': '밴드형 스마트 체온계',
-                    'product-ict-1': '아두이노 키트',
-                    'product-ict-2': '미로탈출 RC카',
-                    'product-ict-3': '스마트팜 키트'
-                };
-                
                 let processedPages = new Set();
+                let pageScores = {};
+                
+                // ⭐ 모든 콘텐츠를 수집하여 페이지별 관련성 점수 계산
                 for (const key in siteContent) {
                     const value = siteContent[key];
+                    const pageKey = key.split('.')[0];
+                    
                     if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
-                        const pageKey = key.split('.')[0];
-                        if (processedPages.has(pageKey) || !key.includes('.')) continue;
+                        if (!pageScores[pageKey]) {
+                            pageScores[pageKey] = calculateRelevance(pageKey, value, searchTerm);
+                        } else {
+                            pageScores[pageKey] += 1;
+                        }
+                    }
+                }
                 
-                        // ⭐ 페이지 제목 결정 로직 개선
-                        let title = pageTitles[pageKey] || pageKey; // 매핑된 한글 제목 우선 사용
-                        
-                        // 특정 키에서 더 나은 제목을 찾을 수 있으면 사용
-                        const possibleTitleKeys = [
-                            `${pageKey}.hero.title`,
-                            `${pageKey}.title`,
-                            `${pageKey}.section.title`
-                        ];
-                        
-                        for (const titleKey of possibleTitleKeys) {
-                            if (siteContent[titleKey] && siteContent[titleKey].length < 100) {
-                                title = siteContent[titleKey];
+                // ⭐ 점수가 높은 페이지만 결과에 추가
+                for (const pageKey in pageScores) {
+                    if (processedPages.has(pageKey)) continue;
+                    
+                    // 한글 제목 우선 사용
+                    let title = pageTitles[pageKey] || pageKey;
+                    
+                    // 더 나은 제목 찾기
+                    const possibleTitleKeys = [
+                        `${pageKey}.hero.title`,
+                        `${pageKey}.title`,
+                        `${pageKey}.section.title`
+                    ];
+                    
+                    for (const titleKey of possibleTitleKeys) {
+                        if (siteContent[titleKey]) {
+                            const cleanTitle = siteContent[titleKey].replace(/<[^>]*>/g, '').trim();
+                            if (cleanTitle && cleanTitle.length < 100) {
+                                title = cleanTitle;
                                 break;
                             }
                         }
-                        
-                        const description = siteContent[`${pageKey}.hero.subtitle`] || 
-                                          siteContent[`${pageKey}.subtitle`] || 
-                                          siteContent[`${pageKey}.description`] || 
-                                          value;
-                        
-                        const image = siteContent[`${pageKey}.hero.image`] || 
-                                     siteContent[`${pageKey}.image`] || 
-                                     'https://placehold.co/600x400/e0f2fe/1e3a8a?text=AUTOLAB';
-                        
-                        foundItems.push({
-                            id: pageKey,
-                            title: title,
-                            content: description,
-                            image: image,
-                            type: '웹페이지',
-                            link: `./index.html#${pageKey}`
-                        });
-                        processedPages.add(pageKey);
                     }
+                    
+                    // 설명 찾기
+                    const descriptionKeys = [
+                        `${pageKey}.hero.subtitle`,
+                        `${pageKey}.subtitle`,
+                        `${pageKey}.description`,
+                        `${pageKey}.intro`
+                    ];
+                    
+                    let description = '';
+                    for (const descKey of descriptionKeys) {
+                        if (siteContent[descKey]) {
+                            description = siteContent[descKey].replace(/<[^>]*>/g, '').trim();
+                            if (description && description.length < 300) break;
+                        }
+                    }
+                    
+                    // 이미지 찾기
+                    const imageKeys = [
+                        `${pageKey}.hero.image`,
+                        `${pageKey}.image`,
+                        `${pageKey}.philosophy.image`
+                    ];
+                    
+                    let image = 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=AUTOLAB';
+                    for (const imgKey of imageKeys) {
+                        if (siteContent[imgKey] && siteContent[imgKey].startsWith('http')) {
+                            image = siteContent[imgKey];
+                            break;
+                        }
+                    }
+                    
+                    foundItems.push({
+                        id: pageKey,
+                        title: title,
+                        content: description || `${title} 페이지입니다.`,
+                        image: image,
+                        type: '웹페이지',
+                        link: `./index.html#${pageKey}`,
+                        score: pageScores[pageKey]
+                    });
+                    
+                    processedPages.add(pageKey);
                 }
-                // 3. 'community' (공지사항) 검색
+                
+                // 공지사항 검색
                 communitySnapshot.forEach(doc => {
                     const post = { id: doc.id, ...doc.data() };
-                    if (post.title.toLowerCase().includes(lowerCaseSearchTerm) || post.content.toLowerCase().includes(lowerCaseSearchTerm)) {
+                    if (post.title.toLowerCase().includes(lowerCaseSearchTerm) || 
+                        post.content.toLowerCase().includes(lowerCaseSearchTerm)) {
                         foundItems.push({
                             id: post.id,
                             title: post.title,
@@ -301,25 +379,28 @@
                             image: (post.images && post.images.length > 0) ? post.images[0] : null,
                             date: post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '',
                             type: '공지사항',
-                            link: `./index.html#community`
+                            link: `./index.html#community?post=${post.id}`,
+                            score: 100 // 공지사항은 높은 우선순위
                         });
                     }
                 });
                 
-                // 4. 결과 표시
+                // ⭐ 점수 기준으로 정렬
+                foundItems.sort((a, b) => b.score - a.score);
+                
+                // 결과 표시
                 resultsContainer.innerHTML = '';
                 if (foundItems.length > 0) {
                     foundItems.forEach(item => {
                         const itemEl = document.createElement('div');
                         itemEl.className = 'block p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all cursor-pointer';
                         
-                        // 검색어 하이라이트 적용
                         const highlightedTitle = highlightText(item.title, searchTerm);
                         const highlightedContent = highlightText(item.content, searchTerm);
                     
                         itemEl.innerHTML = `
                             <div class="flex flex-col sm:flex-row gap-6 items-center">
-                                ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0 bg-gray-100">` : ''}
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0 bg-gray-100" onerror="this.style.display='none'">` : ''}
                                 <div class="flex-grow w-full">
                                     <div class="flex justify-between items-start mb-1">
                                         <span class="text-sm font-semibold text-blue-800">${item.type}</span>
@@ -331,15 +412,8 @@
                             </div>
                         `;
                         
-                        // ⭐ 수정된 클릭 이벤트
                         itemEl.addEventListener('click', () => {
-                            if (item.type === '공지사항') {
-                                // 공지사항인 경우: 게시물 ID를 URL 파라미터로 전달
-                                window.location.href = `./index.html#community?post=${item.id}`;
-                            } else {
-                                // 웹페이지인 경우: 해당 섹션으로 이동
-                                window.location.href = item.link;
-                            }
+                            window.location.href = item.link;
                         });
                         
                         resultsContainer.appendChild(itemEl);
@@ -347,20 +421,20 @@
                 } else {
                     noResults.classList.remove('hidden');
                 }
-
+    
             } catch (error) {
                 console.error("검색 중 오류 발생:", error);
                 resultsContainer.innerHTML = '<p class="text-center text-red-500 py-10">검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
             }
         }
-
+    
         fetchAndSearch();
         
-        // --- Search Modal Logic ---
+        // Search Modal Logic
         const searchModal = document.getElementById('search-modal');
         const searchInput = document.getElementById('search-input');
         const closeSearchBtn = document.getElementById('close-search-btn');
-
+    
         function openSearch() {
             searchModal.classList.remove('hidden');
             searchInput.focus();
@@ -368,13 +442,13 @@
         function closeSearch() {
             searchModal.classList.add('hidden');
         }
-
+    
         document.querySelectorAll('.search-btn').forEach(btn => btn.addEventListener('click', openSearch));
         closeSearchBtn.addEventListener('click', closeSearch);
         searchModal.addEventListener('click', (e) => {
             if (e.target === searchModal) closeSearch();
         });
-
+    
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const searchTerm = e.target.value.trim();
@@ -384,15 +458,14 @@
             }
         });
         
-        // --- Mobile Menu Logic ---
+        // Mobile Menu Logic
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenuContainer = document.getElementById('mobile-menu');
         const desktopNav = document.getElementById('desktop-nav');
-
+    
         function buildMobileMenu() {
             const mobileMenuHTML = desktopNav.innerHTML;
             mobileMenuContainer.innerHTML = mobileMenuHTML;
-            // Additional mobile-specific items can be added here
         }
         buildMobileMenu();
         mobileMenuButton.addEventListener('click', (e) => {
@@ -400,7 +473,6 @@
             mobileMenuContainer.classList.toggle('hidden');
         });
         
-        // Accordion functionality for mobile dropdowns
         mobileMenuContainer.querySelectorAll('.dropdown').forEach(dropdown => {
             const link = dropdown.querySelector('a');
             const subMenu = dropdown.querySelector('.dropdown-menu');
@@ -410,7 +482,7 @@
                 link.querySelector('i')?.classList.toggle('rotate-180');
             });
         });
-
+    
     </script>
 </body>
 </html>
