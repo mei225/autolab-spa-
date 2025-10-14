@@ -2652,8 +2652,10 @@
         function navigateTo(pageId, tabId) {
             console.log('Navigating to:', pageId, 'Current page:', currentPage);
             
-            // ⭐ 같은 페이지면 스킵 (단, 탭 정보가 있거나 아직 렌더링 안 된 경우는 진행)
+            // ⭐ 강제 렌더링 - 검색에서 올 때도 정상 작동
             const isAlreadyRendered = appContent.querySelector('.page-content') !== null;
+            
+            // 같은 페이지이고 탭 변경도 없고 이미 렌더링 되어있으면 스킵
             if (pageId === currentPage && !tabId && isAlreadyRendered) {
                 console.log('Already on this page, skipping navigation');
                 return;
@@ -2661,7 +2663,7 @@
             
             currentPage = pageId;
             
-            // ⭐ URL 해시 업데이트 (무한 루프 방지)
+            // ⭐ URL 해시 업데이트
             const currentHash = window.location.hash.substring(1).split('?')[0];
             if (currentHash !== pageId) {
                 window.history.pushState(null, '', `#${pageId}`);
@@ -3247,7 +3249,10 @@
                 
                 // URL 해시 확인 후 페이지 이동
                 const hash = window.location.hash.substring(1).split('?')[0];
-                navigateTo(hash || 'home');
+                const initialPage = hash || 'home';
+                
+                console.log('Initial page load:', initialPage);
+                navigateTo(initialPage);
             }, 300); // 300ms 대기
     
             // --- Modal & Form Elements ---
@@ -3268,9 +3273,9 @@
                 const hash = window.location.hash.substring(1);
                 const pageId = hash.split('?')[0] || 'home';
                 
-                console.log('Hash changed to:', pageId); // 디버깅용
+                console.log('Hash changed to:', pageId);
                 
-                // ⭐ 현재 페이지와 다를 때만 이동
+                // ⭐ 페이지가 다르면 항상 이동 (조건문 단순화)
                 if (pageId && pageId !== currentPage) {
                     navigateTo(pageId);
                 }
@@ -3285,15 +3290,15 @@
                 }
             });
             
-            // ✅ 페이지 로드 시 해시 확인 개선
+            // ✅ 페이지 로드 시 해시 확인 (수정된 버전)
             window.addEventListener('load', () => {
                 const hash = window.location.hash.substring(1);
                 const pageId = hash.split('?')[0] || 'home';
                 
-                console.log('Page loaded with hash:', pageId); // 디버깅용
+                console.log('Page loaded with hash:', pageId);
                 
-                // ⭐ home이 아닌 경우에만 네비게이션
-                if (pageId && pageId !== 'home' && pageId !== currentPage) {
+                // ⭐ 해시가 있으면 무조건 해당 페이지로 이동
+                if (pageId) {
                     setTimeout(() => {
                         navigateTo(pageId);
                         
@@ -3305,7 +3310,7 @@
                                 setTimeout(() => openPostDetailById(postId), 800);
                             }
                         }
-                    }, 100);
+                    }, 300); // 딜레이 증가
                 }
             });
             // ✅ 다운로드 모달 관련 변수 선언
