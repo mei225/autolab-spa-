@@ -178,25 +178,20 @@
         const searchQueryDisplay = document.getElementById('search-query-display');
         const noResults = document.getElementById('no-results');
     
-        // ⭐ 페이지별 한글 제목 매핑 (확장된 버전)
+        // ⭐ 페이지별 한글 제목 매핑 (수정된 버전)
         const pageTitles = {
             'home': '홈',
             'about-intro': 'AUTOLAB 소개',
-            'about': 'AUTOLAB 소개',
             'history': '사업연혁',
             'about-location': '오시는길',
-            'location': '오시는길',
             'business-sensor': '센서 개발 R&D',
-            'sensor': '센서 개발 R&D',
             'business-ict': 'ICT 교육',
-            'ict': 'ICT 교육',
             'quote': '견적문의',
             'products': '제품소개',
             'community': '공지사항',
             'equipment-manufacturing': '제조 장비',
             'equipment-measuring': '측정 장비',
             'equipment-miniaturization': '소형화 장비',
-            'equipment': '보유 장비',
             'product-rd-1': '타액 기반 혈당 센서',
             'product-rd-2': '종이 기반 포름알데히드 센서',
             'product-rd-3': '밴드형 스마트 체온계',
@@ -205,19 +200,75 @@
             'product-ict-3': '스마트팜 키트'
         };
     
-        // ⭐ 페이지별 대표 키워드 매핑 (검색 정확도 향상)
+        // ⭐ 페이지별 대표 키워드 매핑 (수정된 버전)
         const pageKeywords = {
-            'about-intro': ['autolab', '회사', '소개', '비전', '핵심가치', '조직도', 'ci', '로고', '대표'],
-            'history': ['연혁', '사업', '역사', '성장'],
-            'about-location': ['오시는길', '위치', '주소', '연락처', '찾아오기'],
-            'business-sensor': ['센서', 'r&d', '연구', '개발', '기술이전', '프로세스'],
-            'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습'],
-            'quote': ['견적', '문의', '상담', '의뢰'],
+            'about-intro': ['autolab', '회사', '소개', '비전', '핵심가치', '조직도', 'ci', '로고', '대표', '신정활'],
+            'history': ['연혁', '사업', '역사', '성장', '발자취'],
+            'about-location': ['오시는길', '위치', '주소', '연락처', '찾아오기', '경남대학교'],
+            'business-sensor': ['센서', 'r&d', '연구', '개발', '기술이전', '프로세스', '장비', '제조', '측정', '소형화', '보유'],
+            'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습', '미래', '인재'],
+            'quote': ['견적', '문의', '상담', '의뢰', '3d프린팅'],
             'products': ['제품', '결과물', '키트', '콘텐츠'],
             'community': ['공지', '소식', '뉴스', '알림'],
-            'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb'],
-            'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트'],
-            'equipment-miniaturization': ['소형화', '마이크로', '나노']
+            'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb', '프린터'],
+            'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트', '전기화학'],
+            'equipment-miniaturization': ['소형화', '마이크로', '나노', '스퍼터', '스크린']
+        };
+    
+        // ⭐ 새로운 함수: 특수 페이지 처리
+        const getCorrectPageLink = (pageKey) => {
+            // 장비 관련 페이지는 business-sensor로 연결
+            if (pageKey.startsWith('equipment-')) {
+                return './index.html#business-sensor';
+            }
+            
+            // 제품 상세 페이지
+            if (pageKey.startsWith('product-rd-')) {
+                return `./index.html#${pageKey}`;
+            }
+            if (pageKey.startsWith('product-ict-')) {
+                return `./index.html#${pageKey}`;
+            }
+            
+            // 일반 페이지
+            return `./index.html#${pageKey}`;
+        };
+    
+        // ⭐ 페이지 제목 가져오기 함수 개선
+        const getPageTitle = (pageKey, siteContent) => {
+            // 1. 미리 정의된 한글 제목 사용
+            if (pageTitles[pageKey]) {
+                return pageTitles[pageKey];
+            }
+            
+            // 2. 장비 페이지 특수 처리
+            if (pageKey.startsWith('equipment-')) {
+                const equipmentTitles = {
+                    'equipment-manufacturing': '제조 장비',
+                    'equipment-measuring': '측정 장비',
+                    'equipment-miniaturization': '소형화 장비'
+                };
+                return equipmentTitles[pageKey] || '보유 장비';
+            }
+            
+            // 3. siteContent에서 제목 찾기
+            const possibleTitleKeys = [
+                `${pageKey}.hero.title`,
+                `${pageKey}.title`,
+                `${pageKey}.section.title`
+            ];
+            
+            for (const titleKey of possibleTitleKeys) {
+                if (siteContent[titleKey]) {
+                    const cleanTitle = siteContent[titleKey].replace(/<[^>]*>/g, '').trim();
+                    if (cleanTitle && cleanTitle.length < 100) {
+                        return cleanTitle;
+                    }
+                }
+            }
+            
+            // 4. 기본값
+            return pageKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         };
     
         async function fetchAndSearch() {
@@ -299,29 +350,12 @@
                     }
                 }
                 
-                // ⭐ 점수가 높은 페이지만 결과에 추가
+                // ⭐ 점수가 높은 페이지만 결과에 추가 (수정된 버전)
                 for (const pageKey in pageScores) {
                     if (processedPages.has(pageKey)) continue;
                     
-                    // 한글 제목 우선 사용
-                    let title = pageTitles[pageKey] || pageKey;
-                    
-                    // 더 나은 제목 찾기
-                    const possibleTitleKeys = [
-                        `${pageKey}.hero.title`,
-                        `${pageKey}.title`,
-                        `${pageKey}.section.title`
-                    ];
-                    
-                    for (const titleKey of possibleTitleKeys) {
-                        if (siteContent[titleKey]) {
-                            const cleanTitle = siteContent[titleKey].replace(/<[^>]*>/g, '').trim();
-                            if (cleanTitle && cleanTitle.length < 100) {
-                                title = cleanTitle;
-                                break;
-                            }
-                        }
-                    }
+                    // 올바른 제목 가져오기
+                    const title = getPageTitle(pageKey, siteContent);
                     
                     // 설명 찾기
                     const descriptionKeys = [
@@ -339,11 +373,17 @@
                         }
                     }
                     
+                    // 기본 설명이 없으면 생성
+                    if (!description) {
+                        description = `${title}에 대한 정보를 확인하세요.`;
+                    }
+                    
                     // 이미지 찾기
                     const imageKeys = [
                         `${pageKey}.hero.image`,
                         `${pageKey}.image`,
-                        `${pageKey}.philosophy.image`
+                        `${pageKey}.philosophy.image`,
+                        `${pageKey}.cardImage`
                     ];
                     
                     let image = 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=AUTOLAB';
@@ -354,13 +394,16 @@
                         }
                     }
                     
+                    // 올바른 링크 생성
+                    const link = getCorrectPageLink(pageKey);
+                    
                     foundItems.push({
                         id: pageKey,
                         title: title,
-                        content: description || `${title} 페이지입니다.`,
+                        content: description,
                         image: image,
                         type: '웹페이지',
-                        link: `./index.html#${pageKey}`,
+                        link: link,
                         score: pageScores[pageKey]
                     });
                     
@@ -392,28 +435,33 @@
                 resultsContainer.innerHTML = '';
                 if (foundItems.length > 0) {
                     foundItems.forEach(item => {
-                        const itemEl = document.createElement('a'); // ⭐ div → a 태그로 변경
-                        itemEl.href = item.link; // ⭐ href 속성 추가
-                        itemEl.className = 'block p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all cursor-pointer';
+                        const itemEl = document.createElement('a');
+                        itemEl.href = item.link;
+                        itemEl.className = 'block p-4 sm:p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all cursor-pointer';
                         
                         const highlightedTitle = highlightText(item.title, searchTerm);
                         const highlightedContent = highlightText(item.content, searchTerm);
                     
                         itemEl.innerHTML = `
-                            <div class="flex flex-col sm:flex-row gap-6 items-center">
-                                ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full sm:w-40 h-32 object-cover rounded-md flex-shrink-0 bg-gray-100" onerror="this.style.display='none'">` : ''}
-                                <div class="flex-grow w-full">
-                                    <div class="flex justify-between items-start mb-1">
-                                        <span class="text-sm font-semibold text-blue-800">${item.type}</span>
-                                        ${item.date ? `<span class="text-sm text-gray-500">${item.date}</span>` : ''}
+                            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                                ${item.image ? `
+                                    <div class="w-full sm:w-40 flex-shrink-0">
+                                        <img src="${item.image}" 
+                                             alt="${item.title}" 
+                                             class="w-full h-40 sm:h-32 object-cover rounded-md bg-gray-100" 
+                                             onerror="this.style.display='none'">
                                     </div>
-                                    <h3 class="text-xl font-bold text-gray-800 mt-1">${highlightedTitle}</h3>
-                                    <p class="text-gray-600 mt-2 line-clamp-2">${highlightedContent}</p>
+                                ` : ''}
+                                <div class="flex-grow w-full min-w-0">
+                                    <div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+                                        <span class="text-xs sm:text-sm font-semibold text-blue-800 px-2 py-1 bg-blue-50 rounded">${item.type}</span>
+                                        ${item.date ? `<span class="text-xs sm:text-sm text-gray-500">${item.date}</span>` : ''}
+                                    </div>
+                                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 mt-1 break-words">${highlightedTitle}</h3>
+                                    <p class="text-sm sm:text-base text-gray-600 mt-2 line-clamp-2 break-words">${highlightedContent}</p>
                                 </div>
                             </div>
                         `;
-                        
-                        // ⭐ 이벤트 리스너 제거 (a 태그가 자동으로 처리)
                         
                         resultsContainer.appendChild(itemEl);
                     });
