@@ -16,7 +16,6 @@
     <link rel="icon" href="./favicon.png" type="image/png">
 
     <style>
-        /* Custom Styles */
         body {
             font-family: 'Noto Sans KR', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -42,7 +41,7 @@
             -webkit-line-clamp: 2;
         }
         .highlight {
-            background-color: #bfdbfe; /* Tailwind's blue-200 */
+            background-color: #bfdbfe;
             font-weight: 600;
             padding: 0 2px;
             border-radius: 2px;
@@ -178,97 +177,130 @@
         const searchQueryDisplay = document.getElementById('search-query-display');
         const noResults = document.getElementById('no-results');
     
-        // ⭐ 페이지별 한글 제목 매핑 (수정된 버전)
-        const pageTitles = {
-            'home': '홈',
-            'about-intro': 'AUTOLAB 소개',
-            'history': '사업연혁',
-            'about-location': '오시는길',
-            'business-sensor': '센서 개발 R&D',
-            'business-ict': 'ICT 교육',
-            'quote': '견적문의',
-            'products': '제품소개',
-            'community': '공지사항',
-            'equipment-manufacturing': '제조 장비',
-            'equipment-measuring': '측정 장비',
-            'equipment-miniaturization': '소형화 장비',
-            'product-rd-1': '타액 기반 혈당 센서',
-            'product-rd-2': '종이 기반 포름알데히드 센서',
-            'product-rd-3': '밴드형 스마트 체온계',
-            'product-ict-1': '아두이노 키트',
-            'product-ict-2': '미로탈출 RC카',
-            'product-ict-3': '스마트팜 키트'
+        // ⭐ 페이지별 한글 제목 및 설명 정의
+        const pageInfo = {
+            'home': {
+                title: '홈',
+                description: '세상을 바꾸는 센서, 미래를 키우는 교육',
+                image: './background.jpg'
+            },
+            'about-intro': {
+                title: 'AUTOLAB 소개',
+                description: '기술 혁신을 통해 더 나은 미래를 만들어갑니다',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=Vision+of+Future'
+            },
+            'history': {
+                title: '사업연혁',
+                description: 'AUTOLAB이 걸어온 혁신의 발자취입니다',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=AUTOLAB+History'
+            },
+            'about-location': {
+                title: '오시는길',
+                description: 'AUTOLAB에 오시는 길을 안내해 드립니다',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=AUTOLAB+Location'
+            },
+            'business-sensor': {
+                title: '센서 개발 R&D',
+                description: '세상의 한계를 넘어서는 감각, AUTOLAB의 센서 기술',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=Sensor+R%26D'
+            },
+            'business-ict': {
+                title: 'ICT 교육',
+                description: '미래를 만드는 사람을 키웁니다',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=ICT+Education'
+            },
+            'quote': {
+                title: '견적문의',
+                description: 'AUTOLAB의 전문가가 빠르고 정확하게 답변해 드립니다',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=Contact+Us'
+            },
+            'products': {
+                title: '제품소개',
+                description: 'AUTOLAB의 기술력으로 탄생한 혁신적인 제품들을 만나보세요',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=Our+Products'
+            },
+            'community': {
+                title: '공지사항',
+                description: 'AUTOLAB의 새로운 소식과 활동을 전해드립니다',
+                image: 'https://placehold.co/1920x600/1e293b/ffffff?text=Community'
+            },
+            'equipment-manufacturing': {
+                title: '제조 장비',
+                description: '상상을 현실로 만드는 정밀한 기술',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=제조+장비'
+            },
+            'equipment-measuring': {
+                title: '측정 장비',
+                description: '보이지 않는 데이터를 시각화하는 기술',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=측정+장비'
+            },
+            'equipment-miniaturization': {
+                title: '소형화 장비',
+                description: '더 작고, 더 강력한 기술을 위한 기반',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=소형화+장비'
+            },
+            'product-rd-1': {
+                title: '타액 기반 혈당 센서',
+                description: '바늘 없이, 침 한 방울로 혈당을 관리하는 새로운 시대',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=Saliva+Sensor'
+            },
+            'product-rd-2': {
+                title: '종이 기반 포름알데히드 센서',
+                description: '보이지 않는 실내 공기 오염, 색깔 변화로 간편하게 확인',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=Paper+Sensor'
+            },
+            'product-rd-3': {
+                title: '밴드형 스마트 체온계',
+                description: '24시간 체온 변화를 놓치지 않고 기록하는 스마트 건강 관리 파트너',
+                image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=Smart+Band'
+            },
+            'product-ict-1': {
+                title: '아두이노 키트',
+                description: '전자공학의 기초부터 IoT 프로젝트까지, 상상을 현실로 만드는 첫걸음',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Arduino'
+            },
+            'product-ict-2': {
+                title: '미로탈출 RC카',
+                description: '알고리즘으로 길을 찾는 인공지능 자동차 만들기',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=RC+Car'
+            },
+            'product-ict-3': {
+                title: '스마트팜 키트',
+                description: '데이터로 식물을 키우는 나만의 작은 농장',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Smart+Farm'
+            }
         };
     
-        // ⭐ 페이지별 대표 키워드 매핑 (수정된 버전)
+        // ⭐ 페이지별 대표 키워드
         const pageKeywords = {
-            'about-intro': ['autolab', '회사', '소개', '비전', '핵심가치', '조직도', 'ci', '로고', '대표', '신정활'],
+            'about-intro': ['autolab', '회사', '소개', '비전', '핵심가치', '조직도', 'ci', '로고', '대표', '신정활', '돌고래'],
             'history': ['연혁', '사업', '역사', '성장', '발자취'],
-            'about-location': ['오시는길', '위치', '주소', '연락처', '찾아오기', '경남대학교'],
+            'about-location': ['오시는길', '위치', '주소', '연락처', '찾아오기', '경남대학교', '창원', '마산'],
             'business-sensor': ['센서', 'r&d', '연구', '개발', '기술이전', '프로세스', '장비', '제조', '측정', '소형화', '보유'],
-            'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습', '미래', '인재'],
-            'quote': ['견적', '문의', '상담', '의뢰', '3d프린팅'],
-            'products': ['제품', '결과물', '키트', '콘텐츠'],
-            'community': ['공지', '소식', '뉴스', '알림'],
-            'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb', '프린터'],
-            'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트', '전기화학'],
-            'equipment-miniaturization': ['소형화', '마이크로', '나노', '스퍼터', '스크린']
+            'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습', '미래', '인재', '배움', '가르침'],
+            'quote': ['견적', '문의', '상담', '의뢰', '3d프린팅', '요청'],
+            'products': ['제품', '결과물', '키트', '콘텐츠', '상품'],
+            'community': ['공지', '소식', '뉴스', '알림', '공지사항'],
+            'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb', '프린터', 'fdm', 'sla'],
+            'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트', '전기화학', '분광'],
+            'equipment-miniaturization': ['소형화', '마이크로', '나노', '스퍼터', '스크린', 'mems'],
+            'product-rd-1': ['타액', '혈당', '센서', '침', '당뇨', '비침습'],
+            'product-rd-2': ['종이', '포름알데히드', '센서', '공기질', '새집증후군'],
+            'product-rd-3': ['밴드', '스마트', '체온계', '웨어러블', '발열'],
+            'product-ict-1': ['아두이노', '키트', '전자공학', 'iot', '프로그래밍'],
+            'product-ict-2': ['미로탈출', 'rc카', '자율주행', '알고리즘', '초음파'],
+            'product-ict-3': ['스마트팜', '키트', '식물', '농업', '자동화']
         };
     
-        // ⭐ 새로운 함수: 특수 페이지 처리
+        // ⭐ 올바른 페이지 링크 반환
         const getCorrectPageLink = (pageKey) => {
-            // 장비 관련 페이지는 business-sensor로 연결
             if (pageKey.startsWith('equipment-')) {
                 return './index.html#business-sensor';
             }
-            
-            // 제품 상세 페이지
-            if (pageKey.startsWith('product-rd-')) {
+            if (pageKey.startsWith('product-')) {
                 return `./index.html#${pageKey}`;
             }
-            if (pageKey.startsWith('product-ict-')) {
-                return `./index.html#${pageKey}`;
-            }
-            
-            // 일반 페이지
             return `./index.html#${pageKey}`;
-        };
-    
-        // ⭐ 페이지 제목 가져오기 함수 개선
-        const getPageTitle = (pageKey, siteContent) => {
-            // 1. 미리 정의된 한글 제목 사용
-            if (pageTitles[pageKey]) {
-                return pageTitles[pageKey];
-            }
-            
-            // 2. 장비 페이지 특수 처리
-            if (pageKey.startsWith('equipment-')) {
-                const equipmentTitles = {
-                    'equipment-manufacturing': '제조 장비',
-                    'equipment-measuring': '측정 장비',
-                    'equipment-miniaturization': '소형화 장비'
-                };
-                return equipmentTitles[pageKey] || '보유 장비';
-            }
-            
-            // 3. siteContent에서 제목 찾기
-            const possibleTitleKeys = [
-                `${pageKey}.hero.title`,
-                `${pageKey}.title`,
-                `${pageKey}.section.title`
-            ];
-            
-            for (const titleKey of possibleTitleKeys) {
-                if (siteContent[titleKey]) {
-                    const cleanTitle = siteContent[titleKey].replace(/<[^>]*>/g, '').trim();
-                    if (cleanTitle && cleanTitle.length < 100) {
-                        return cleanTitle;
-                    }
-                }
-            }
-            
-            // 4. 기본값
-            return pageKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         };
     
         async function fetchAndSearch() {
@@ -288,29 +320,17 @@
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             let foundItems = [];
     
-            // 검색어 하이라이트 함수
             const highlightText = (text, term) => {
                 if (!text) return '';
-                const tags = [];
-                let tempText = text.replace(/<[^>]*>/g, (tag) => {
-                    tags.push(tag);
-                    return `__TAG_${tags.length - 1}__`;
-                });
-    
                 const regex = new RegExp(`(${term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
-                tempText = tempText.replace(regex, '<span class="highlight">$1</span>');
-    
-                return tempText.replace(/__TAG_(\d+)__/g, (match, index) => {
-                    return tags[parseInt(index, 10)];
-                });
+                return text.replace(regex, '<span class="highlight">$1</span>');
             };
     
-            // ⭐ 페이지 관련성 점수 계산 함수
-            const calculateRelevance = (pageKey, content, searchTerm) => {
+            const calculateRelevance = (pageKey, searchTerm) => {
                 let score = 0;
                 const keywords = pageKeywords[pageKey] || [];
+                const info = pageInfo[pageKey];
                 
-                // 키워드 매칭 점수
                 keywords.forEach(keyword => {
                     if (keyword.toLowerCase().includes(searchTerm.toLowerCase()) || 
                         searchTerm.toLowerCase().includes(keyword.toLowerCase())) {
@@ -318,90 +338,67 @@
                     }
                 });
                 
-                // 콘텐츠 내 검색어 빈도
-                const matches = (content.toLowerCase().match(new RegExp(searchTerm.toLowerCase(), 'g')) || []).length;
-                score += matches;
+                if (info) {
+                    if (info.title.toLowerCase().includes(searchTerm.toLowerCase())) score += 20;
+                    if (info.description.toLowerCase().includes(searchTerm.toLowerCase())) score += 15;
+                }
                 
                 return score;
             };
     
             try {
-                const siteContentPromise = getDocs(collection(db, 'site_content'));
-                const communityPromise = getDocs(query(collection(db, 'community'), orderBy("createdAt", "desc")));
-                const [siteContentSnapshot, communitySnapshot] = await Promise.all([siteContentPromise, communityPromise]);
+                const [siteContentSnapshot, communitySnapshot] = await Promise.all([
+                    getDocs(collection(db, 'site_content')),
+                    getDocs(query(collection(db, 'community'), orderBy("createdAt", "desc")))
+                ]);
     
                 const siteContent = {};
-                siteContentSnapshot.forEach(doc => { siteContent[doc.id] = doc.data().value; });
+                siteContentSnapshot.forEach(doc => { 
+                    siteContent[doc.id] = doc.data().value; 
+                });
                 
                 let processedPages = new Set();
                 let pageScores = {};
                 
-                // ⭐ 모든 콘텐츠를 수집하여 페이지별 관련성 점수 계산
+                // Firebase 콘텐츠 검색
                 for (const key in siteContent) {
                     const value = siteContent[key];
                     const pageKey = key.split('.')[0];
                     
                     if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
                         if (!pageScores[pageKey]) {
-                            pageScores[pageKey] = calculateRelevance(pageKey, value, searchTerm);
+                            pageScores[pageKey] = calculateRelevance(pageKey, searchTerm);
                         } else {
                             pageScores[pageKey] += 1;
                         }
                     }
                 }
                 
-                // ⭐ 점수가 높은 페이지만 결과에 추가 (수정된 버전)
+                // 키워드 기반 검색 추가
+                for (const pageKey in pageKeywords) {
+                    const keywords = pageKeywords[pageKey];
+                    const matched = keywords.some(keyword => 
+                        keyword.toLowerCase().includes(lowerCaseSearchTerm) || 
+                        lowerCaseSearchTerm.includes(keyword.toLowerCase())
+                    );
+                    
+                    if (matched && !pageScores[pageKey]) {
+                        pageScores[pageKey] = calculateRelevance(pageKey, searchTerm);
+                    }
+                }
+                
+                // 결과 생성
                 for (const pageKey in pageScores) {
-                    if (processedPages.has(pageKey)) continue;
+                    if (processedPages.has(pageKey) || !pageInfo[pageKey]) continue;
                     
-                    // 올바른 제목 가져오기
-                    const title = getPageTitle(pageKey, siteContent);
-                    
-                    // 설명 찾기
-                    const descriptionKeys = [
-                        `${pageKey}.hero.subtitle`,
-                        `${pageKey}.subtitle`,
-                        `${pageKey}.description`,
-                        `${pageKey}.intro`
-                    ];
-                    
-                    let description = '';
-                    for (const descKey of descriptionKeys) {
-                        if (siteContent[descKey]) {
-                            description = siteContent[descKey].replace(/<[^>]*>/g, '').trim();
-                            if (description && description.length < 300) break;
-                        }
-                    }
-                    
-                    // 기본 설명이 없으면 생성
-                    if (!description) {
-                        description = `${title}에 대한 정보를 확인하세요.`;
-                    }
-                    
-                    // 이미지 찾기
-                    const imageKeys = [
-                        `${pageKey}.hero.image`,
-                        `${pageKey}.image`,
-                        `${pageKey}.philosophy.image`,
-                        `${pageKey}.cardImage`
-                    ];
-                    
-                    let image = 'https://placehold.co/600x400/e0f2fe/1e3a8a?text=AUTOLAB';
-                    for (const imgKey of imageKeys) {
-                        if (siteContent[imgKey] && siteContent[imgKey].startsWith('http')) {
-                            image = siteContent[imgKey];
-                            break;
-                        }
-                    }
-                    
-                    // 올바른 링크 생성
+                    const info = pageInfo[pageKey];
                     const link = getCorrectPageLink(pageKey);
                     
                     foundItems.push({
                         id: pageKey,
-                        title: title,
-                        content: description,
-                        image: image,
+                        title: info.title,
+                        content: info.description,
+                        image: info.image,
                         type: '웹페이지',
                         link: link,
                         score: pageScores[pageKey]
@@ -423,12 +420,11 @@
                             date: post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '',
                             type: '공지사항',
                             link: `./index.html#community?post=${post.id}`,
-                            score: 100 // 공지사항은 높은 우선순위
+                            score: 100
                         });
                     }
                 });
                 
-                // ⭐ 점수 기준으로 정렬
                 foundItems.sort((a, b) => b.score - a.score);
                 
                 // 결과 표시
@@ -477,7 +473,7 @@
     
         fetchAndSearch();
         
-        // Search Modal Logic
+        // Search Modal
         const searchModal = document.getElementById('search-modal');
         const searchInput = document.getElementById('search-input');
         const closeSearchBtn = document.getElementById('close-search-btn');
@@ -505,16 +501,16 @@
             }
         });
         
-        // Mobile Menu Logic
+        // Mobile Menu
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenuContainer = document.getElementById('mobile-menu');
         const desktopNav = document.getElementById('desktop-nav');
     
         function buildMobileMenu() {
-            const mobileMenuHTML = desktopNav.innerHTML;
-            mobileMenuContainer.innerHTML = mobileMenuHTML;
+            mobileMenuContainer.innerHTML = desktopNav.innerHTML;
         }
         buildMobileMenu();
+        
         mobileMenuButton.addEventListener('click', (e) => {
             e.stopPropagation();
             mobileMenuContainer.classList.toggle('hidden');
@@ -526,7 +522,6 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 subMenu.classList.toggle('hidden');
-                link.querySelector('i')?.classList.toggle('rotate-180');
             });
         });
     
