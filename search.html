@@ -75,7 +75,13 @@
                             </div>
                         </div>
                         <a href="./index.html#quote" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">견적문의</a>
-                        <a href="./index.html#products" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">제품소개</a>
+                        <div class="dropdown relative">
+                            <a href="./index.html#products" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800 rounded-md">제품소개</a>
+                            <div class="dropdown-menu absolute hidden bg-white shadow-lg rounded-md mt-2 py-2 w-56 border border-gray-100">
+                                <a href="./index.html#products?tab=rd" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">R&D 연구개발 결과물</a>
+                                <a href="./index.html#products?tab=ict" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800">ICT 교육 콘텐츠</a>
+                            </div>
+                        </div>
                         <a href="./index.html#community" class="px-4 py-2 text-lg font-medium text-gray-600 hover:text-blue-800">공지사항</a>
                     </nav>
                     <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hidden lg:block ml-4 p-3 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-lg"></i></a>
@@ -112,37 +118,24 @@
     
     <footer class="bg-gray-800 text-gray-400 text-sm">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="lg:col-span-2">
-                    <a href="./index.html"><img src="./logo.png" alt="AUTOLAB Logo" class="h-10 mb-4 opacity-80" onerror="this.onerror=null; this.src='https://placehold.co/200x40/9ca3af/ffffff?text=AUTOLAB';"></a>
-                    <p class="text-xs leading-relaxed">
-                        <span class="mr-2">주소 : 경상남도 창원시 마산합포구 경남대학로 7, 1공학관 4층</span><br>
-                        <span class="mr-2">대표 : 신정활</span> |
-                        <span class="mx-2">사업자등록번호 : 310-17-61940</span><br>
-                        <span class="mr-2">연락처 : 010-0000-0000</span> |
-                        <span class="ml-2">이메일 : contact@autolab.co.kr</span>
-                    </p>
-                </div>
-                <div>
-                    <h3 class="font-bold text-white mb-4">바로가기</h3>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="./index.html#about-intro" class="hover:text-white">회사소개</a></li>
-                        <li><a href="./index.html#business-sensor" class="hover:text-white">사업분야</a></li>
-                        <li><a href="./index.html#products" class="hover:text-white">제품소개</a></li>
-                        <li><a href="./index.html#community" class="hover:text-white">공지사항</a></li>
-                        <li><a href="./index.html#quote" class="hover:text-white">견적문의</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold text-white mb-4">소셜 미디어</h3>
-                    <div class="flex space-x-4">
-                        <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="hover:text-white"><i class="fab fa-instagram fa-lg"></i></a>
-                        <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="hover:text-white"><i class="fab fa-facebook fa-lg"></i></a>
-                    </div>
-                </div>
+            <div class="mb-6">
+                <h3 class="text-lg font-bold text-white mb-2">AUTOLAB</h3>
+                <p class="font-semibold text-gray-300">AUTOLAB 사업자 정보</p>
+            </div>
+            <div class="space-y-1 text-xs leading-relaxed">
+                <p>
+                    <span class="mr-2">경상남도 창원시 마산합포구 경남대학로 7, 1공학관 4층</span> |
+                    <span class="mx-2">010-0000-0000</span> |
+                    <span class="mx-2">대표 : 신정활</span> |
+                    <span class="ml-2">사업자등록번호 : 310-17-61940</span>
+                </p>
+                <p>
+                    <span class="mr-2">통신판매업신고 : 2025-0000-0000</span> |
+                    <span class="ml-2">이메일 : contact@autolab.co.kr</span>
+                </p>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-500 text-xs">
-                <p>© 2025 AUTOLAB. All Rights Reserved.</p>
+                <p>&copy; 2025 AUTOLAB. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -255,19 +248,19 @@
                 image: 'https://placehold.co/800x600/e0f2fe/1e3a8a?text=Smart+Band'
             },
             'product-ict-1': {
-                title: '아두이노 키트',
-                description: '전자공학의 기초부터 IoT 프로젝트까지, 상상을 현실로 만드는 첫걸음',
-                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Arduino'
+                title: '기초 센서·제어 과정',
+                description: '센서의 기본 원리와 제어 시스템의 기초를 배우는 입문 과정',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Basic+Sensor'
             },
             'product-ict-2': {
-                title: '미로탈출 RC카',
-                description: '알고리즘으로 길을 찾는 인공지능 자동차 만들기',
-                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=RC+Car'
+                title: '응용 메이킹 과정',
+                description: '실제 프로젝트를 통해 창의적인 문제 해결 능력을 키우는 실습 과정',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Applied+Making'
             },
             'product-ict-3': {
-                title: '스마트팜 키트',
-                description: '데이터로 식물을 키우는 나만의 작은 농장',
-                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Smart+Farm'
+                title: '종합 제작·프로토타이핑 과정',
+                description: '아이디어를 실제 제품으로 구현하는 고급 프로토타이핑 과정',
+                image: 'https://placehold.co/800x600/dbeafe/1e3a8a?text=Prototyping'
             }
         };
     
@@ -279,7 +272,7 @@
             'business-sensor': ['센서', 'r&d', '연구', '개발', '기술이전', '프로세스', '장비', '제조', '측정', '소형화', '보유'],
             'business-ict': ['ict', '교육', '강의', '커리큘럼', '실습', '미래', '인재', '배움', '가르침'],
             'quote': ['견적', '문의', '상담', '의뢰', '3d프린팅', '요청'],
-            'products': ['제품', '결과물', '키트', '콘텐츠', '상품'],
+            'products': ['제품', '결과물', '키트', '콘텐츠', '상품', '과정'],
             'community': ['공지', '소식', '뉴스', '알림', '공지사항'],
             'equipment-manufacturing': ['제조', '장비', '3d프린팅', 'cnc', 'pcb', '프린터', 'fdm', 'sla'],
             'equipment-measuring': ['측정', '분석', '오실로스코프', '테스트', '전기화학', '분광'],
@@ -287,19 +280,29 @@
             'product-rd-1': ['타액', '혈당', '센서', '침', '당뇨', '비침습'],
             'product-rd-2': ['종이', '포름알데히드', '센서', '공기질', '새집증후군'],
             'product-rd-3': ['밴드', '스마트', '체온계', '웨어러블', '발열'],
-            'product-ict-1': ['아두이노', '키트', '전자공학', 'iot', '프로그래밍'],
-            'product-ict-2': ['미로탈출', 'rc카', '자율주행', '알고리즘', '초음파'],
-            'product-ict-3': ['스마트팜', '키트', '식물', '농업', '자동화']
+            'product-ict-1': ['기초', '센서', '제어', '입문', '과정', '교육', '기본'],
+            'product-ict-2': ['응용', '메이킹', '과정', '실습', '프로젝트', '창의'],
+            'product-ict-3': ['종합', '제작', '프로토타이핑', '과정', '고급', '구현', '아이디어']
         };
     
         // ⭐ 올바른 페이지 링크 반환
         const getCorrectPageLink = (pageKey) => {
+            // 장비 상세 페이지는 해당 페이지로 직접 연결
             if (pageKey.startsWith('equipment-')) {
-                return './index.html#business-sensor';
+                return `./index.html#${pageKey}`;
             }
+            
+            // 제품 상세 페이지
             if (pageKey.startsWith('product-')) {
                 return `./index.html#${pageKey}`;
             }
+            
+            // 제품소개 메인 페이지 - 기본은 R&D 탭
+            if (pageKey === 'products') {
+                return './index.html#products?tab=rd';
+            }
+            
+            // 일반 페이지
             return `./index.html#${pageKey}`;
         };
     
@@ -507,22 +510,56 @@
         const desktopNav = document.getElementById('desktop-nav');
     
         function buildMobileMenu() {
-            mobileMenuContainer.innerHTML = desktopNav.innerHTML;
+            mobileMenuContainer.innerHTML = '';
+            desktopNav.querySelectorAll(':scope > a, :scope > .dropdown').forEach(item => {
+                const wrapper = document.createElement('div');
+                if (item.classList.contains('dropdown')) {
+                    const parentLink = item.querySelector('a');
+                    const subMenu = item.querySelector('.dropdown-menu');
+                    const toggleButton = document.createElement('button');
+                    toggleButton.className = 'w-full flex items-center justify-between px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+                    toggleButton.innerHTML = `<span>${parentLink.textContent}</span><i class="fas fa-chevron-down transition-transform duration-200"></i>`;
+                    const mobileSubMenu = document.createElement('div');
+                    mobileSubMenu.className = 'hidden pl-4 bg-gray-50';
+                    subMenu.querySelectorAll('a').forEach(link => {
+                        const clonedLink = link.cloneNode(true);
+                        clonedLink.className = 'block w-full px-4 py-3 text-gray-700 hover:bg-blue-100';
+                        mobileSubMenu.appendChild(clonedLink);
+                    });
+                    toggleButton.onclick = () => {
+                        mobileSubMenu.classList.toggle('hidden');
+                        toggleButton.querySelector('i').classList.toggle('rotate-180');
+                    };
+                    wrapper.appendChild(toggleButton);
+                    wrapper.appendChild(mobileSubMenu);
+                } else {
+                    const clonedLink = item.cloneNode(true);
+                    clonedLink.className = 'block w-full px-4 py-3 text-lg font-medium text-gray-600 hover:bg-blue-50';
+                    wrapper.appendChild(clonedLink);
+                }
+                mobileMenuContainer.appendChild(wrapper);
+            });
+            
+            const mobileSearchBtn = document.createElement('button');
+            mobileSearchBtn.className = 'search-btn block w-full px-4 py-3 text-lg font-medium text-left text-gray-600 hover:bg-blue-50';
+            mobileSearchBtn.innerHTML = `<i class="fas fa-search mr-2"></i> 검색`;
+            mobileSearchBtn.addEventListener('click', openSearch);
+            mobileMenuContainer.appendChild(mobileSearchBtn);
+            
+            const mobileSocials = document.createElement('div');
+            mobileSocials.className = 'flex items-center justify-center space-x-6 px-4 py-4 border-t';
+            mobileSocials.innerHTML = `
+                <a href="https://www.instagram.com/hey.autolab?igsh=c2thN3R6OWphMHpy" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-instagram fa-2x"></i></a>
+                <a href="https://www.facebook.com/share/1Y89qWZtNo/" target="_blank" rel="noopener noreferrer" class="p-2 text-gray-500 hover:text-blue-800"><i class="fab fa-facebook fa-2x"></i></a>
+            `;
+            mobileMenuContainer.appendChild(mobileSocials);
         }
+        
         buildMobileMenu();
         
         mobileMenuButton.addEventListener('click', (e) => {
             e.stopPropagation();
             mobileMenuContainer.classList.toggle('hidden');
-        });
-        
-        mobileMenuContainer.querySelectorAll('.dropdown').forEach(dropdown => {
-            const link = dropdown.querySelector('a');
-            const subMenu = dropdown.querySelector('.dropdown-menu');
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                subMenu.classList.toggle('hidden');
-            });
         });
     
     </script>
