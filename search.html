@@ -438,6 +438,12 @@
                         itemEl.href = item.link;
                         itemEl.className = 'block p-4 sm:p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:shadow-md transition-all cursor-pointer';
                         
+                        // ⭐⭐ 클릭 이벤트 추가
+                        itemEl.addEventListener('click', (e) => {
+                            // 기본 링크 동작 허용 (href로 이동)
+                            console.log('Navigating to:', item.link);
+                        });
+                        
                         const highlightedTitle = highlightText(item.title, searchTerm);
                         const highlightedContent = highlightText(item.content, searchTerm);
                     
