@@ -469,6 +469,12 @@
 </head>
 <body class="bg-white text-gray-800">
 
+    <form name="brochure-download" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="organization" />
+        <input type="text" name="name" />
+        <input type="email" name="email" />
+        <input type="tel" name="phone" />
+    </form>
     <form name="3d-printing-inquiry" netlify netlify-honeypot="bot-field" hidden>
         <input type="text" name="company" />
         <input type="text" name="name" />
@@ -2277,9 +2283,17 @@
         <div id="brochure-download-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">회사 소개서 다운로드</h2>
-                <p class="text-gray-600 mb-6">원활한 자료 제공을 위해 소속 기관 또는 회사명을 입력해주세요.</p>
-                <form id="brochure-download-form">
-                    <input id="organization-name-input" type="text" placeholder="기관/회사명" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                <p class="text-gray-600 mb-6">자료 제공을 위해 아래 정보를 입력해주세요.</p>
+                
+                <form id="brochure-download-form" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-4">
+                    <input type="hidden" name="form-name" value="brochure-download">
+                    <div class="hidden"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></div>
+                    
+                    <input name="organization" id="organization-name-input" type="text" placeholder="기관/회사명" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                    <input name="name" type="text" placeholder="담당자명" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                    <input name="email" type="email" placeholder="이메일 (자료 수신용)" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                    <input name="phone" type="tel" placeholder="연락처" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-800" required>
+                    
                     <div class="mt-8 flex justify-end space-x-3">
                         <button type="button" id="brochure-cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors">취소</button>
                         <button type="submit" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-6 rounded-lg transition-colors">확인 및 다운로드</button>
@@ -2810,38 +2824,61 @@
         }
         
         // ✅ 관리자용 기록 조회 함수
-        function initDownloadLogViewer() {
-            const logBody = document.getElementById('download-log-body'); // 기록이 들어갈 테이블 본문
-            const logStatus = document.getElementById('download-log-status'); // "불러오는 중..." 메시지
-            if (!logBody || !logStatus) return;
-        
-            logStatus.textContent = '기록을 불러오는 중...';
-        
-            // 'brochure_downloads' 컬렉션에서 다운로드 시간(downloadedAt)을 기준으로 최신순 정렬
-            const q = query(collection(db, 'brochure_downloads'), orderBy("downloadedAt", "desc"));
-            
-            // 데이터 변경을 실시간으로 감지
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                logBody.innerHTML = ''; // 기존 목록을 비움
-                
-                if (snapshot.empty) { // 데이터가 하나도 없으면
-                    logStatus.textContent = '아직 다운로드 기록이 없습니다.';
-                    return;
-                }
-                
-                logStatus.textContent = ''; // 데이터가 있으면 "불러오는 중" 메시지 숨김
-                
-                // 가져온 데이터를 하나씩 테이블 행(row)으로 만들어 추가
-                snapshot.forEach(doc => {
-                    const log = doc.data();
-                    const row = logBody.insertRow();
-                    row.className = 'border-b border-gray-200 hover:bg-gray-50';
-                    const formattedDate = log.downloadedAt ? log.downloadedAt.toDate().toLocaleString('ko-KR') : '날짜 정보 없음';
-                    row.innerHTML = `<td class="px-6 py-4">${log.organizationName}</td><td class="px-6 py-4 text-sm text-gray-600">${formattedDate}</td>`;
-                });
-            });
-            activeFirestoreListeners.push(unsubscribe); // 페이지 이동 시 실시간 감지를 중지할 수 있도록 등록
-        }
+    // 🔽 [2-4] 관리자 패널 뷰어 함수 교체 🔽
+            // ✅ 관리자용 기록 조회 함수
+            function initDownloadLogViewer() {
+                const logTable = document.querySelector('#download-log-body').closest('table'); // 테이블 전체 선택
+                const logBody = document.getElementById('download-log-body'); // 기록이 들어갈 테이블 본문
+                const logStatus = document.getElementById('download-log-status'); // "불러오는 중..." 메시지
+                if (!logBody || !logStatus || !logTable) return;
+    
+                // 테이블 헤더 수정
+                const thead = logTable.querySelector('thead tr');
+                if (thead) {
+                    thead.innerHTML = `
+                        <th class="px-6 py-4 font-semibold text-gray-600">기관/회사명</th>
+                        <th class="px-6 py-4 font-semibold text-gray-600">담당자명</th>
+                        <th class="px-6 py-4 font-semibold text-gray-600">이메일</th>
+                        <th class="px-6 py-4 font-semibold text-gray-600">연락처</th>
+                        <th class="px-6 py-4 font-semibold text-gray-600">다운로드 일시</th>
+                    `;
+                }
+            
+                logStatus.textContent = '기록을 불러오는 중...';
+            
+                // 'brochure_downloads' 컬렉션에서 다운로드 시간(downloadedAt)을 기준으로 최신순 정렬
+                const q = query(collection(db, 'brochure_downloads'), orderBy("downloadedAt", "desc"));
+                
+                // 데이터 변경을 실시간으로 감지
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    logBody.innerHTML = ''; // 기존 목록을 비움
+                    
+                    if (snapshot.empty) { // 데이터가 하나도 없으면
+                        logStatus.textContent = '아직 다운로드 기록이 없습니다.';
+                        return;
+                    }
+                    
+                    logStatus.textContent = ''; // 데이터가 있으면 "불러오는 중" 메시지 숨김
+                    
+                    // 가져온 데이터를 하나씩 테이블 행(row)으로 만들어 추가
+                    snapshot.forEach(doc => {
+                        const log = doc.data();
+                        const row = logBody.insertRow();
+                        row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                        const formattedDate = log.downloadedAt ? log.downloadedAt.toDate().toLocaleString('ko-KR') : '날짜 정보 없음';
+                        // 새 필드 추가
+                    t     row.innerHTML = `
+                            <td class="px-6 py-4">${log.organizationName || '-'}</td>
+                            <td class="px-6 py-4">${log.name || '-'}</td>
+                            <td class="px-6 py-4">${log.email || '-'}</td>
+                            <td class="px-6 py-4">${log.phone || '-'}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${formattedDate}</td>
+              _ECHO_         `;
+                    });
+                });
+                activeFirestoreListeners.push(unsubscribe); // 페이지 이동 시 실시간 감지를 중지할 수 있도록 등록
+            }
+        // 🔼 [2-4] 관리자 패널 뷰어 함수 (여기까지) 🔼
         
         // ✅ 2-B: 이 함수를 아래 코드로 교체하세요.
         function initAboutIntroPage() {
@@ -3358,42 +3395,67 @@
             });
             // 팝업창의 폼(form)이 제출되었을 때의 동작
             brochureForm?.addEventListener('submit', async (e) => {
-                e.preventDefault(); // 폼 제출 시 페이지가 새로고침되는 기본 동작을 막습니다.
-                
-                const organizationInput = document.getElementById('organization-name-input');
-                const organizationName = organizationInput.value.trim(); // 입력값의 양쪽 공백 제거
-                
-                // 입력값이 없으면 경고창을 띄우고 여기서 멈춥니다.
-                if (!organizationName) {
-                    return customAlert('기관/회사명을 입력해주세요.');
-                }
-            
-                // ⭐ 1단계에서 만든 최종 Google Drive 링크를 여기에 붙여넣으세요!
-                const brochureFileUrl = "https://drive.google.com/uc?export=download&id=1Y9bbVPG_dGichjmysa-4AlZTRkDvF0_r"; 
-                
-                try {
-                    // 1. Firestore에 기록 저장 (비동기 작업)
-                    await addDoc(collection(db, 'brochure_downloads'), {
-                        organizationName: organizationName,       // 입력받은 기관명
-                        downloadedAt: serverTimestamp()           // 현재 서버 시간
-                    });
-            
-                    // 2. 파일 다운로드 실행
-                    const link = document.createElement('a');    // 눈에 보이지 않는 링크(<a> 태그) 생성
-                    link.href = brochureFileUrl;                 // 링크 주소 설정
-                    link.download = 'AUTOLAB_회사소개서.pdf';  // 다운로드될 때의 파일 이름 지정
-                    link.target = '_blank';                      // 새 탭에서 열리도록 하여 안정성 확보
-                    link.click();                                // 생성된 링크를 자동으로 클릭하여 다운로드 실행
-                    
-                    // 3. 마무리 작업
-                    brochureModal.classList.add('hidden');       // 팝업창 닫기
-                    brochureForm.reset();                        // 폼 입력 내용 지우기
-            
-                } catch (error) {
-                    // Firestore 저장이나 다운로드 중 오류가 발생하면 사용자에게 알림
-                    customAlert("오류가 발생했습니다. 다시 시도해주세요.");
-                }
-            });
+                e.preventDefault(); // 폼 제출 시 페이지가 새로고침되는 기본 동작을 막습니다.
+
+                const submitButton = brochureForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.textContent = '전송 중...';
+
+                const formData = new FormData(brochureForm);
+                const organizationName = formData.get('organization')?.trim();
+                const name = formData.get('name')?.trim();
+                const email = formData.get('email')?.trim();
+                const phone = formData.get('phone')?.trim();
+
+                // 입력값 유효성 검사
+                if (!organizationName || !name || !email || !phone) {
+                    customAlert('모든 항목을 입력해주세요.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                    return;
+                }
+            
+                // Google Drive 링크
+                const brochureFileUrl = "https://drive.google.com/uc?export=download&id=1Y9bbVPG_dGichjmysa-4AlZTRkDvF0_r"; 
+                
+                try {
+                    // 1. Netlify로 폼 데이터 전송 (이메일 발송용)
+                    await fetch('/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(formData).toString()
+                    });
+
+                    // 2. Firestore에 기록 저장 (관리자 확인용)
+                    await addDoc(collection(db, 'brochure_downloads'), {
+                        organizationName: organizationName,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        downloadedAt: serverTimestamp() 
+                    });
+            
+                    // 3. 파일 다운로드 실행
+                    const link = document.createElement('a');
+                    link.href = brochureFileUrl;
+                    link.download = 'AUTOLAB_회사소개서.pdf';
+                    link.target = '_blank';
+                    link.click();
+          _ECHO_
+                // 4. 마무리 작업
+                    brochureModal.classList.add('hidden');
+                    brochureForm.reset();
+                    customAlert('신청이 완료되었습니다. 회사 소개서 다운로드가 시작됩니다.');
+            
+                } catch (error) {
+                    console.error("Download form submission error:", error);
+                    customAlert("오류가 발생했습니다. 다시 시도해주세요.");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                }
+            });
             async function handleHistoryFormSubmit(e) {
                 e.preventDefault();
                 const docId = document.getElementById('history-id').value;
