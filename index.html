@@ -2867,7 +2867,7 @@
                         row.className = 'border-b border-gray-200 hover:bg-gray-50';
                         const formattedDate = log.downloadedAt ? log.downloadedAt.toDate().toLocaleString('ko-KR') : '날짜 정보 없음';
                         // 새 필드 추가
-                    t     row.innerHTML = `
+                        row.innerHTML = `
                             <td class="px-6 py-4">${log.organizationName || '-'}</td>
                             <td class="px-6 py-4">${log.name || '-'}</td>
                             <td class="px-6 py-4">${log.email || '-'}</td>
@@ -3442,7 +3442,7 @@
                     link.download = 'AUTOLAB_회사소개서.pdf';
                     link.target = '_blank';
                     link.click();
-          _ECHO_
+
                 // 4. 마무리 작업
                     brochureModal.classList.add('hidden');
                     brochureForm.reset();
