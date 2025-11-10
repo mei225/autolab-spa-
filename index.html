@@ -2887,53 +2887,77 @@
                 });
             });
         }
-        // ✅ 5-A: initCommunityPage 함수 전체 교체 (검색, 리스트, 팝업 기능 포함)
-        function initCommunityPage() {
-            const container = document.getElementById('community-posts-container');
-            const searchInput = document.getElementById('community-search-input');
-            if (!container || !searchInput) return;
-        
-            let allPosts = []; // 모든 게시물을 저장할 배열
-        
-            const renderPosts = (postsToRender) => {
-                container.innerHTML = '';
-                if (postsToRender.length === 0) {
-                    container.innerHTML = '<p class="text-center text-gray-500 py-10">일치하는 게시물이 없습니다.</p>';
-                    return;
-                }
-                postsToRender.forEach(post => {
-                    const postEl = document.createElement('div');
-                    postEl.className = 'community-post-item';
-                    postEl.addEventListener('click', () => openPostDetailModal(post));
-        
-                    const date = post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '';
-                    const imageIcon = (post.images && post.images.length > 0) ? '<i class="fas fa-image post-image-icon"></i>' : '';
-                    
-                    postEl.innerHTML = `
-                        <span class="post-title">${post.title}</span>
-                        <span class="post-date">${date}</span>
-                        ${imageIcon}
-                    `;
-                    container.appendChild(postEl);
-                });
-            };
-        
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filteredPosts = allPosts.filter(post => 
-                    post.title.toLowerCase().includes(searchTerm) || 
-                    post.content.toLowerCase().includes(searchTerm)
-                );
-                renderPosts(filteredPosts);
-            });
-        
-            const q = query(collection(db, 'community'), orderBy("createdAt", "desc"));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderPosts(allPosts); // 초기 렌더링
-            });
-            activeFirestoreListeners.push(unsubscribe);
-        }
+// ✅ 5-A: initCommunityPage 함수 전체 교체 (검색, 리스트, 팝업 기능 포함)
+        function initCommunityPage() {
+            const container = document.getElementById('community-posts-container');
+            const searchInput = document.getElementById('community-search-input');
+            if (!container || !searchInput) return;
+       
+            let allPosts = []; // 모든 게시물을 저장할 배열
+       
+            // 🔽 [수정됨] renderPosts 함수가 관리자 버튼을 포함하도록 수정
+            const renderPosts = (postsToRender) => {
+                container.innerHTML = '';
+                if (postsToRender.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-10">일치하는 게시물이 없습니다.</p>';
+                    return;
+                }
+                const isAdmin = document.body.classList.contains('admin-mode'); // 관리자 모드인지 확인
+
+                postsToRender.forEach(post => {
+                    const postEl = document.createElement('div');
+                    postEl.className = 'community-post-item';
+                    
+                    // [수정됨] 버튼 클릭 시 모달이 열리지 않도록 이벤트 핸들러 수정
+                    postEl.addEventListener('click', (e) => {
+                        if (e.target.closest('button')) { // 클릭된 대상이 버튼이면
+                            return; // 아무것도 하지 않음 (상세 모달 열기 방지)
+                        }
+                        openPostDetailModal(post); // 버튼이 아니면 상세 모달 열기
+                    });
+       
+                    const date = post.createdAt ? post.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+                    const imageIcon = (post.images && post.images.length > 0) ? '<i class="fas fa-image post-image-icon"></i>' : '';
+                    
+                    // [추가됨] 관리자일 경우 버튼 HTML 생성
+                    let adminButtonsHtml = '';
+                    if (isAdmin) {
+                        adminButtonsHtml = `
+                            <button data-id="${post.id}" class="edit-post-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 text-sm ml-4">수정</button>
+                            <button data-id="${post.id}" class="delete-post-btn bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm ml-2">삭제</button>
+                        `;
+                    }
+       
+                    // [수정됨] HTML 구조 변경: 제목 / (날짜 + 아이콘 + 관리자 버튼)
+                    postEl.innerHTML = `
+                        <span class="post-title">${post.title}</span>
+                        <div class="flex-shrink-0 flex items-center">
+                            <span class="post-date">${date}</span>
+                            ${imageIcon}
+                            ${adminButtonsHtml}
+                        </div>
+                    `;
+                    container.appendChild(postEl);
+                });
+            };
+            // 🔼 [수정됨] renderPosts 함수 끝
+       
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredPosts = allPosts.filter(post => 
+                    post.title.toLowerCase().includes(searchTerm) || 
+                    post.content.toLowerCase().includes(searchTerm)
+                );
+                renderPosts(filteredPosts);
+            });
+       
+            const q = query(collection(db, 'community'), orderBy("createdAt", "desc"));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPosts(allPosts); // 초기 렌더링
+            });
+            activeFirestoreListeners.push(unsubscribe);
+        }
         // ⭐ index.html에 새로운 함수 추가:
         
         // 특정 ID로 게시물 모달 열기
